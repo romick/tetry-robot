@@ -73,10 +73,10 @@ class TerminalSettingsDialog(wx.Dialog):
         self.radio_box_newline.SetSelection(self.settings.newline)
 
 
-        leg1 = legIK(offset=[10,10],   coxa=10, temur=10, tibia=10)
-        leg1 = legIK(offset=[-10,10],  coxa=10, temur=10, tibia=10)
-        leg1 = legIK(offset=[10,-10],  coxa=10, temur=10, tibia=10)
-        leg1 = legIK(offset=[-10,-10], coxa=10, temur=10, tibia=10)
+        leg1 = legIK(offset=[10,10],   coxa=45, temur=45, tibia=85)
+        leg1 = legIK(offset=[-10,10],  coxa=45, temur=45, tibia=85)
+        leg1 = legIK(offset=[10,-10],  coxa=45, temur=45, tibia=85)
+        leg1 = legIK(offset=[-10,-10], coxa=45, temur=45, tibia=85)
 
 
     def __set_properties(self):
@@ -168,6 +168,7 @@ class TerminalFrame(wx.Frame):
         self.button_2 = wx.Button(self, wx.ID_ANY, ("left"))
         self.button_4 = wx.Button(self, wx.ID_ANY, ("right"))
         self.button_5 = wx.Button(self, wx.ID_ANY, ("backward"))
+        self.button_6 = wx.Button(self, wx.ID_ANY, ("reset all servos"))
 
         self.slider_1 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_LABELS | wx.SL_TOP)
         self.slider_2 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
@@ -278,6 +279,7 @@ class TerminalFrame(wx.Frame):
         grid_sizer_1.Add(self.slider_10, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_1.Add(self.slider_11, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_1.Add(self.slider_12, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        grid_sizer_1.Add(self.button_6, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         sizer_2.Add(grid_sizer_1, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
         sizer_1.Add(sizer_2, 1, wx.ALL | wx.EXPAND, 0)
 
@@ -307,6 +309,7 @@ class TerminalFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.left_button_pressed, self.button_2)
         self.Bind(wx.EVT_BUTTON, self.right_button_pressed, self.button_4)
         self.Bind(wx.EVT_BUTTON, self.back_button_pressed, self.button_5)
+        self.Bind(wx.EVT_BUTTON, self.reset_button_pressed, self.button_6)
         self.Bind(wx.EVT_SCROLL_CHANGED , self.servo0_move, self.slider_1)
         self.Bind(wx.EVT_SCROLL_CHANGED , self.servo3_move, self.slider_4)
         self.Bind(wx.EVT_SCROLL_CHANGED , self.servo2_move, self.slider_3)
@@ -461,6 +464,26 @@ class TerminalFrame(wx.Frame):
     def back_button_pressed(self, event):  # wxGlade: MyFrame.<event_handler>
                     print "Event handler 'back_button_pressed' not implemented!"
                     event.Skip()
+
+    def reset_button_pressed(self, event):  # wxGlade: MyFrame.<event_handler>
+                char = "#0P1500#1P1500#2P1500#3P1500#4P1500#5P1500#6P1500#7P1500#8P1500#9P1500#10P1500#110P1500\n"
+                self.slider_1.SetValue(1500)
+                self.slider_2.SetValue(1500)
+                self.slider_3.SetValue(1500)
+                self.slider_4.SetValue(1500)
+                self.slider_5.SetValue(1500)
+                self.slider_6.SetValue(1500)
+                self.slider_7.SetValue(1500)
+                self.slider_8.SetValue(1500)
+                self.slider_9.SetValue(1500)
+                self.slider_10.SetValue(1500)
+                self.slider_11.SetValue(1500)
+                self.slider_12.SetValue(1500)
+                if self.settings.echo:          #do echo if needed
+                    self.text_ctrl_output.WriteText(char)
+                char = char[::-1]
+                self.serial.write(char)         #send the charcater
+                event.Skip()
 
     def servo0_move(self, event):  # wxGlade: MyFrame.<event_handler>
                 positionValue = self.slider_1.GetValue()
