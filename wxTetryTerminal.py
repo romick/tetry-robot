@@ -7,6 +7,7 @@ import sys
 import wxSerialConfigDialog
 import serial
 import threading
+import botMovements
 import legIK
 
 #----------------------------------------------------------------------
@@ -71,12 +72,6 @@ class TerminalSettingsDialog(wx.Dialog):
         self.checkbox_echo.SetValue(self.settings.echo)
         self.checkbox_unprintable.SetValue(self.settings.unprintable)
         self.radio_box_newline.SetSelection(self.settings.newline)
-
-
-        leg1 = legIK(offset=[10,10],   coxa=45, temur=45, tibia=85)
-        leg1 = legIK(offset=[-10,10],  coxa=45, temur=45, tibia=85)
-        leg1 = legIK(offset=[10,-10],  coxa=45, temur=45, tibia=85)
-        leg1 = legIK(offset=[-10,-10], coxa=45, temur=45, tibia=85)
 
 
     def __set_properties(self):

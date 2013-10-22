@@ -13,6 +13,7 @@ class legIK:
         self.coxaLengh = kwds['coxa']
         self.temurLengh = kwds['temur']
         self.tibiaLengh = kwds['tibia']
+        self.servos = kwds['servos']
 
     def _ikLowerLeg(self, x, y):
         #print "IK function called. x=", x, "y=", y
@@ -81,9 +82,11 @@ class legIK:
         print "Positions:", some
         return some
 
-#leg1 = legIK(offset=[65,65], coxa=35,temur=40, tibia=40)
-#leg1.getPositions(110,0, 30)
-#print "\n"
-#leg1.getPositions(130,0, 10)
-#print "\n"
+    def getCommand(self,x,y,z):
+        [xp,yp,zp] = self.getPositions(x,y,z)
+        command =  '#' + str(self.servos[0]) + 'P' + str(xp)
+        command =+ '#' + str(self.servos[1]) + 'P' + str(yp)
+        command =+ '#' + str(self.servos[2]) + 'P' + str(zp)
+        return command
+
 
