@@ -81,10 +81,9 @@ class legIK:
         print "Positions:", some
         return some
 
-leg1 = legIK(offset=[65,65], coxa=35,temur=40, tibia=40)
-
-leg1.getPositions(110,0, 30)
-print "\n"
-leg1.getPositions(130,0, 10)
-print "\n"
+#leg1 = legIK(offset=[65,65], coxa=35,temur=40, tibia=40)
+#leg1.getPositions(110,0, 30)
+#print "\n"
+#leg1.getPositions(130,0, 10)
+#print "\n"
 
