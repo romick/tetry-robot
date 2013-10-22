@@ -56,12 +56,12 @@ MARQUEE _marquee_ = MAKE_MARQUEE(marquee_list,500000,2000000,&marquee_put_char);
 static MAKE_WRITER(marquee_put_char){ /* createWriter */
 	return marqueeSendByte(&_marquee_,byte);
 }
-SERVO _servo_ = MAKE_SERVO(false,B5,1500,500);
-SERVO _servo2_ = MAKE_SERVO(false,B6,1500,500);
-SERVO _servo3_ = MAKE_SERVO(false,B7,1500,500);
-SERVO _servo4_ = MAKE_SERVO(false,E3,1500,500);
-SERVO _servo5_ = MAKE_SERVO(false,E4,1500,500);
-SERVO _servo6_ = MAKE_SERVO(false,E5,1500,500);
+SERVO _servo_ = MAKE_SERVO(false,B5,1500,1000);
+SERVO _servo2_ = MAKE_SERVO(false,B6,1500,1000);
+SERVO _servo3_ = MAKE_SERVO(false,B7,1500,1000);
+SERVO _servo4_ = MAKE_SERVO(false,E3,1500,1000);
+SERVO _servo5_ = MAKE_SERVO(false,E4,1500,1000);
+SERVO _servo6_ = MAKE_SERVO(false,E5,1500,1000);
 static const SERVO_LIST PROGMEM Servos1_list[] = {
 	&_servo_,
 	&_servo2_,
@@ -71,12 +71,12 @@ static const SERVO_LIST PROGMEM Servos1_list[] = {
 	&_servo6_
 };
 SERVO_DRIVER _Servos1_ = MAKE_SERVO_DRIVER(Servos1_list);
-SERVO _servo7_ = MAKE_SERVO(false,H3,1500,500);
-SERVO _servo8_ = MAKE_SERVO(false,H4,1500,500);
-SERVO _servo9_ = MAKE_SERVO(false,H5,1500,500);
-SERVO _servo10_ = MAKE_SERVO(false,L3,1500,500);
-SERVO _servo11_ = MAKE_SERVO(false,L4,1500,500);
-SERVO _servo12_ = MAKE_SERVO(false,L5,1500,500);
+SERVO _servo7_ = MAKE_SERVO(false,H3,1500,1000);
+SERVO _servo8_ = MAKE_SERVO(false,H4,1500,1000);
+SERVO _servo9_ = MAKE_SERVO(false,H5,1500,1000);
+SERVO _servo10_ = MAKE_SERVO(false,L3,1500,1000);
+SERVO _servo11_ = MAKE_SERVO(false,L4,1500,1000);
+SERVO _servo12_ = MAKE_SERVO(false,L5,1500,1000);
 static const SERVO_LIST PROGMEM servos2_list[] = {
 	&_servo7_,
 	&_servo8_,

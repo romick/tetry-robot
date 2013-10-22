@@ -17,7 +17,7 @@ MCU_TARGET     = atmega640
 MCU_SPEED	   = 16000000
 
 # The library where WebbotLib is installed
-WEBBOT		   = ../lib2/webbotavrclib-2.11
+WEBBOT		   = C:\Users\roman_000\Desktop\webbot\lib2\webbotavrclib-2.11
 
 # The library to link against
 WEBBOT_LIB = $(WEBBOT)/libWebbot-ATmega640.a

@@ -10,13 +10,15 @@
 
 #define SERVOS_NUMBER 11  
 //actually 12 counting 0 as first 
-#define SSC_RESOLUTION 100000
+#define SSC_RESOLUTION 1000
 #define DEBUG_SESSION 1
 #define MY_DRIVE_SPEED_MIN 500
 #define MY_DRIVE_SPEED_MAX 2500
 #define MY_DRIVE_SPEED_AVERAGE 1500
 
 Servo* servos[SERVOS_NUMBER];
+
+uint8_t VERBOSE = 0;
 
 struct command {
 	uint8_t has_changed[SERVOS_NUMBER];
@@ -62,9 +64,9 @@ void print_command (struct command* command, TICK_COUNT loop_number) {
 
 int to_int (char chr) {
 	int i = chr - '0';
-	#ifdef DEBUG_SESSION
+	if (VERBOSE==1) {
 		cout << "\n To_int'd number:" << i << "\n";
-	#endif
+	}
 	return i;
 }
 
@@ -74,13 +76,17 @@ void reader(unsigned char data, Uart& uart, void* param) {
 	switch (data) {
 		case '?':
 		{
-			//subcommand "Poll servo speeds"
-			#ifdef DEBUG_SESSION
+			
+			//subcommand "Toggle verbose TRUE/FALSE" 
+			if (VERBOSE==0) {
+				VERBOSE = 1;
 				int8_t i;
 				for (i=0; i <= SERVOS_NUMBER; i++) {
 					cout << "Current speed:" << (*servos[i]).getSpeed() << "\n";
 				}
-			#endif
+			} else {
+				VERBOSE = 0;
+			}
 			break;
 		}
 		case '#':
@@ -88,9 +94,9 @@ void reader(unsigned char data, Uart& uart, void* param) {
 			//subcommand "Servo number"
 			r_curr_servo = 0;
 			r_curr_subcommand = data;
-			#ifdef DEBUG_SESSION
+			if (VERBOSE==1) {
 				cout << "Received servo number command \n";
-			#endif
+			}
 			break;
 		}
 		case 'P':
@@ -98,9 +104,9 @@ void reader(unsigned char data, Uart& uart, void* param) {
 			//subcommand "Position"
 			command_receiving.servo_target_positions[r_curr_servo] = 0;
 			r_curr_subcommand = data;
-			#ifdef DEBUG_SESSION
+			if (VERBOSE==1) {
 				cout << "Received position command \n";
-			#endif
+			}
 			break;
 		}
 		case 'S':
@@ -108,9 +114,9 @@ void reader(unsigned char data, Uart& uart, void* param) {
 			//subcommand "Speed"
 			command_receiving.servo_speeds[r_curr_servo] = 0;
 			r_curr_subcommand = data;
-			#ifdef DEBUG_SESSION
+			if (VERBOSE==1) {
 				cout << "Received speed command \n";
-			#endif
+			}
 			break;
 		}
 		case 'T':
@@ -118,9 +124,9 @@ void reader(unsigned char data, Uart& uart, void* param) {
 			//subcommand "Time"
 			command_receiving.time = 0;
 			r_curr_subcommand = data;
-			#ifdef DEBUG_SESSION
+			if (VERBOSE==1) {
 				cout << "Received time command \n";
-			#endif
+			}
 			break;
 		}
 		case '1':
@@ -134,41 +140,41 @@ void reader(unsigned char data, Uart& uart, void* param) {
 		case '9':
 		case '0':
 		{
-			#ifdef DEBUG_SESSION
+			if (VERBOSE==1) {
 				cout << "Received digit \n Current subcommand is " << r_curr_subcommand << "\n";
-			#endif
+			}
 			switch (r_curr_subcommand) {
 				case '#':
 				{
 					r_curr_servo = r_curr_servo*10 + to_int(data);
-					#ifdef DEBUG_SESSION
+					if (VERBOSE==1) {
 						cout << "Set current servo to:" << r_curr_servo << "\n";
-					#endif
+					}
 					break;
 				}
 				case 'P':
 				{
 					command_receiving.servo_target_positions[r_curr_servo] = command_receiving.servo_target_positions[r_curr_servo]*10 + to_int(data);
 					command_receiving.has_changed[r_curr_servo] = 1;
-					#ifdef DEBUG_SESSION
+					if (VERBOSE==1) {
 						cout << "Set current servo target position to:" << command_receiving.servo_target_positions[r_curr_servo] << "\n";
-					#endif
+					}
 					break;
 				}
 				case 'S':
 				{
 					command_receiving.servo_speeds[r_curr_servo] = command_receiving.servo_speeds[r_curr_servo]*10 + to_int(data);
-					#ifdef DEBUG_SESSION
+					if (VERBOSE==1) {
 						cout << "Set current servo speed to:" << command_receiving.servo_speeds[r_curr_servo] << "\n";
-					#endif
+					}
 					break;
 				}
 				case 'T':
 				{
 					command_receiving.time = command_receiving.time*10 + to_int(data);
-					#ifdef DEBUG_SESSION
+					if (VERBOSE==1) {
 						cout << "Set movement time to:" << command_receiving.time << "\n";
-					#endif
+					}
 					break;
 				}
 				default:
