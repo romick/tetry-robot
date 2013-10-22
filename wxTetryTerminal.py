@@ -7,6 +7,7 @@ import sys
 import wxSerialConfigDialog
 import serial
 import threading
+import legIK
 
 #----------------------------------------------------------------------
 # Create an own event type, so that GUI updates can be delegated
@@ -71,6 +72,13 @@ class TerminalSettingsDialog(wx.Dialog):
         self.checkbox_unprintable.SetValue(self.settings.unprintable)
         self.radio_box_newline.SetSelection(self.settings.newline)
 
+
+        leg1 = legIK(offset=[10,10],   coxa=10, temur=10, tibia=10)
+        leg1 = legIK(offset=[-10,10],  coxa=10, temur=10, tibia=10)
+        leg1 = legIK(offset=[10,-10],  coxa=10, temur=10, tibia=10)
+        leg1 = legIK(offset=[-10,-10], coxa=10, temur=10, tibia=10)
+
+
     def __set_properties(self):
         # begin wxGlade: TerminalSettingsDialog.__set_properties
         self.SetTitle("Terminal Settings")
@@ -120,7 +128,7 @@ class RedirectText:
         self.out=aWxTextCtrl
 
     def write(self,string):
-        self.out.WriteText(string)
+        self.out.WriteText(string) #supporting class to redirect stdout to textcontrol
 
 
 class TerminalFrame(wx.Frame):
