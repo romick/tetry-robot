@@ -1,4 +1,3 @@
-#TODO: make a separate class for bot positions storage
 
 import legIK
 
@@ -16,27 +15,48 @@ class Tetry():
 		
 		#assume to start from BasePose
 		#raise Front Right leg , move forward by 20mm, lower it
-		self.legFR.getCommand(80,75,30)
-		self.legFR.getCommand(90,75,30)
-		self.legFR.getCommand(95,75,40)
+		self.legFR.getCommandOffsetCoordinates(5,  0, -10)
+		self.legFR.getCommandOffsetCoordinates(10, 0, 0)
+		self.legFR.getCommandOffsetCoordinates(5,  0, 10)
 
 		#move body forward by 5mm
-		self.legFR.getCommand(90,75,40)
-		self.legFL.getCommand(-80,75,40)
-		self.legBR.getCommand(70,-75,40)
-		self.legBL.getCommand(-80,-75,40)
+		self.legFR.getCommandOffsetCoordinates(-5,0,0)
+		self.legFL.getCommandOffsetCoordinates(-5,0,0)
+		self.legBR.getCommandOffsetCoordinates(-5,0,0)
+		self.legBL.getCommandOffsetCoordinates(-5,0,0)
 
 		#raise Back Left leg , move forward by 20mm, lower it
-		self.legBL.getCommand(-75,-75,30)
-		self.legBL.getCommand(-65,-75,30)
-		self.legBL.getCommand(-60,-75,40)
+		self.legBL.getCommandOffsetCoordinates(5,  0, -10)
+		self.legBL.getCommandOffsetCoordinates(10, 0, 0)
+		self.legBL.getCommandOffsetCoordinates(5,  0, 10)
 
 		#move body forward by 5mm
-		self.legFR.getCommand(85,75,40)
-		self.legFL.getCommand(-85,75,40)
-		self.legBR.getCommand(65,-75,40)
-		self.legBL.getCommand(-65,-75,40)
+		self.legFR.getCommandOffsetCoordinates(-5,0,0)
+		self.legFL.getCommandOffsetCoordinates(-5,0,0)
+		self.legBR.getCommandOffsetCoordinates(-5,0,0)
+		self.legBL.getCommandOffsetCoordinates(-5,0,0)
 
+		#raise Front Left leg , move forward by 20mm, lower it
+		self.legFL.getCommandOffsetCoordinates(5,  0, -10)
+		self.legFL.getCommandOffsetCoordinates(10, 0, 0)
+		self.legFL.getCommandOffsetCoordinates(5,  0, 10)
+
+		#move body forward by 5mm
+		self.legFR.getCommandOffsetCoordinates(-5,0,0)
+		self.legFL.getCommandOffsetCoordinates(-5,0,0)
+		self.legBR.getCommandOffsetCoordinates(-5,0,0)
+		self.legBL.getCommandOffsetCoordinates(-5,0,0)
+
+		#raise Back Right leg , move forward by 20mm, lower it
+		self.legBR.getCommandOffsetCoordinates(5,  0, -10)
+		self.legBR.getCommandOffsetCoordinates(10, 0, 0)
+		self.legBR.getCommandOffsetCoordinates(5,  0, 10)
+
+		#move body forward by 5mm
+		self.legFR.getCommandOffsetCoordinates(-5,0,0)
+		self.legFL.getCommandOffsetCoordinates(-5,0,0)
+		self.legBR.getCommandOffsetCoordinates(-5,0,0)
+		self.legBL.getCommandOffsetCoordinates(-5,0,0)
 		pass
 
 	def makeBasePose(self):
