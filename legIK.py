@@ -14,6 +14,9 @@ class legIK:
         self.temurLengh = kwds['temur']
         self.tibiaLengh = kwds['tibia']
         self.servos = kwds['servos']
+        self.state.x = 0
+        self.state.y = 0
+        self.state.z = 0
 
     def _ikLowerLeg(self, x, y):
         #print "IK function called. x=", x, "y=", y
@@ -45,7 +48,8 @@ class legIK:
             returnAngles = [alpha, lowerLegAngles[0], lowerLegAngles[1]] 
             return returnAngles
 
-    def getAngles(self,x,y,z):
+    def _getAngles(self,x,y,z):
+        #re-calculate position
         x = x - self.legOffset[0]
         y = y - self.legOffset[1]
         # rotate to leg zero position
@@ -73,20 +77,34 @@ class legIK:
             return
         return x
 
-    def getPositions (self, x, y, z):
+    def _getPositions (self, x, y, z):
         print "Global targets are:", x, y, z
-        some = self.getAngles(x, y, z)
+        some = self._getAngles(x, y, z)
         some[0] = round(self._interpolate(some[0], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
         some[1] = round(self._interpolate(some[1], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
         some[2] = round(self._interpolate(some[2], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
         print "Positions:", some
         return some
 
-    def getCommand(self,x,y,z):
-        [xp,yp,zp] = self.getPositions(x,y,z)
+    def getCommandExactCoordinates(self,x,y,z):
+        #TODO: move state storage to separate class (is it really needed?)
+
+        #check if targets set
+        x = self.state.x if x is None
+        y = self.state.y if y is None
+        z = self.state.z if z is None
+
+        #save current position
+        self.state.x = x
+        self.state.y = y
+        self.state.z = z
+        
+        #TODO: separate IK calculation and serial protocol handling (allow multiple protocols)
+        [xp,yp,zp] = self._getPositions(x,y,z)
         command =  '#' + str(self.servos[0]) + 'P' + str(xp)
         command =+ '#' + str(self.servos[1]) + 'P' + str(yp)
         command =+ '#' + str(self.servos[2]) + 'P' + str(zp)
         return command
 
-
+    def getCommandOffsetCoordinates(self, xOffset, yOffset, zOffset):
+        return getCommandExactCoordinates(self.state.x + xOffset, self.state.y + yOffset, self.state.z + zOffset)
