@@ -7,7 +7,7 @@ import sys
 import wxSerialConfigDialog
 import serial
 import threading
-import botMovements
+import Tetry
 import legIK
 
 #----------------------------------------------------------------------
@@ -206,6 +206,12 @@ class TerminalFrame(wx.Frame):
         if not self.alive.isSet():
             self.Close()
 
+        
+        #Start_bot
+        self.bot = Tetry.Robot(sender = self.Sender)
+
+
+
     def StartThread(self):
         """Start the receiver thread"""        
         self.thread = threading.Thread(target=self.ComPortThread)
@@ -301,6 +307,7 @@ class TerminalFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
 
         self.Bind(wx.EVT_BUTTON, self.forward_button_pressed, self.button_3)
+        #self.Bind(wx., self.forward_button_pressed, self.button_3)
         self.Bind(wx.EVT_BUTTON, self.left_button_pressed, self.button_2)
         self.Bind(wx.EVT_BUTTON, self.right_button_pressed, self.button_4)
         self.Bind(wx.EVT_BUTTON, self.back_button_pressed, self.button_5)
@@ -445,20 +452,16 @@ class TerminalFrame(wx.Frame):
                 #~ self.OnSerialRead(text)         #output text in window
 
     def forward_button_pressed(self, event):  # wxGlade: MyFrame.<event_handler>
-                    print "Event handler 'forward_button_pressed' not implemented!"
-                    event.Skip()
+                    self.bot.makeStep(0)
 
     def left_button_pressed(self, event):  # wxGlade: MyFrame.<event_handler>
-                    print "Event handler 'left_button_pressed' not implemented!"
-                    event.Skip()
+                    self.bot.makeStep(270)
 
     def right_button_pressed(self, event):  # wxGlade: MyFrame.<event_handler>
-                    print "Event handler 'right_button_pressed' not implemented!"
-                    event.Skip()
+                    self.bot.makeStep(90)
 
     def back_button_pressed(self, event):  # wxGlade: MyFrame.<event_handler>
-                    print "Event handler 'back_button_pressed' not implemented!"
-                    event.Skip()
+                    self.bot.makeStep(180)
 
     def reset_button_pressed(self, event):  # wxGlade: MyFrame.<event_handler>
                 char = "#0P1500#1P1500#2P1500#3P1500#4P1500#5P1500#6P1500#7P1500#8P1500#9P1500#10P1500#110P1500\n"
@@ -474,107 +477,76 @@ class TerminalFrame(wx.Frame):
                 self.slider_10.SetValue(1500)
                 self.slider_11.SetValue(1500)
                 self.slider_12.SetValue(1500)
-                if self.settings.echo:          #do echo if needed
-                    self.text_ctrl_output.WriteText(char)
-                char = char[::-1]
-                self.serial.write(char)         #send the charcater
-                event.Skip()
+                self.Sender(char)
 
     def servo0_move(self, event):  # wxGlade: MyFrame.<event_handler>
                 positionValue = self.slider_1.GetValue()
                 char = "#0P%i\n" % positionValue
-                if self.settings.echo:          #do echo if needed
-                    self.text_ctrl_output.WriteText(char)
-                char = char[::-1]
-                self.serial.write(char)         #send the charcater
+                self.Sender(char)
 
     def servo1_move(self, event):  # wxGlade: MyFrame.<event_handler>
                 positionValue = self.slider_2.GetValue()
                 char = "#1P%i\n" % positionValue
-                if self.settings.echo:          #do echo if needed
-                    self.text_ctrl_output.WriteText(char)
-                char = char[::-1]
-                self.serial.write(char)         #send the charcater
+                self.Sender(char)
 
     def servo2_move(self, event):  # wxGlade: MyFrame.<event_handler>
                 positionValue = self.slider_3.GetValue()
                 char = "#2P%i\n" % positionValue
-                if self.settings.echo:          #do echo if needed
-                    self.text_ctrl_output.WriteText(char)
-                char = char[::-1]
-                self.serial.write(char)         #send the charcater
+                self.Sender(char)
 
     def servo3_move(self, event):  # wxGlade: MyFrame.<event_handler>
                 positionValue = self.slider_4.GetValue()
                 char = "#3P%i\n" % positionValue
-                if self.settings.echo:          #do echo if needed
-                    self.text_ctrl_output.WriteText(char)
-                char = char[::-1]
-                self.serial.write(char)         #send the charcater
+                self.Sender(char)
 
     def servo4_move(self, event):  # wxGlade: MyFrame.<event_handler>
                 positionValue = self.slider_5.GetValue()
                 char = "#4P%i\n" % positionValue
-                if self.settings.echo:          #do echo if needed
-                    self.text_ctrl_output.WriteText(char)
-                char = char[::-1]
-                self.serial.write(char)         #send the charcater
+                self.Sender(char)
 
     def servo5_move(self, event):  # wxGlade: MyFrame.<event_handler>
                 positionValue = self.slider_6.GetValue()
                 char = "#5P%i\n" % positionValue
-                if self.settings.echo:          #do echo if needed
-                    self.text_ctrl_output.WriteText(char)
-                char = char[::-1]
-                self.serial.write(char)         #send the charcater
+                self.Sender(char)
 
     def servo6_move(self, event):  # wxGlade: MyFrame.<event_handler>
                 positionValue = self.slider_7.GetValue()
                 char = "#6P%i\n" % positionValue
-                if self.settings.echo:          #do echo if needed
-                    self.text_ctrl_output.WriteText(char)
-                char = char[::-1]
-                self.serial.write(char)         #send the charcater
+                self.Sender(char)
 
     def servo7_move(self, event):  # wxGlade: MyFrame.<event_handler>
                 positionValue = self.slider_8.GetValue()
                 char = "#7P%i\n" % positionValue
-                if self.settings.echo:          #do echo if needed
-                    self.text_ctrl_output.WriteText(char)
-                char = char[::-1]
-                self.serial.write(char)         #send the charcater
+                self.Sender(char)
 
     def servo8_move(self, event):  # wxGlade: MyFrame.<event_handler>
                 positionValue = self.slider_9.GetValue()
                 char = "#8P%i\n" % positionValue
-                if self.settings.echo:          #do echo if needed
-                    self.text_ctrl_output.WriteText(char)
-                char = char[::-1]
-                self.serial.write(char)         #send the charcater
+                self.Sender(char)
 
     def servo9_move(self, event):  # wxGlade: MyFrame.<event_handler>
                 positionValue = self.slider_10.GetValue()
                 char = "#9P%i\n" % positionValue
-                if self.settings.echo:          #do echo if needed
-                    self.text_ctrl_output.WriteText(char)
-                char = char[::-1]
-                self.serial.write(char)         #send the charcater
+                self.Sender(char)
 
     def servo10_move(self, event):  # wxGlade: MyFrame.<event_handler>
                 positionValue = self.slider_11.GetValue()
                 char = "#10P%i\n" % positionValue
-                if self.settings.echo:          #do echo if needed
-                    self.text_ctrl_output.WriteText(char)
-                char = char[::-1]
-                self.serial.write(char)         #send the charcater
+                self.Sender(char)
 
     def servo11_move(self, event):  # wxGlade: MyFrame.<event_handler>
                 positionValue = self.slider_12.GetValue()
                 char = "#11P%i\n" % positionValue
+                self.Sender(char)
+
+    def Sender(self, message):
+                message = message + '\n'
+                print "Sending message:%s" % message
                 if self.settings.echo:          #do echo if needed
-                    self.text_ctrl_output.WriteText(char)
-                char = char[::-1]
-                self.serial.write(char)         #send the charcater
+                    self.text_ctrl_output.WriteText(message)
+                message = message[::-1]
+                self.serial.write(message)         #send the charcater
+
             
 # end of class TerminalFrame
 
