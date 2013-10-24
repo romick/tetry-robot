@@ -23,7 +23,7 @@ class Robot:
 
 
 	def initBot(self):
-			self._send(self.legFR.gCExactCoordinates(75,75,40)+self.legFL.gCExactCoordinates(-75,75,40)+self.legBR.gCExactCoordinates(75,-75,40)+self.legBL.gCExactCoordinates(-75,-75,40))
+			self._send(self.legFR.gCExactCoordinates(95,95,40)+self.legFL.gCExactCoordinates(-95,95,40)+self.legBR.gCExactCoordinates(95,-95,40)+self.legBL.gCExactCoordinates(-95,-95,40))
 
 	def makeStep(self, angle):
 			
@@ -36,47 +36,27 @@ class Robot:
 
 			d=10
 			sleep1=0.1
-			sleep2=0.2
+			sleep2=0.5
 
 			#assume to start from BasePose
 			#raise Front Right leg , move forward by 20mm, lower it, then move body forward by 5mm
-			self._send(self.legFR.gCOffset(s,  t, -d))
-			time.sleep(sleep1)
-			self._send(self.legFR.gCOffset(s*2, t*2, 0))
-			time.sleep(sleep1)
-			self._send(self.legFR.gCOffset(s,  t, d))
-			time.sleep(sleep1)
-			self._send(self.legFR.gCOffset(-s, -t, 0) + self.legFL.gCOffset(-s, -t, 0) + self.legBR.gCOffset(-s, -t, 0) + self.legBL.gCOffset(-s, -t, 0))
+			self._legTranspose(self.legFR, s, t, d, sleep1)
+			self._shiftBody(-s, -t)
 			time.sleep(sleep2)
 
 			#raise Back Left leg , move forward by 20mm, lower it, then move body forward by 5mm
-			self._send(self.legBL.gCOffset(s,  t, -d))
-			time.sleep(sleep1)
-			self._send(self.legBL.gCOffset(s*2, t, 0))
-			time.sleep(sleep1)
-			self._send(self.legBL.gCOffset(s,  t, d))
-			time.sleep(sleep1)
-			self._send(self.legFR.gCOffset(-s, -t, 0) + self.legFL.gCOffset(-s, -t, 0) + self.legBR.gCOffset(-s, -t, 0) + self.legBL.gCOffset(-s, -t, 0))
+			self._legTranspose(self.legBL, s, t, d, sleep1)
+			self._shiftBody(-s, -t)
 			time.sleep(sleep2)
 
 			#raise Front Left leg , move forward by 20mm, lower it, then move body forward by 5mm
-			self._send(self.legFL.gCOffset(s,  t, -d))
-			time.sleep(sleep1)
-			self._send(self.legFL.gCOffset(s*2, t, 0))
-			time.sleep(sleep1)
-			self._send(self.legFL.gCOffset(s,  t, d))
-			time.sleep(sleep1)
-			self._send(self.legFR.gCOffset(-s, -t, 0) + self.legFL.gCOffset(-s, -t, 0) + self.legBR.gCOffset(-s, -t, 0) + self.legBL.gCOffset(-s, -t, 0))
+			self._legTranspose(self.legFL, s, t, d, sleep1)
+			self._shiftBody(-s, -t)
 			time.sleep(sleep2)
 
 			#raise Back Right leg , move forward by 20mm, lower it, then move body forward by 5mm
-			self._send(self.legBR.gCOffset(s,  t, -d))
-			time.sleep(sleep1)
-			self._send(self.legBR.gCOffset(s*2, t, 0))
-			time.sleep(sleep1)
-			self._send(self.legBR.gCOffset(s,  t, d))
-			time.sleep(sleep1)
-			self._send(self.legFR.gCOffset(-s, -t, 0) + self.legFL.gCOffset(-s, -t, 0) + self.legBR.gCOffset(-s, -t, 0) + self.legBL.gCOffset(-s, -t, 0))
+			self._legTranspose(self.legBR, s, t, d, sleep1)
+			self._shiftBody(-s, -t)
 			time.sleep(sleep2)
 			pass
 
@@ -86,3 +66,20 @@ class Robot:
 			print
 			self.sender(botcommand)
 
+	def _legTranspose (self, leg, xOffset, yOffset, depth, sleeptime1):
+			self._send(leg.gCOffset(xOffset,  yOffset, -depth))
+			time.sleep(sleeptime1)
+			self._send(leg.gCOffset(xOffset*2, yOffset*2, 0))
+			time.sleep(sleeptime1)
+			self._send(leg.gCOffset(xOffset,  yOffset, depth))
+			time.sleep(sleeptime1)
+			pass
+
+	def _shiftBody(self, xOffset, yOffset):
+			clist = []
+			clist.extend(self.legFR.gCOffset(xOffset, yOffset, 0))
+			clist.extend(self.legFL.gCOffset(xOffset, yOffset, 0))
+			clist.extend(self.legBR.gCOffset(xOffset, yOffset, 0))
+			clist.extend(self.legBL.gCOffset(xOffset, yOffset, 0))
+			self._send(clist)
+			pass
