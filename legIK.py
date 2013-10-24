@@ -3,10 +3,9 @@ import math
 MY_DRIVE_SPEED_MIN = 500
 MY_DRIVE_SPEED_MAX = 2500
 
-class legIK:
+class leg:
     """ new legIK(offset=[-65.8, 76.3], angle=-2.2829, coxa=29.0, temur=49, tibia=52)  docstring for legIK"""
     def __init__(self, *args, **kwds):
-        #super(legIK, self).__init__()
         self.legOffset = kwds['offset']
         self.legOffsetAngle = math.atan2(self.legOffset[1], self.legOffset[0])
         print "legOffsetAngle=", math.degrees(self.legOffsetAngle)
@@ -14,9 +13,9 @@ class legIK:
         self.temurLengh = kwds['temur']
         self.tibiaLengh = kwds['tibia']
         self.servos = kwds['servos']
-        self.state.x = 0
-        self.state.y = 0
-        self.state.z = 0
+        self.stateX = 0
+        self.stateY = 0
+        self.stateZ = 0
 
     def _ikLowerLeg(self, x, y):
         #print "IK function called. x=", x, "y=", y
@@ -86,25 +85,25 @@ class legIK:
         print "Positions:", some
         return some
 
-    def getCommandExactCoordinates(self,x,y,z):
+    def gCExactCoordinates(self,x,y,z):
         #TODO: move state storage to separate class (is it really needed?)
 
         #check if targets set
-        x = self.state.x if x is None
-        y = self.state.y if y is None
-        z = self.state.z if z is None
+        if x is None: x = self.stateX 
+        if y is None: y = self.stateY 
+        if z is None: z = self.stateZ 
 
         #save current position
-        self.state.x = x
-        self.state.y = y
-        self.state.z = z
+        self.stateX = x
+        self.stateY = y
+        self.stateZ = z
         
         #TODO: separate IK calculation and serial protocol handling (allow multiple protocols)
         [xp,yp,zp] = self._getPositions(x,y,z)
-        command =  '#' + str(self.servos[0]) + 'P' + str(xp)
-        command =+ '#' + str(self.servos[1]) + 'P' + str(yp)
-        command =+ '#' + str(self.servos[2]) + 'P' + str(zp)
+        command =  '#%iP%i' % (self.servos[0], xp)
+        command =  '#%iP%i' % (self.servos[1], yp)
+        command =  '#%iP%i' % (self.servos[2], zp)
         return command
 
-    def getCommandOffsetCoordinates(self, xOffset, yOffset, zOffset):
-        return getCommandExactCoordinates(self.state.x + xOffset, self.state.y + yOffset, self.state.z + zOffset)
+    def gCOffset(self, xOffset, yOffset, zOffset):
+        return self.gCExactCoordinates(self.stateX + xOffset, self.stateY + yOffset, self.stateZ + zOffset)
