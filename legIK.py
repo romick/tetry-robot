@@ -17,6 +17,8 @@ class leg:
         self.stateY = 0
         self.stateZ = 0
 
+
+
     def _ikLowerLeg(self, x, y):
         #print "IK function called. x=", x, "y=", y
         print "Lower leg targets are:", x, y
@@ -98,12 +100,12 @@ class leg:
         self.stateY = y
         self.stateZ = z
         
-        #TODO: separate IK calculation and serial protocol handling (allow multiple protocols)
         [xp,yp,zp] = self._getPositions(x,y,z)
-        command =  '#%iP%i' % (self.servos[0], xp)
-        command =  '#%iP%i' % (self.servos[1], yp)
-        command =  '#%iP%i' % (self.servos[2], zp)
-        return command
+        commandlist =  []
+        commandlist.append(dict(servo=self.servos[0], position=xp))
+        commandlist.append(dict(servo=self.servos[1], position=yp))
+        commandlist.append(dict(servo=self.servos[2], position=zp))
+        return commandlist
 
     def gCOffset(self, xOffset, yOffset, zOffset):
         return self.gCExactCoordinates(self.stateX + xOffset, self.stateY + yOffset, self.stateZ + zOffset)
