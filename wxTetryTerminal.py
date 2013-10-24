@@ -42,6 +42,8 @@ NEWLINE_LF      = 1
 NEWLINE_CRLF    = 2
 NEWLINE         ='\n'
 
+SERVO_NUMBER = 12
+
 class TerminalSetup:
     """Placeholder for various terminal settings. Used to pass the
        options to the TerminalSettingsDialog."""
@@ -165,35 +167,39 @@ class TerminalFrame(wx.Frame):
         self.button_5 = wx.Button(self, wx.ID_ANY, ("backward"))
         self.button_6 = wx.Button(self, wx.ID_ANY, ("reset all servos"))
 
-        self.slider_1 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_LABELS | wx.SL_TOP)
-        self.slider_2 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
-        self.slider_3 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
-        self.slider_4 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
-        self.slider_5 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
-        self.slider_6 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
-        self.slider_7 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
-        self.slider_8 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
-        self.slider_9 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
-        self.slider_10 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
-        self.slider_11 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
-        self.slider_12 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
+        self.sliders=[]
+        for i in range(SERVO_NUMBER):
+            self.sliders.append(wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_LABELS | wx.SL_TOP))
+            #print i, ':', self.sliders[i].GetValue()
+        # self.slider_1 = 
+        # self.slider_2 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
+        # self.slider_3 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
+        # self.slider_4 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
+        # self.slider_5 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
+        # self.slider_6 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
+        # self.slider_7 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
+        # self.slider_8 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
+        # self.slider_9 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
+        # self.slider_10 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
+        # self.slider_11 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
+        # self.slider_12 = wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS | wx.SL_LABELS | wx.SL_LEFT | wx.SL_RIGHT | wx.SL_TOP)
 
         self.Bind(wx.EVT_BUTTON, self.forward_button_pressed, self.button_3)
         self.Bind(wx.EVT_BUTTON, self.left_button_pressed, self.button_2)
         self.Bind(wx.EVT_BUTTON, self.right_button_pressed, self.button_4)
         self.Bind(wx.EVT_BUTTON, self.back_button_pressed, self.button_5)
-        self.Bind(wx.EVT_SCROLL_CHANGED , self.servo0_move, self.slider_1)
-        self.Bind(wx.EVT_SCROLL_CHANGED , self.servo3_move, self.slider_4)
-        self.Bind(wx.EVT_SCROLL_CHANGED , self.servo2_move, self.slider_3)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo1_move, self.slider_2)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo4_move, self.slider_5)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo5_move, self.slider_6)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo6_move, self.slider_7)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo7_move, self.slider_8)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo8_move, self.slider_9)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo9_move, self.slider_10)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo10_move, self.slider_11)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo11_move, self.slider_12)
+        # self.Bind(wx.EVT_SCROLL_CHANGED , self.servo0_move, self.slider_1)
+        # self.Bind(wx.EVT_SCROLL_CHANGED , self.servo3_move, self.slider_4)
+        # self.Bind(wx.EVT_SCROLL_CHANGED , self.servo2_move, self.slider_3)
+        # self.Bind(wx.EVT_SCROLL_CHANGED, self.servo1_move, self.slider_2)
+        # self.Bind(wx.EVT_SCROLL_CHANGED, self.servo4_move, self.slider_5)
+        # self.Bind(wx.EVT_SCROLL_CHANGED, self.servo5_move, self.slider_6)
+        # self.Bind(wx.EVT_SCROLL_CHANGED, self.servo6_move, self.slider_7)
+        # self.Bind(wx.EVT_SCROLL_CHANGED, self.servo7_move, self.slider_8)
+        # self.Bind(wx.EVT_SCROLL_CHANGED, self.servo8_move, self.slider_9)
+        # self.Bind(wx.EVT_SCROLL_CHANGED, self.servo9_move, self.slider_10)
+        # self.Bind(wx.EVT_SCROLL_CHANGED, self.servo10_move, self.slider_11)
+        # self.Bind(wx.EVT_SCROLL_CHANGED, self.servo11_move, self.slider_12)
         #My_block end
 
 
@@ -236,18 +242,21 @@ class TerminalFrame(wx.Frame):
         self.button_2.SetMinSize((140, 140))
         self.button_4.SetMinSize((140, 140))
         self.button_5.SetMinSize((140, 140))
-        self.slider_1.SetMinSize((150, -1))
-        self.slider_2.SetMinSize((150, -1))
-        self.slider_3.SetMinSize((150, -1))
-        self.slider_4.SetMinSize((150, -1))
-        self.slider_5.SetMinSize((150, -1))
-        self.slider_6.SetMinSize((150, -1))
-        self.slider_7.SetMinSize((150, -1))
-        self.slider_8.SetMinSize((150, -1))
-        self.slider_9.SetMinSize((150, -1))
-        self.slider_10.SetMinSize((150, -1))
-        self.slider_11.SetMinSize((150, -1))
-        self.slider_12.SetMinSize((150, -1))
+        
+        for i in range(SERVO_NUMBER):
+            self.sliders[i].SetMinSize((150, -1))
+        # self.slider_1
+        # self.slider_2.SetMinSize((150, -1))
+        # self.slider_3.SetMinSize((150, -1))
+        # self.slider_4.SetMinSize((150, -1))
+        # self.slider_5.SetMinSize((150, -1))
+        # self.slider_6.SetMinSize((150, -1))
+        # self.slider_7.SetMinSize((150, -1))
+        # self.slider_8.SetMinSize((150, -1))
+        # self.slider_9.SetMinSize((150, -1))
+        # self.slider_10.SetMinSize((150, -1))
+        # self.slider_11.SetMinSize((150, -1))
+        # self.slider_12.SetMinSize((150, -1))
 
 
 
@@ -268,18 +277,21 @@ class TerminalFrame(wx.Frame):
         grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.slider_1, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.slider_2, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.slider_3, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.slider_4, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.slider_5, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.slider_6, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.slider_7, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.slider_8, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.slider_9, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.slider_10, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.slider_11, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.slider_12, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+
+        for i in range(SERVO_NUMBER):
+            grid_sizer_1.Add(self.sliders[i], 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        # grid_sizer_1.Add(self.slider_2, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        # grid_sizer_1.Add(self.slider_3, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        # grid_sizer_1.Add(self.slider_4, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        # grid_sizer_1.Add(self.slider_5, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        # grid_sizer_1.Add(self.slider_6, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        # grid_sizer_1.Add(self.slider_7, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        # grid_sizer_1.Add(self.slider_8, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        # grid_sizer_1.Add(self.slider_9, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        # grid_sizer_1.Add(self.slider_10, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        # grid_sizer_1.Add(self.slider_11, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        # grid_sizer_1.Add(self.slider_12, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+
         grid_sizer_1.Add(self.button_6, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         sizer_2.Add(grid_sizer_1, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
         sizer_1.Add(sizer_2, 1, wx.ALL | wx.EXPAND, 0)
@@ -312,18 +324,9 @@ class TerminalFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.right_button_pressed, self.button_4)
         self.Bind(wx.EVT_BUTTON, self.back_button_pressed, self.button_5)
         self.Bind(wx.EVT_BUTTON, self.reset_button_pressed, self.button_6)
-        self.Bind(wx.EVT_SCROLL_CHANGED , self.servo0_move, self.slider_1)
-        self.Bind(wx.EVT_SCROLL_CHANGED , self.servo3_move, self.slider_4)
-        self.Bind(wx.EVT_SCROLL_CHANGED , self.servo2_move, self.slider_3)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo1_move, self.slider_2)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo4_move, self.slider_5)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo5_move, self.slider_6)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo6_move, self.slider_7)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo7_move, self.slider_8)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo8_move, self.slider_9)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo9_move, self.slider_10)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo10_move, self.slider_11)
-        self.Bind(wx.EVT_SCROLL_CHANGED, self.servo11_move, self.slider_12)
+
+        for i in range(SERVO_NUMBER):
+            self.Bind(wx.EVT_SCROLL_CHANGED , self.servo_move, self.sliders[i])
 
     def OnExit(self, event):
         """Menu point Exit"""
@@ -464,87 +467,75 @@ class TerminalFrame(wx.Frame):
                     self.bot.makeStep(180)
 
     def reset_button_pressed(self, event):  # wxGlade: MyFrame.<event_handler>
-                char = "#0P1500#1P1500#2P1500#3P1500#4P1500#5P1500#6P1500#7P1500#8P1500#9P1500#10P1500#110P1500\n"
-                self.slider_1.SetValue(1500)
-                self.slider_2.SetValue(1500)
-                self.slider_3.SetValue(1500)
-                self.slider_4.SetValue(1500)
-                self.slider_5.SetValue(1500)
-                self.slider_6.SetValue(1500)
-                self.slider_7.SetValue(1500)
-                self.slider_8.SetValue(1500)
-                self.slider_9.SetValue(1500)
-                self.slider_10.SetValue(1500)
-                self.slider_11.SetValue(1500)
-                self.slider_12.SetValue(1500)
-                self.Sender(char)
+                #char = "#0P1500#1P1500#2P1500#3P1500#4P1500#5P1500#6P1500#7P1500#8P1500#9P1500#10P1500#110P1500\n"
+                # command = []
+                # for s in range(10):
+                #     command.append(dict(servo=s, position=1500))
+                #     self.sliders[s].SetValue(1500)
+                # self.slider_2.SetValue(1500)
+                # self.slider_3.SetValue(1500)
+                # self.slider_4.SetValue(1500)
+                # self.slider_5.SetValue(1500)
+                # self.slider_6.SetValue(1500)
+                # self.slider_7.SetValue(1500)
+                # self.slider_8.SetValue(1500)
+                # self.slider_9.SetValue(1500)
+                # self.slider_10.SetValue(1500)
+                # self.slider_11.SetValue(1500)
+                # self.slider_12.SetValue(1500)
+                # self.Sender(command)
+                self.bot.initBot()
 
-    def servo0_move(self, event):  # wxGlade: MyFrame.<event_handler>
-                positionValue = self.slider_1.GetValue()
-                char = "#0P%i\n" % positionValue
-                self.Sender(char)
+    def servo_move(self, event):  # wxGlade: MyFrame.<event_handler>
+                command = []
+                for s in range(10):
+                    command.append(dict(servo=s, position=self.sliders[s].GetValue()))
+                self.Sender(command)
 
-    def servo1_move(self, event):  # wxGlade: MyFrame.<event_handler>
-                positionValue = self.slider_2.GetValue()
-                char = "#1P%i\n" % positionValue
-                self.Sender(char)
+    # def servo1_move(self, event):  # wxGlade: MyFrame.<event_handler>
+    #             self.Sender([dict(servo=1, position=self.slider_2.GetValue())])
 
-    def servo2_move(self, event):  # wxGlade: MyFrame.<event_handler>
-                positionValue = self.slider_3.GetValue()
-                char = "#2P%i\n" % positionValue
-                self.Sender(char)
+    # def servo2_move(self, event):  # wxGlade: MyFrame.<event_handler>
+    #             self.Sender([dict(servo=2, position=self.slider_3.GetValue())])
 
-    def servo3_move(self, event):  # wxGlade: MyFrame.<event_handler>
-                positionValue = self.slider_4.GetValue()
-                char = "#3P%i\n" % positionValue
-                self.Sender(char)
+    # def servo3_move(self, event):  # wxGlade: MyFrame.<event_handler>
+    #             self.Sender([dict(servo=3, position=self.slider_4.GetValue())])
 
-    def servo4_move(self, event):  # wxGlade: MyFrame.<event_handler>
-                positionValue = self.slider_5.GetValue()
-                char = "#4P%i\n" % positionValue
-                self.Sender(char)
+    # def servo4_move(self, event):  # wxGlade: MyFrame.<event_handler>
+    #             self.Sender([dict(servo=4, position=self.slider_5.GetValue())])
 
-    def servo5_move(self, event):  # wxGlade: MyFrame.<event_handler>
-                positionValue = self.slider_6.GetValue()
-                char = "#5P%i\n" % positionValue
-                self.Sender(char)
+    # def servo5_move(self, event):  # wxGlade: MyFrame.<event_handler>
+    #             self.Sender([dict(servo=5, position=self.slider_6.GetValue())])
 
-    def servo6_move(self, event):  # wxGlade: MyFrame.<event_handler>
-                positionValue = self.slider_7.GetValue()
-                char = "#6P%i\n" % positionValue
-                self.Sender(char)
+    # def servo6_move(self, event):  # wxGlade: MyFrame.<event_handler>
+    #             self.Sender([dict(servo=6, position=self.slider_7.GetValue())])
 
-    def servo7_move(self, event):  # wxGlade: MyFrame.<event_handler>
-                positionValue = self.slider_8.GetValue()
-                char = "#7P%i\n" % positionValue
-                self.Sender(char)
+    # def servo7_move(self, event):  # wxGlade: MyFrame.<event_handler>
+    #             self.Sender([dict(servo=7, position=self.slider_8.GetValue())])
 
-    def servo8_move(self, event):  # wxGlade: MyFrame.<event_handler>
-                positionValue = self.slider_9.GetValue()
-                char = "#8P%i\n" % positionValue
-                self.Sender(char)
+    # def servo8_move(self, event):  # wxGlade: MyFrame.<event_handler>
+    #             self.Sender([dict(servo=8, position=self.slider_9.GetValue())])
 
-    def servo9_move(self, event):  # wxGlade: MyFrame.<event_handler>
-                positionValue = self.slider_10.GetValue()
-                char = "#9P%i\n" % positionValue
-                self.Sender(char)
+    # def servo9_move(self, event):  # wxGlade: MyFrame.<event_handler>
+    #             self.Sender([dict(servo=9, position=self.slider_10.GetValue())])
 
-    def servo10_move(self, event):  # wxGlade: MyFrame.<event_handler>
-                positionValue = self.slider_11.GetValue()
-                char = "#10P%i\n" % positionValue
-                self.Sender(char)
+    # def servo10_move(self, event):  # wxGlade: MyFrame.<event_handler>
+    #             self.Sender([dict(servo=10, position=self.slider_11.GetValue())])
 
-    def servo11_move(self, event):  # wxGlade: MyFrame.<event_handler>
-                positionValue = self.slider_12.GetValue()
-                char = "#11P%i\n" % positionValue
-                self.Sender(char)
+    # def servo11_move(self, event):  # wxGlade: MyFrame.<event_handler>
+    #             self.Sender([dict(servo=11, position=self.slider_12.GetValue())])
 
-    def Sender(self, message):
-                message = message + '\n'
+    def Sender(self, botcommand):
+                #TODO: separate serial protocol handling (allow multiple protocols)
+                message = ''
+                for x in botcommand: 
+                    message = message + '#%iP%i' % (x['servo'], x['position'])
+                    self.sliders[x['servo']].SetValue(x['position'])
                 print "Sending message:%s" % message
                 if self.settings.echo:          #do echo if needed
-                    self.text_ctrl_output.WriteText(message)
+                    self.text_ctrl_output.WriteText(message + '\n')
                 message = message[::-1]
+                message = message  + '\n'
                 self.serial.write(message)         #send the charcater
 
             
