@@ -48,7 +48,7 @@ class TerminalSetup:
     """Placeholder for various terminal settings. Used to pass the
        options to the TerminalSettingsDialog."""
     def __init__(self):
-        self.echo = True
+        self.echo = False
         self.unprintable = False
         self.newline = NEWLINE_CRLF
 
@@ -412,7 +412,7 @@ class TerminalFrame(wx.Frame):
 
     def servo_move(self, event):  
                 command = []
-                for s in range(10):
+                for s in range(SERVO_NUMBER):
                     command.append(dict(servo=s, position=self.sliders[s].GetValue()))
                 self.Sender(command)
 
@@ -426,7 +426,7 @@ class TerminalFrame(wx.Frame):
                 print "Sending message:%s" % message
                 if self.settings.echo:          #do echo if needed
                     self.text_ctrl_output.WriteText(message + '\n')
-                message = message[::-1]
+                #message = message[::-1]
                 message = message  + '\n'
                 self.serial.write(message)         #send the charcater
 
