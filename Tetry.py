@@ -3,6 +3,9 @@ import legIK
 import time
 import math
 
+
+#The class is based on a work by Rob Cook. Please visit www.robcook.eu for more details on algorithm and calculations behind it.
+
 class Robot:
     """Tetrym
 
@@ -13,10 +16,10 @@ class Robot:
 
     """
     def __init__(self, **kwds):
-            self.legFR = legIK.leg(offset=[25,25],   coxa=45, temur=45, tibia=85, servos=[0,1,2])
-            self.legFL = legIK.leg(offset=[-25,25],  coxa=45, temur=45, tibia=85, servos=[3,4,5])
-            self.legBR = legIK.leg(offset=[25,-25],  coxa=45, temur=45, tibia=85, servos=[6,7,8])
-            self.legBL = legIK.leg(offset=[-25,-25], coxa=45, temur=45, tibia=85, servos=[9,10,11])
+            self.legFR = legIK.leg(offset=[25,25],   coxa=45, temur=45, tibia=85, servos=[0,1,2],   name="FR leg", debug=True)
+            self.legFL = legIK.leg(offset=[-25,25],  coxa=45, temur=45, tibia=85, servos=[3,4,5],   name="FL leg", debug=True)
+            self.legBR = legIK.leg(offset=[25,-25],  coxa=45, temur=45, tibia=85, servos=[6,7,8],   name="BR leg", debug=True)
+            self.legBL = legIK.leg(offset=[-25,-25], coxa=45, temur=45, tibia=85, servos=[9,10,11], name="BL leg", debug=True)
             self.sender = kwds['sender']
 
             self.initBot()
@@ -30,7 +33,7 @@ class Robot:
 
             angle = math.radians(angle)
 
-            s,t = math.sin(angle)*5, math.cos(angle)*5
+            s,t = math.sin(angle)*10, math.cos(angle)*10
 
             print "Offsets are: %f, %f" % (s,t)
 
