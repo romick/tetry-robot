@@ -20,7 +20,7 @@
 
 Servo* servos[SERVOS_NUMBER];
 
-uint8_t VERBOSE = 0;
+uint8_t VERBOSE = 1;
 
 struct command {
 	uint8_t has_changed[SERVOS_NUMBER];
@@ -95,18 +95,20 @@ void appInitHardware(void) {
 }
 // Initialise the software
 TICK_COUNT appInitSoftware(TICK_COUNT loopStart){
+	cout << "RESTART!!!\nRESTART!!!\nRESTART!!!\nRESTART!!!\n";
 	return 0;
+
 }
 
 // This is the main loop
 TICK_COUNT appControl(LOOP_COUNT loopCount, TICK_COUNT loopStart) {
 
-	int early_break = FALSE;
-	while ((uart1.isRxBufferEmpty()==FALSE) && (early_break == FALSE)) {
+	int early_break = 0;
+	while ((uart1.isRxBufferEmpty()==FALSE) && (early_break == 0)) {
 		char data = uart1.read();
-		if (data != EOF) {
+		//if (data != EOF) {
 			cout << data;
-		}
+		//}
 		switch (data) {
 			case '?':
 			{
@@ -263,7 +265,7 @@ TICK_COUNT appControl(LOOP_COUNT loopCount, TICK_COUNT loopStart) {
 
 	}
 
-	if (loopStart > (last_loop_time + SSC_RESOLUTION)) {   
+	//if (loopStart > (last_loop_time + SSC_RESOLUTION)) {   
 		last_loop_time = loopStart;
 
 		int8_t jk=0;
@@ -271,10 +273,10 @@ TICK_COUNT appControl(LOOP_COUNT loopCount, TICK_COUNT loopStart) {
 			DRIVE_SPEED speed = interpolate((int16_t)command_in_process.servo_target_positions[jk], MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX, DRIVE_SPEED_MIN,DRIVE_SPEED_MAX);
 			(*servos[jk]).setSpeed(speed);  
 			command_in_process.has_changed[jk] = 0;
-			command_in_process.servo_current_positions = (*servos[jk]).getSpeed();
+			//command_in_process.servo_current_positions = (*servos[jk]).getSpeed();
 				// cout << "#" << jk << " Chgd?:" << command_in_process.has_changed[jk] << " Trgt:" << speed << "\n";
 		}
 		
-	}
+	//}
 	return 0;
 }
