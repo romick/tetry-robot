@@ -12,7 +12,7 @@
 
 #define SERVOS_NUMBER 11  
 //actually 12 counting 0 as first 
-#define SSC_RESOLUTION 10000
+#define SSC_RESOLUTION 1000
 #define DEBUG_SESSION 1
 #define MY_DRIVE_SPEED_MIN 500
 #define MY_DRIVE_SPEED_MAX 2500
@@ -95,13 +95,14 @@ void appInitHardware(void) {
 }
 // Initialise the software
 TICK_COUNT appInitSoftware(TICK_COUNT loopStart){
-	//uart1.attach(&reader, NULL);
 	return 0;
 }
+
 // This is the main loop
 TICK_COUNT appControl(LOOP_COUNT loopCount, TICK_COUNT loopStart) {
 
-	while (uart1.isRxBufferEmpty()==FALSE) {
+	int early_break = FALSE;
+	while ((uart1.isRxBufferEmpty()==FALSE) && (early_break == FALSE)) {
 		char data = uart1.read();
 		if (data != EOF) {
 			cout << data;
@@ -229,19 +230,17 @@ TICK_COUNT appControl(LOOP_COUNT loopCount, TICK_COUNT loopStart) {
 				// execute command
 				r_curr_subcommand = ' ';
 				
-				// Debug print 
-				//#ifdef  DEBUG_SESSION
-				//	cout << "Befora copy.\nReceived ";
-				//	print_command(&command_receiving, NULL);
-				//	cout << "In process ";
-				//	print_command(&command_in_process, NULL);
-				//#endif
-
-				CRITICAL_SECTION{
-					memcpy(&command_in_process, &command_receiving, sizeof(command_receiving));
+				
+				int8_t jl=0;
+				for (jl=0; jl <= SERVOS_NUMBER; jl++) {
+					if (command_receiving.has_changed[jl] > 0) {
+						command_in_process.has_changed[jl] = 1;
+						command_in_process.servo_target_positions[jl] = command_receiving.servo_target_positions[jl];
+					}
+					
 				}
-				
-				
+
+
 				initialize_command(&command_receiving);
 				
 				if (VERBOSE==1) {
@@ -251,11 +250,13 @@ TICK_COUNT appControl(LOOP_COUNT loopCount, TICK_COUNT loopStart) {
 					print_command(&command_in_process, NULL);
 				}
 				
+				//Stop parsing RX buffer and go straight to command execution, the rest of buffer will be parsed in next main loop
+				early_break = TRUE;
+
 				break;
 			}
 			default:
 			{
-				//err.print("Reader: Wrong input!");
 				break;
 			}
 		}
@@ -264,61 +265,14 @@ TICK_COUNT appControl(LOOP_COUNT loopCount, TICK_COUNT loopStart) {
 
 	if (loopStart > (last_loop_time + SSC_RESOLUTION)) {   
 		last_loop_time = loopStart;
-		//#ifdef  DEBUG_SESSION
-		//	cout << "Loop " << loopStart;
-		//#endif
 
-
-/*		
-		cout << "BEFORE:\n";
-		print_command(&command_in_process, loopStart);
-
-		//re-calculate command.time 
-		int8_t j;
-		for (j=0; j <= SERVOS_NUMBER; j++) {
-			command_in_process.servo_current_positions[j] = interpolate((*servos[j]).getSpeed(), DRIVE_SPEED_MIN, DRIVE_SPEED_MAX, MY_DRIVE_SPEED_MIN,MY_DRIVE_SPEED_MAX);
-			int16_t target_variance = command_in_process.servo_target_positions[j] - command_in_process.servo_current_positions[j];
-			#ifdef  DEBUG_SESSION
-				cout << "Servo " << j << " Variance " << target_variance << "\n";
-			#endif
-			command_in_process.time = MAX(command_in_process.time, (int16_t)(target_variance / command_in_process.servo_speeds[j]));
-		}
-		cout << "AFTER:\n";
-		print_command(&command_in_process, loopStart);
-		
-		//
-		if (command_in_process.time > 0) {
-			for (j=0; j <= SERVOS_NUMBER; j++) {
-				int16_t target_variance = command_in_process.servo_target_positions[j] - command_in_process.servo_current_positions[j];
-				command_in_process.servo_speed_per_tick[j] = target_variance / command_in_process.time;
-			}
-			cout << "EXECUTE:\n";
-			print_command(&command_in_process, loopStart);
-			for (int i=0; i<=SERVOS_NUMBER; i++) {
-				if (ABS(command_in_process.servo_current_positions[i] - command_in_process.servo_target_positions[i]) > ABS(command_in_process.servo_speed_per_tick[i])) {
-					command_in_process.servo_current_positions[i] += command_in_process.servo_speed_per_tick[i];
-				} else {
-					command_in_process.servo_current_positions[i] =command_in_process.servo_target_positions[i];
-				}
-				DRIVE_SPEED speed = interpolate((int16_t)command_in_process.servo_current_positions[i], MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX, DRIVE_SPEED_MIN,DRIVE_SPEED_MAX);
-				#ifdef  DEBUG_SESSION
-					cout << "Servo " << i << "moves to" << speed << "\n";
-				#endif
-				(*servos[i]).setSpeed(speed);  
-			}
-			command_in_process.time--;
-		}
-
-
-*/
 		int8_t jk=0;
 		for (jk=0; jk <= SERVOS_NUMBER; jk++) {
-			if (command_in_process.has_changed[jk] == 1) {
-				DRIVE_SPEED speed = interpolate((int16_t)command_in_process.servo_target_positions[jk], MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX, DRIVE_SPEED_MIN,DRIVE_SPEED_MAX);
-				(*servos[jk]).setSpeed(speed);  
-				command_in_process.has_changed[jk] = 0;
-				cout << "#" << jk << " Chgd?:" << command_in_process.has_changed[jk] << " Trgt:" << speed << "\n";
-			}
+			DRIVE_SPEED speed = interpolate((int16_t)command_in_process.servo_target_positions[jk], MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX, DRIVE_SPEED_MIN,DRIVE_SPEED_MAX);
+			(*servos[jk]).setSpeed(speed);  
+			command_in_process.has_changed[jk] = 0;
+			command_in_process.servo_current_positions = (*servos[jk]).getSpeed();
+				// cout << "#" << jk << " Chgd?:" << command_in_process.has_changed[jk] << " Trgt:" << speed << "\n";
 		}
 		
 	}
