@@ -160,16 +160,20 @@ class TerminalFrame(wx.Frame):
         self.frame_terminal_menubar.Append(wxglade_tmp_menu, "&File")
         # Menu Bar end
 
-        #My_block
+        #Bot mgmt buttons
         self.button_3 = wx.Button(self, wx.ID_ANY, ("forward"))
         self.button_2 = wx.Button(self, wx.ID_ANY, ("left"))
         self.button_4 = wx.Button(self, wx.ID_ANY, ("right"))
         self.button_5 = wx.Button(self, wx.ID_ANY, ("backward"))
         self.button_6 = wx.Button(self, wx.ID_ANY, ("reset all servos"))
 
+        #clean log buttons
+        self.button_clear_1 = wx.Button(self, wx.ID_ANY, ("clear log"), style= wx.BU_EXACTFIT)
+        self.button_clear_2 = wx.Button(self, wx.ID_ANY, ("clear log"), style= wx.BU_EXACTFIT)
+
         self.sliders=[]
         for i in range(SERVO_NUMBER):
-            self.sliders.append(wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_LABELS | wx.SL_TOP))
+            self.sliders.append(wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_LABELS | wx.SL_TOP, name="servo%i" % i))
 
 
         self.__set_properties()
@@ -213,6 +217,9 @@ class TerminalFrame(wx.Frame):
         for i in range(SERVO_NUMBER):
             self.sliders[i].SetMinSize((150, -1))
 
+        # self.button_clear_1.SetMaxSize((140, 140))
+        # self.button_clear_2.SetMaxSize((140, 140))
+
 
     def __do_layout(self):
         sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
@@ -244,8 +251,19 @@ class TerminalFrame(wx.Frame):
         self.Layout()
 
         sizer_3 = wx.BoxSizer(wx.VERTICAL)
+        sizer_4 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
+
+
+
         sizer_3.Add(self.text_ctrl_output, 1, wx.EXPAND, 0)
+        sizer_4.Add(self.button_clear_1, 1,  wx.ALIGN_LEFT | wx.ALIGN_BOTTOM, 0)
+        sizer_3.Add(sizer_4, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 1)
+
         sizer_3.Add(self.text_ctrl_log, 1, wx.EXPAND, 0)
+        sizer_5.Add(self.button_clear_2, 1,  wx.ALIGN_LEFT | wx.ALIGN_BOTTOM, 0)
+        sizer_3.Add(sizer_5, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 1)
+
         sizer_1.Add(sizer_3, 1,  wx.ALL | wx.EXPAND, 0)
 
 
@@ -265,6 +283,9 @@ class TerminalFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.right_button_pressed, self.button_4)
         self.Bind(wx.EVT_BUTTON, self.back_button_pressed, self.button_5)
         self.Bind(wx.EVT_BUTTON, self.reset_button_pressed, self.button_6)
+
+        self.Bind(wx.EVT_BUTTON, self.clean_terminal, self.button_clear_1)
+        self.Bind(wx.EVT_BUTTON, self.clean_log, self.button_clear_2)
 
         for i in range(SERVO_NUMBER):
             self.Bind(wx.EVT_SCROLL_CHANGED , self.servo_move, self.sliders[i])
@@ -417,6 +438,14 @@ class TerminalFrame(wx.Frame):
                 self.Sender(command)
 
 
+    def clean_terminal(self, event):
+            self.text_ctrl_output.Clear()
+            pass
+
+    def clean_log(self, event):
+            self.text_ctrl_log.Clear()
+            pass
+    
     def Sender(self, botcommand):
                 #TODO: separate serial protocol handling (allow multiple protocols)
                 message = ''
