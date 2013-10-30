@@ -132,9 +132,9 @@ class leg:
         
         [xp,yp,zp] = self._getPositions(x,y,z)
         commandlist =  []
-        commandlist.append(dict(servo=self.servos[0], position=xp))
-        commandlist.append(dict(servo=self.servos[1], position=yp))
-        commandlist.append(dict(servo=self.servos[2], position=zp))
+        commandlist.append(dict(servo=self.servos[0], position=int(xp)))
+        commandlist.append(dict(servo=self.servos[1], position=int(yp)))
+        commandlist.append(dict(servo=self.servos[2], position=int(zp)))
         return commandlist
 
     def gCOffset(self, xOffset, yOffset, zOffset):
