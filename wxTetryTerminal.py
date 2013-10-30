@@ -99,7 +99,7 @@ class TerminalSettingsDialog(wx.Dialog):
         sizer_4.Add(self.checkbox_echo, 0, wx.ALL, 4)
         sizer_4.Add(self.checkbox_unprintable, 0, wx.ALL, 4)
         sizer_4.Add(self.radio_box_newline, 0, 0, 0)
-        sizer_4.Add(self.radio_box_protocol, 0, 0, 0)
+        # sizer_4.Add(self.radio_box_protocol, 0, 0, 0)
         sizer_2.Add(sizer_4, 0, wx.EXPAND, 0)
         sizer_3.Add(self.button_ok, 0, 0, 0)
         sizer_3.Add(self.button_cancel, 0, 0, 0)
@@ -233,6 +233,7 @@ class TerminalFrame(wx.Frame):
         self.button_4 = wx.Button(self, wx.ID_ANY, ("right"))
         self.button_5 = wx.Button(self, wx.ID_ANY, ("backward"))
         self.button_6 = wx.Button(self, wx.ID_ANY, ("reset all servos"))
+        self.button_7 = wx.Button(self, wx.ID_ANY, ("Start robot"))
 
         #clean log buttons
         self.button_clear_1 = wx.Button(self, wx.ID_ANY, ("clear log"), style= wx.BU_EXACTFIT)
@@ -291,8 +292,8 @@ class TerminalFrame(wx.Frame):
 
     def __do_layout(self):
         sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
-
         sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
+
         grid_sizer_1 = wx.FlexGridSizer(8, 3, 2, 2)
         grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_1.Add(self.button_3, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
@@ -306,11 +307,11 @@ class TerminalFrame(wx.Frame):
         grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-
         for i in range(SERVO_NUMBER):
             grid_sizer_1.Add(self.sliders[i], 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-
         grid_sizer_1.Add(self.button_6, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        grid_sizer_1.Add(self.button_7, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+
         sizer_2.Add(grid_sizer_1, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
         sizer_1.Add(sizer_2, 1, wx.ALL | wx.EXPAND, 0)
 
@@ -352,6 +353,7 @@ class TerminalFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.right_button_pressed, self.button_4)
         self.Bind(wx.EVT_BUTTON, self.back_button_pressed, self.button_5)
         self.Bind(wx.EVT_BUTTON, self.reset_button_pressed, self.button_6)
+        self.Bind(wx.EVT_BUTTON, self.OnStartRobot, self.button_7)
 
         self.Bind(wx.EVT_BUTTON, self.clean_terminal, self.button_clear_1)
         self.Bind(wx.EVT_BUTTON, self.clean_log, self.button_clear_2)
@@ -491,6 +493,9 @@ class TerminalFrame(wx.Frame):
                 event = SerialRxEvent(self.GetId(), text)
                 self.GetEventHandler().AddPendingEvent(event)
                 #~ self.OnSerialRead(text)         #output text in window
+
+    def OnStartRobot(self, event):
+        self.bot.initBot()
 
     def forward_button_pressed(self, event):  
                     self.bot.makeStep(0)
