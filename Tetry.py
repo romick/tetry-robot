@@ -30,7 +30,7 @@ class Robot:
                 self.protocol = self.protocol_list[0]
             print "Protocol is %s" % self.protocol
 
-            self.initBot()
+            # self.initBot()
 
     def initBot(self):
             self._send(self.legFR.gCExactCoordinates(95, 95, -40)+self.legFL.gCExactCoordinates(-95, 95, -40)+self.legBR.gCExactCoordinates(95, -95, -40)+self.legBL.gCExactCoordinates(-95, -95, -40))
