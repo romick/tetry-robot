@@ -6,7 +6,8 @@ import wxConfigDialog
 import serial
 import threading
 import Tetry
-import legIK
+#import legIK
+import cPickle
 
 #----------------------------------------------------------------------
 # Create an own event type, so that GUI updates can be delegated
@@ -41,13 +42,13 @@ NEWLINE_LF      = 1
 NEWLINE_CRLF    = 2
 NEWLINE         ='\n'
 
-PROTOCOL_CUSTOM     = 0
-PROTOCOL_COMPACT    = 1
-PROTOCOL_POLOLU     = 2
-PROTOCOL_MINISSC    = 3
+#PROTOCOL_CUSTOM     = 0
+#PROTOCOL_COMPACT    = 1
+#PROTOCOL_POLOLU     = 2
+#PROTOCOL_MINISSC    = 3
 
 
-SERVO_NUMBER = 12
+#SERVO_NUMBER = 12
 
 class TerminalSetup:
     """Placeholder for various terminal settings. Used to pass the
@@ -69,6 +70,9 @@ class TerminalFrame(wx.Frame):
     """Simple terminal program for wxPython"""
     
     def __init__(self, *args, **kwds):
+        self.bot = Tetry.Robot(sender = self.Sender)
+        #bot_settings_file = open('./tetry.ini',mode='w+')
+        #cPickle.dump(self.bot,bot_settings_file)
 
         self.serial = serial.Serial()
         self.serial.timeout = 0.5   #make sure that the alive event can be checked from time to time
@@ -90,7 +94,7 @@ class TerminalFrame(wx.Frame):
         wxglade_tmp_menu.Append(ID_CLEAR, "&Clear", "", wx.ITEM_NORMAL)
         wxglade_tmp_menu.Append(ID_SAVEAS, "&Save Text As...", "", wx.ITEM_NORMAL)
         wxglade_tmp_menu.AppendSeparator()
-        wxglade_tmp_menu.Append(ID_SETTINGS, "&Port Settings...", "", wx.ITEM_NORMAL)
+        wxglade_tmp_menu.Append(ID_SETTINGS, "&Settings...", "", wx.ITEM_NORMAL)
         wxglade_tmp_menu.AppendSeparator()
         wxglade_tmp_menu.Append(ID_EXIT, "&Exit", "", wx.ITEM_NORMAL)
         self.frame_terminal_menubar.Append(wxglade_tmp_menu, "&File")
@@ -108,14 +112,13 @@ class TerminalFrame(wx.Frame):
         self.button_clear_2 = wx.Button(self, wx.ID_ANY, ("clear log"), style= wx.BU_EXACTFIT)
 
         self.sliders=[]
-        for i in range(SERVO_NUMBER):
+        for i in range(self.bot.servo_number):
             self.sliders.append(wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_LABELS | wx.SL_TOP, name="servo%i" % i))
 
 
         self.__set_properties()
         self.__do_layout()
         self.__attach_events()          #register events
-        self.bot = Tetry.Robot(sender = self.Sender)
 
 
 
@@ -142,7 +145,7 @@ class TerminalFrame(wx.Frame):
             self.thread = None
         
     def __set_properties(self):
-        self.SetTitle("Serial Terminal")
+        self.SetTitle("Robot Terminal")
         self.SetSize((1000, 800))
 
         self.button_3.SetMinSize((140, 140))
@@ -150,7 +153,7 @@ class TerminalFrame(wx.Frame):
         self.button_4.SetMinSize((140, 140))
         self.button_5.SetMinSize((140, 140))
         
-        for i in range(SERVO_NUMBER):
+        for i in range(self.bot.servo_number):
             self.sliders[i].SetMinSize((150, -1))
 
 
@@ -171,7 +174,7 @@ class TerminalFrame(wx.Frame):
         grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        for i in range(SERVO_NUMBER):
+        for i in range(self.bot.servo_number):
             grid_sizer_1.Add(self.sliders[i], 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_1.Add(self.button_6, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_1.Add(self.button_7, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
@@ -220,7 +223,7 @@ class TerminalFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.clean_terminal, self.button_clear_1)
         self.Bind(wx.EVT_BUTTON, self.clean_log, self.button_clear_2)
 
-        for i in range(SERVO_NUMBER):
+        for i in range(self.bot.servo_number):
             self.Bind(wx.EVT_SCROLL_CHANGED , self.servo_move, self.sliders[i])
 
     def OnExit(self, event):
@@ -279,7 +282,7 @@ class TerminalFrame(wx.Frame):
                     dlg.Destroy()
                 else:
                     self.StartThread()
-                    self.SetTitle("Serial Terminal on %s [%s, %s%s%s%s%s]" % (
+                    self.SetTitle("Robot Terminal on %s [%s, %s%s%s%s%s]" % (
                         self.serial.portstr,
                         self.serial.baudrate,
                         self.serial.bytesize,
@@ -364,7 +367,7 @@ class TerminalFrame(wx.Frame):
 
     def servo_move(self, event):  
                 command = []
-                for s in range(SERVO_NUMBER):
+                for s in range(self.bot.servo_number):
                     command.append(dict(servo=s, position=self.sliders[s].GetValue()))
                 self.bot._send(command)
 

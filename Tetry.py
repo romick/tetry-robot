@@ -25,6 +25,7 @@ class Robot:
             self.legs.append(legIK.leg(offset=[-25,25],  coxa=45, temur=45, tibia=85, servos=[3,4,5],   name="FL leg", debug=True))
             self.legs.append(legIK.leg(offset=[25,-25],  coxa=45, temur=45, tibia=85, servos=[6,7,8],   name="BR leg", debug=True))
             self.legs.append(legIK.leg(offset=[-25,-25], coxa=45, temur=45, tibia=85, servos=[9,10,11], name="BL leg", debug=True))
+            self.servo_number = 12
             self.sender = kwds['sender']
             self.inverted = [2,5,8,11]
 
@@ -40,7 +41,7 @@ class Robot:
             a = 65
             b = 65
             c = 60
-            self._send(self.leg[0].gCExactCoordinates(a, b, c)+self.leg[1].gCExactCoordinates(-a, b, c)+self.leg[2].gCExactCoordinates(a, -b, c)+self.leg[3].gCExactCoordinates(-a, -b, c))
+            self._send(self.legs[0].gCExactCoordinates(a, b, c)+self.legs[1].gCExactCoordinates(-a, b, c)+self.legs[2].gCExactCoordinates(a, -b, c)+self.legs[3].gCExactCoordinates(-a, -b, c))
 
     def makeStep(self, angle):
             d=10

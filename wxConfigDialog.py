@@ -138,6 +138,7 @@ class SerialConfigDialog(wx.Dialog):
             self.checkbox_xonxoff.SetValue(self.serial.xonxoff)
 
 
+        #TODO: read initial settings from file
         #Terminal settings
         self.checkbox_echo.SetValue(self.settings.echo)
         self.checkbox_unprintable.SetValue(self.settings.unprintable)
@@ -211,6 +212,7 @@ class SerialConfigDialog(wx.Dialog):
         sizer_3.Add(self.button_ok, 0, 0, 0)
         sizer_3.Add(self.button_cancel, 0, 0, 0)
         sizer_1.Add(sizer_2, 0, wx.ALL|wx.ALIGN_RIGHT, 4)
+
 
         #Terminal settings layout
         sizer_4 = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Input/Output"), wx.VERTICAL)
