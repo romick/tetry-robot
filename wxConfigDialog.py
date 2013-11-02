@@ -30,10 +30,18 @@ class SerialConfigDialog(wx.Dialog):
         #grab the serial keyword and remove it from the dict
         self.serial = kwds['serial']
         del kwds['serial']
+
         self.show = SHOW_ALL
         if kwds.has_key('show'):
             self.show = kwds['show']
             del kwds['show']
+
+        self.settings = kwds['settings']
+        del kwds['settings']
+
+        self.bot = kwds['bot']
+        del kwds['bot']
+
         # begin wxGlade: SerialConfigDialog.__init__
         # end wxGlade
         kwds["style"] = wx.DEFAULT_DIALOG_STYLE
@@ -60,6 +68,14 @@ class SerialConfigDialog(wx.Dialog):
         self.button_ok = wx.Button(self, -1, "OK")
         self.button_cancel = wx.Button(self, -1, "Cancel")
 
+        #Terminal settings
+        self.checkbox_echo = wx.CheckBox(self, -1, "Local Echo")
+        self.checkbox_unprintable = wx.CheckBox(self, -1, "Show unprintable characters")
+        self.radio_box_newline = wx.RadioBox(self, -1, "Newline Handling", choices=["CR only", "LF only", "CR+LF"], majorDimension=0, style=wx.RA_SPECIFY_ROWS)
+
+        #Bot settings
+        self.radio_box_protocol = wx.RadioBox(self, -1, "Protocol", choices=self.bot.protocol_list, majorDimension=0, style=wx.RA_SPECIFY_ROWS)
+
         self.__set_properties()
         self.__do_layout()
         #fill in ports and select current setting
@@ -73,7 +89,8 @@ class SerialConfigDialog(wx.Dialog):
         if self.serial.portstr is not None:
             self.combo_box_port.SetValue(str(self.serial.portstr))
         else:
-            self.combo_box_port.SetSelection(index)
+            #self.combo_box_port.SetSelection(index)
+            self.combo_box_port.SetSelection(2)
         if self.show & SHOW_BAUDRATE:
             #fill in badrates and select current setting
             self.choice_baudrate.Clear()
@@ -81,7 +98,8 @@ class SerialConfigDialog(wx.Dialog):
                 self.choice_baudrate.Append(str(baudrate))
                 if self.serial.baudrate == baudrate:
                     index = n
-            self.choice_baudrate.SetSelection(index)
+            #self.choice_baudrate.SetSelection(index)
+            self.choice_baudrate.SetSelection(len(self.serial.BAUDRATES)-1)
         if self.show & SHOW_FORMAT:
             #fill in databits and select current setting
             self.choice_databits.Clear()
@@ -118,20 +136,37 @@ class SerialConfigDialog(wx.Dialog):
             self.checkbox_rtscts.SetValue(self.serial.rtscts)
             #set the rtscts mode
             self.checkbox_xonxoff.SetValue(self.serial.xonxoff)
+
+
+        #Terminal settings
+        self.checkbox_echo.SetValue(self.settings.echo)
+        self.checkbox_unprintable.SetValue(self.settings.unprintable)
+        self.radio_box_newline.SetSelection(self.settings.newline)
+
+        #Bot settings
+        self.radio_box_protocol.SetSelection(self.bot.protocol_list.index(self.bot.protocol))
+
+
         #attach the event handlers
         self.__attach_events()
 
     def __set_properties(self):
         # begin wxGlade: SerialConfigDialog.__set_properties
         # end wxGlade
-        self.SetTitle("Serial Port Configuration")
+        self.SetTitle("Robot Terminal Configuration")
         if self.show & SHOW_TIMEOUT:
             self.text_ctrl_timeout.Enable(0)
         self.button_ok.SetDefault()
+        self.radio_box_newline.SetSelection(0)
+
 
     def __do_layout(self):
         # begin wxGlade: SerialConfigDialog.__do_layout
         # end wxGlade
+
+        sizer_main = wx.BoxSizer(wx.VERTICAL)
+        sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
+
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
         sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_basics = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Basics"), wx.VERTICAL)
@@ -172,13 +207,31 @@ class SerialConfigDialog(wx.Dialog):
             sizer_flow.Add(self.checkbox_xonxoff, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 4)
             sizer_flow.Add((10,10), 1, wx.EXPAND, 0)
             sizer_2.Add(sizer_flow, 0, wx.EXPAND, 0)
+
         sizer_3.Add(self.button_ok, 0, 0, 0)
         sizer_3.Add(self.button_cancel, 0, 0, 0)
-        sizer_2.Add(sizer_3, 0, wx.ALL|wx.ALIGN_RIGHT, 4)
+        sizer_1.Add(sizer_2, 0, wx.ALL|wx.ALIGN_RIGHT, 4)
+
+        #Terminal settings layout
+        sizer_4 = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Input/Output"), wx.VERTICAL)
+        sizer_4.Add(self.checkbox_echo, 0, wx.ALL, 4)
+        sizer_4.Add(self.checkbox_unprintable, 0, wx.ALL, 4)
+        sizer_4.Add(self.radio_box_newline, 0, 0, 0)
+        sizer_1.Add(sizer_4, 0, wx.ALL|wx.EXPAND, 4)
+
+        #Bot setting layout
+        sizer_9 = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Bot"), wx.VERTICAL)
+        sizer_9.Add(self.radio_box_protocol, 0, 0, 0)
+        sizer_1.Add(sizer_9, 0, wx.ALL|wx.EXPAND, 4)
+
+        sizer_main.Add(sizer_1, 0, wx.ALL, 4)
+
+        sizer_main.Add(sizer_3, 0, wx.ALL|wx.ALIGN_RIGHT, 4)
+
         self.SetAutoLayout(1)
-        self.SetSizer(sizer_2)
-        sizer_2.Fit(self)
-        sizer_2.SetSizeHints(self)
+        self.SetSizer(sizer_main)
+        sizer_main.Fit(self)
+        sizer_main.SetSizeHints(self)
         self.Layout()
 
     def __attach_events(self):
@@ -211,6 +264,16 @@ class SerialConfigDialog(wx.Dialog):
                     success = False
             else:
                 self.serial.timeout = None
+
+        #Save terminal settings
+        self.settings.echo = self.checkbox_echo.GetValue()
+        self.settings.unprintable = self.checkbox_unprintable.GetValue()
+        self.settings.newline = self.radio_box_newline.GetSelection()
+
+        #save bot settings
+        self.bot.protocol = self.bot.protocol_list[self.radio_box_protocol.GetSelection()]
+
+
         if success:
             self.EndModal(wx.ID_OK)
 

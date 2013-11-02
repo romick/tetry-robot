@@ -148,9 +148,9 @@ class Robot:
             for a in alist:
                 if 'position' not in a.keys():
                     if a['servo'] in self.inverted:
-                        a['position'] = round(self._interpolate(a['angle'], 180, -180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
+                        a['position'] = int(round(self._interpolate(a['angle'], 180, -180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX)))
                     else:
-                        a['position'] = round(self._interpolate(a['angle'], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
+                        a['position'] = int(round(self._interpolate(a['angle'], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX)))
                 plist.append(a)
             return plist
 
