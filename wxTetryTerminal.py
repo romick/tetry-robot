@@ -56,129 +56,6 @@ class TerminalSetup:
         self.echo = False
         self.unprintable = False
         self.newline = NEWLINE_CRLF
-        # self.protocol = 0
-        # self.protocol_list = []
-
-#class TerminalSettingsDialog(wx.Dialog):
-#    """Simple dialog with common terminal settings like echo, newline mode."""
-#
-#    def __init__(self, *args, **kwds):
-#        self.settings = kwds['settings']
-#        del kwds['settings']
-#        # begin wxGlade: TerminalSettingsDialog.__init__
-#        kwds["style"] = wx.DEFAULT_DIALOG_STYLE
-#        wx.Dialog.__init__(self, *args, **kwds)
-#        self.checkbox_echo = wx.CheckBox(self, -1, "Local Echo")
-#        self.checkbox_unprintable = wx.CheckBox(self, -1, "Show unprintable characters")
-#        self.radio_box_newline = wx.RadioBox(self, -1, "Newline Handling", choices=["CR only", "LF only", "CR+LF"], majorDimension=0, style=wx.RA_SPECIFY_ROWS)
-#        self.button_ok = wx.Button(self, -1, "OK")
-#        self.button_cancel = wx.Button(self, -1, "Cancel")
-#
-#        self.__set_properties()
-#        self.__do_layout()
-#        # end wxGlade
-#        self.__attach_events()
-#        self.checkbox_echo.SetValue(self.settings.echo)
-#        self.checkbox_unprintable.SetValue(self.settings.unprintable)
-#        self.radio_box_newline.SetSelection(self.settings.newline)
-#
-#
-#    def __set_properties(self):
-#        # begin wxGlade: TerminalSettingsDialog.__set_properties
-#        self.SetTitle("Terminal Settings")
-#        self.radio_box_newline.SetSelection(0)
-#        self.button_ok.SetDefault()
-#        # end wxGlade
-#
-#    def __do_layout(self):
-#        # begin wxGlade: TerminalSettingsDialog.__do_layout
-#        sizer_2 = wx.BoxSizer(wx.VERTICAL)
-#        sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
-#        sizer_4 = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Input/Output"), wx.VERTICAL)
-#        sizer_4.Add(self.checkbox_echo, 0, wx.ALL, 4)
-#        sizer_4.Add(self.checkbox_unprintable, 0, wx.ALL, 4)
-#        sizer_4.Add(self.radio_box_newline, 0, 0, 0)
-#        sizer_2.Add(sizer_4, 0, wx.EXPAND, 0)
-#        sizer_3.Add(self.button_ok, 0, 0, 0)
-#        sizer_3.Add(self.button_cancel, 0, 0, 0)
-#        sizer_2.Add(sizer_3, 0, wx.ALL|wx.ALIGN_RIGHT, 4)
-#        self.SetAutoLayout(1)
-#        self.SetSizer(sizer_2)
-#        sizer_2.Fit(self)
-#        sizer_2.SetSizeHints(self)
-#        self.Layout()
-#        # end wxGlade
-#
-#    def __attach_events(self):
-#        self.Bind(wx.EVT_BUTTON, self.OnOK, id = self.button_ok.GetId())
-#        self.Bind(wx.EVT_BUTTON, self.OnCancel, id = self.button_cancel.GetId())
-#
-#    def OnOK(self, events):
-#        """Update data wil new values and close dialog."""
-#        self.settings.echo = self.checkbox_echo.GetValue()
-#        self.settings.unprintable = self.checkbox_unprintable.GetValue()
-#        self.settings.newline = self.radio_box_newline.GetSelection()
-#        self.EndModal(wx.ID_OK)
-#
-#    def OnCancel(self, events):
-#        """Do not update data but close dialog."""
-#        self.EndModal(wx.ID_CANCEL)
-#
-## end of class TerminalSettingsDialog
-
-#class BotSettingsDialog(wx.Dialog):
-#    """Simple dialog with common terminal settings like echo, newline mode."""
-#
-#    def __init__(self, *args, **kwds):
-#        self.bot = kwds['bot']
-#        del kwds['bot']
-#        kwds["style"] = wx.DEFAULT_DIALOG_STYLE
-#        wx.Dialog.__init__(self, *args, **kwds)
-#        self.radio_box_protocol = wx.RadioBox(self, -1, "Protocol", choices=self.bot.protocol_list, majorDimension=0, style=wx.RA_SPECIFY_ROWS)
-#        self.button_ok = wx.Button(self, -1, "OK")
-#        self.button_cancel = wx.Button(self, -1, "Cancel")
-#
-#        self.__set_properties()
-#        self.__do_layout()
-#
-#        self.__attach_events()
-#        self.radio_box_protocol.SetSelection(self.bot.protocol_list.index(self.bot.protocol))
-#
-#
-#    def __set_properties(self):
-#        self.SetTitle("Terminal Settings")
-#        self.button_ok.SetDefault()
-#
-#    def __do_layout(self):
-#        sizer_2 = wx.BoxSizer(wx.VERTICAL)
-#        sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
-#        sizer_4 = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Input/Output"), wx.VERTICAL)
-#        sizer_4.Add(self.radio_box_protocol, 0, 0, 0)
-#
-#        sizer_2.Add(sizer_4, 0, wx.EXPAND, 0)
-#        sizer_3.Add(self.button_ok, 0, 0, 0)
-#        sizer_3.Add(self.button_cancel, 0, 0, 0)
-#        sizer_2.Add(sizer_3, 0, wx.ALL|wx.ALIGN_RIGHT, 4)
-#        self.SetAutoLayout(1)
-#        self.SetSizer(sizer_2)
-#        sizer_2.Fit(self)
-#        sizer_2.SetSizeHints(self)
-#        self.Layout()
-#
-#    def __attach_events(self):
-#        self.Bind(wx.EVT_BUTTON, self.OnOK, id = self.button_ok.GetId())
-#        self.Bind(wx.EVT_BUTTON, self.OnCancel, id = self.button_cancel.GetId())
-#
-#    def OnOK(self, events):
-#        """Update data wil new values and close dialog."""
-#        self.bot.protocol = self.bot.protocol_list[self.radio_box_protocol.GetSelection()]
-#        self.EndModal(wx.ID_OK)
-#
-#    def OnCancel(self, events):
-#        """Do not update data but close dialog."""
-#        self.EndModal(wx.ID_CANCEL)
-#
-# end of class TerminalSettingsDialog
 
 class RedirectText:
     def __init__(self,aWxTextCtrl):
@@ -198,7 +75,6 @@ class TerminalFrame(wx.Frame):
         self.settings = TerminalSetup() #placeholder for the settings
         self.thread = None
         self.alive = threading.Event()               
-        # begin wxGlade: TerminalFrame.__init__
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.text_ctrl_output = wx.TextCtrl(self, -1, "", style=wx.TE_MULTILINE|wx.TE_READONLY)
@@ -215,12 +91,9 @@ class TerminalFrame(wx.Frame):
         wxglade_tmp_menu.Append(ID_SAVEAS, "&Save Text As...", "", wx.ITEM_NORMAL)
         wxglade_tmp_menu.AppendSeparator()
         wxglade_tmp_menu.Append(ID_SETTINGS, "&Port Settings...", "", wx.ITEM_NORMAL)
-        #wxglade_tmp_menu.Append(ID_TERM, "&Terminal Settings...", "", wx.ITEM_NORMAL)
-        #wxglade_tmp_menu.Append(ID_BOT, "&Bot Settings...", "", wx.ITEM_NORMAL)
         wxglade_tmp_menu.AppendSeparator()
         wxglade_tmp_menu.Append(ID_EXIT, "&Exit", "", wx.ITEM_NORMAL)
         self.frame_terminal_menubar.Append(wxglade_tmp_menu, "&File")
-        # Menu Bar end
 
         #Bot mgmt buttons
         self.button_3 = wx.Button(self, wx.ID_ANY, ("forward"))
@@ -250,9 +123,7 @@ class TerminalFrame(wx.Frame):
         if not self.alive.isSet():
             self.Close()
 
-        #Start_bot
-        # self.settings.protocol_list = self.bot.protocol_list
-        
+
 
 
 
@@ -271,10 +142,8 @@ class TerminalFrame(wx.Frame):
             self.thread = None
         
     def __set_properties(self):
-        # begin wxGlade: TerminalFrame.__set_properties
         self.SetTitle("Serial Terminal")
         self.SetSize((1000, 800))
-        # end wxGlade
 
         self.button_3.SetMinSize((140, 140))
         self.button_2.SetMinSize((140, 140))
@@ -283,9 +152,6 @@ class TerminalFrame(wx.Frame):
         
         for i in range(SERVO_NUMBER):
             self.sliders[i].SetMinSize((150, -1))
-
-        # self.button_clear_1.SetMaxSize((140, 140))
-        # self.button_clear_2.SetMaxSize((140, 140))
 
 
     def __do_layout(self):
@@ -340,9 +206,7 @@ class TerminalFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnSaveAs, id = ID_SAVEAS)
         self.Bind(wx.EVT_MENU, self.OnExit, id = ID_EXIT)
         self.Bind(wx.EVT_MENU, self.onSettings, id = ID_SETTINGS)
-        #self.Bind(wx.EVT_MENU, self.OnTermSettings, id = ID_TERM)
-        #self.Bind(wx.EVT_MENU, self.OnBotSettings, id = ID_BOT)
-        self.text_ctrl_output.Bind(wx.EVT_CHAR, self.OnKey)        
+        self.text_ctrl_output.Bind(wx.EVT_CHAR, self.OnKey)
         self.Bind(EVT_SERIALRX, self.OnSerialRead)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
 
@@ -430,20 +294,6 @@ class TerminalFrame(wx.Frame):
                 #on startup, dialog aborted
                 self.alive.clear()
                 ok = True
-
-    #def OnTermSettings(self, event):
-    #    """Menu point Terminal Settings. Show the settings dialog
-    #       with the current terminal settings"""
-    #    dialog = TerminalSettingsDialog(None, -1, "", settings=self.settings)
-    #    result = dialog.ShowModal()
-    #    dialog.Destroy()
-        
-    #def OnBotSettings(self, event):
-    #    """Menu point Bot Settings. Show the bot dialog
-    #       with the current bot settings"""
-    #    dialog = BotSettingsDialog(None, -1, "", bot=self.bot)
-    #    result = dialog.ShowModal()
-    #    dialog.Destroy()
 
     def OnKey(self, event):
         """Key event handler. if the key is in the ASCII range, write it to the serial port.
