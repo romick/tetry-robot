@@ -4,6 +4,8 @@ import legIK
 import time
 import math
 
+MY_DRIVE_SPEED_MIN = 500
+MY_DRIVE_SPEED_MAX = 2500
 
 #The class is based on a work by Rob Cook. Please visit www.robcook.eu for more details on algorithm and calculations behind it.
 
@@ -23,6 +25,7 @@ class Robot:
             self.legBR = legIK.leg(offset=[25,-25],  coxa=45, temur=45, tibia=85, servos=[6,7,8],   name="BR leg", debug=True)
             self.legBL = legIK.leg(offset=[-25,-25], coxa=45, temur=45, tibia=85, servos=[9,10,11], name="BL leg", debug=True)
             self.sender = kwds['sender']
+            self.inverted = [2,5,8,11]
 
             if 'protocol' in kwds.keys():
                 self.protocol = self.protocol_list[(kwds['protocol'])]
@@ -33,7 +36,10 @@ class Robot:
             # self.initBot()
 
     def initBot(self):
-            self._send(self.legFR.gCExactCoordinates(95, 95, -40)+self.legFL.gCExactCoordinates(-95, 95, -40)+self.legBR.gCExactCoordinates(95, -95, -40)+self.legBL.gCExactCoordinates(-95, -95, -40))
+            a = 65
+            b = 65
+            c = 60
+            self._send(self.legFR.gCExactCoordinates(a, b, c)+self.legFL.gCExactCoordinates(-a, b, c)+self.legBR.gCExactCoordinates(a, -b, c)+self.legBL.gCExactCoordinates(-a, -b, c))
 
     def makeStep(self, angle):
 
@@ -77,6 +83,8 @@ class Robot:
 
             message = ''
 
+            botcommand = self._angles2positions(botcommand)
+
             if self.protocol == 'Custom tetry':
                 for x in botcommand: 
                     message = message + '#%iP%i' % (x['servo'], x['position'])
@@ -118,19 +126,46 @@ class Robot:
             self.sender(message)
 
     def _legTranspose (self, leg, xOffset, yOffset, depth, sleeptime1):
-            self._send(leg.gCOffset(xOffset,  yOffset, -depth))
+            self._send(self._angles2positions(leg.gCOffset(xOffset,  yOffset, -depth)))
             time.sleep(sleeptime1)
-            self._send(leg.gCOffset(xOffset*2, yOffset*2, 0))
+            self._send(self._angles2positions(leg.gCOffset(xOffset*2, yOffset*2, 0)))
             time.sleep(sleeptime1)
-            self._send(leg.gCOffset(xOffset,  yOffset, depth))
+            self._send(self._angles2positions(leg.gCOffset(xOffset,  yOffset, depth)))
             time.sleep(sleeptime1)
             pass
 
     def _shiftBody(self, xOffset, yOffset):
             clist = []
-            clist.extend(self.legFR.gCOffset(xOffset, yOffset, 0))
-            clist.extend(self.legFL.gCOffset(xOffset, yOffset, 0))
-            clist.extend(self.legBR.gCOffset(xOffset, yOffset, 0))
-            clist.extend(self.legBL.gCOffset(xOffset, yOffset, 0))
+            clist.extend(self._angles2positions(self.legFR.gCOffset(xOffset, yOffset, 0)))
+            clist.extend(self._angles2positions(self.legFL.gCOffset(xOffset, yOffset, 0)))
+            clist.extend(self._angles2positions(self.legBR.gCOffset(xOffset, yOffset, 0)))
+            clist.extend(self._angles2positions(self.legBL.gCOffset(xOffset, yOffset, 0)))
             self._send(clist)
             pass
+
+    def _angles2positions (self, alist):
+            plist = []
+            for a in alist:
+                if 'position' not in a.keys():
+                    if a['servo'] in self.inverted:
+                        a['position'] = round(self._interpolate(a['angle'], 180, -180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
+                    else:
+                        a['position'] = round(self._interpolate(a['angle'], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
+                plist.append(a)
+            return plist
+
+
+
+
+    def _interpolate (self, x, minS, maxS, minD, maxD):
+        try:
+            x = (maxD-minD)*(x-minS)/(maxS-minS)+minD
+        except ZeroDivisionError:
+            if self.debug:
+                print "Divide by Zero error. "
+            return
+        except ValueError:
+            if self.debug:
+                print "Math function error."
+            return
+        return x

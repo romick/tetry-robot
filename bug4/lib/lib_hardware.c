@@ -9,11 +9,11 @@
 // ------------------- uart1 -------------------
 
 // Make a transmit buffer for uart1
-static unsigned char tx_uart1_Buf[1000];
+static unsigned char tx_uart1_Buf[500];
 static cBuffer tx_uart1_Buffer = MAKE_BUFFER(tx_uart1_Buf);
 
 // Make a receive buffer for uart1
-static unsigned char rx_uart1_Buf[1000];
+static unsigned char rx_uart1_Buf[500];
 static cBuffer rx_uart1_Buffer = MAKE_BUFFER(rx_uart1_Buf);
 
 

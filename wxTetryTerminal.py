@@ -516,7 +516,7 @@ class TerminalFrame(wx.Frame):
                 command = []
                 for s in range(SERVO_NUMBER):
                     command.append(dict(servo=s, position=self.sliders[s].GetValue()))
-                self.Sender(command)
+                self.bot._send(command)
 
 
     def clean_terminal(self, event):

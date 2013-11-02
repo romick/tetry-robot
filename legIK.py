@@ -1,7 +1,5 @@
 import math
 
-MY_DRIVE_SPEED_MIN = 500
-MY_DRIVE_SPEED_MAX = 2500
 
 class leg:
     """ new legIK(offset=[-65.8, 76.3], angle=-2.2829, coxa=29.0, temur=49, tibia=52)  docstring for legIK"""
@@ -95,27 +93,15 @@ class leg:
             #print "%.2f" % s[0], "%.2f" % s[1], "%.2f" % s[2]
             return s
 
-    def _interpolate (self, x, minS, maxS, minD, maxD):
-        try:
-            x = (maxD-minD)*(x-minS)/(maxS-minS)+minD
-        except ZeroDivisionError:
-            if self.debug:
-                print "Divide by Zero error. "
-            return
-        except ValueError:
-            if self.debug:
-                print "Math function error."
-            return
-        return x
 
-    def _getPositions (self, x, y, z):
-        some = self._getAngles(x, y, z)
-        some[0] = round(self._interpolate(some[0], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
-        some[1] = round(self._interpolate(some[1], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
-        some[2] = round(self._interpolate(some[2], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
-        if self.debug:
-            print "Positions:", some
-        return some
+    #def _getPositions (self, x, y, z):
+    #    some = self._getAngles(x, y, z)
+    #    some[0] = round(self._interpolate(some[0], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
+    #    some[1] = round(self._interpolate(some[1], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
+    #    some[2] = round(self._interpolate(some[2], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
+    #    if self.debug:
+    #        print "Positions:", some
+    #    return some
 
     def gCExactCoordinates(self,x,y,z):
         #TODO: move state storage to separate class (is it really needed?)
@@ -130,11 +116,11 @@ class leg:
         self.stateY = y
         self.stateZ = z
         
-        [xp,yp,zp] = self._getPositions(x,y,z)
+        [xp,yp,zp] = self._getAngles(x,y,z)
         commandlist =  []
-        commandlist.append(dict(servo=self.servos[0], position=int(xp)))
-        commandlist.append(dict(servo=self.servos[1], position=int(yp)))
-        commandlist.append(dict(servo=self.servos[2], position=int(zp)))
+        commandlist.append(dict(servo=self.servos[0], angle=int(xp)))
+        commandlist.append(dict(servo=self.servos[1], angle=int(yp)))
+        commandlist.append(dict(servo=self.servos[2], angle=int(zp)))
         return commandlist
 
     def gCOffset(self, xOffset, yOffset, zOffset):

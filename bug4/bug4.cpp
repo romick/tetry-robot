@@ -1,5 +1,3 @@
-#define UART_RX_BUFFER_SIZE = 160;
-
 #include "hardware.h"
 
 #include <string.h>
@@ -56,7 +54,7 @@ void print_command (struct command* command, TICK_COUNT loop_number) {
 	if (loop_number) {
 		cout << "Loop " << loop_number << "\n";
 	}
-	cout << "command:\nTime to execute: " << (*command).time << "\r\n";
+//	cout << "command:\nTime to execute: " << (*command).time << "\r\n";
 	int8_t ia;
 	for (ia=0; ia <= SERVOS_NUMBER; ia++) {
 		cout << "#" << ia << " Changed?:" << (*command).has_changed[ia] << " Trgt: " << (*command).servo_target_positions[ia] << "\n";    //: Current pos: " << (*command).servo_current_positions[ia] << " Speed: " << (*command).servo_speeds[ia] << " Spt: " << (*command).servo_speed_per_tick[ia] << "\n";
@@ -66,9 +64,9 @@ void print_command (struct command* command, TICK_COUNT loop_number) {
 
 int to_int (char chr) {
 	int i = chr - '0';
-	if (VERBOSE==1) {
-		cout << "\n To_int'd number:" << i << "\n";
-	}
+//	if (VERBOSE==1) {
+//		cout << "\n To_int'd number:" << i << "\n";
+//	}
 	return i;
 }
 
@@ -130,9 +128,9 @@ TICK_COUNT appControl(LOOP_COUNT loopCount, TICK_COUNT loopStart) {
 				//subcommand "Servo number"
 				r_curr_servo = 0;
 				r_curr_subcommand = data;
-				if (VERBOSE==1) {
-					cout << "Received servo number command \n";
-				}
+//				if (VERBOSE==1) {
+//					cout << "Received servo number command \n";
+//				}
 				break;
 			}
 			case 'P':
@@ -140,9 +138,9 @@ TICK_COUNT appControl(LOOP_COUNT loopCount, TICK_COUNT loopStart) {
 				//subcommand "Position"
 				command_receiving.servo_target_positions[r_curr_servo] = 0;
 				r_curr_subcommand = data;
-				if (VERBOSE==1) {
-					cout << "Received position command \n";
-				}
+//				if (VERBOSE==1) {
+//					cout << "Received position command \n";
+//				}
 				break;
 			}
 			case 'S':
@@ -150,9 +148,9 @@ TICK_COUNT appControl(LOOP_COUNT loopCount, TICK_COUNT loopStart) {
 				//subcommand "Speed"
 				command_receiving.servo_speeds[r_curr_servo] = 0;
 				r_curr_subcommand = data;
-				if (VERBOSE==1) {
-					cout << "Received speed command \n";
-				}
+//				if (VERBOSE==1) {
+//					cout << "Received speed command \n";
+//				}
 				break;
 			}
 			case 'T':
@@ -160,9 +158,9 @@ TICK_COUNT appControl(LOOP_COUNT loopCount, TICK_COUNT loopStart) {
 				//subcommand "Time"
 				command_receiving.time = 0;
 				r_curr_subcommand = data;
-				if (VERBOSE==1) {
-					cout << "Received time command \n";
-				}
+//				if (VERBOSE==1) {
+//					cout << "Received time command \n";
+//				}
 				break;
 			}
 			case '1':
@@ -176,41 +174,41 @@ TICK_COUNT appControl(LOOP_COUNT loopCount, TICK_COUNT loopStart) {
 			case '9':
 			case '0':
 			{
-				if (VERBOSE==1) {
-					cout << "Received digit \n Current subcommand is " << r_curr_subcommand << "\n";
-				}
+//				if (VERBOSE==1) {
+//					cout << "Received digit \n Current subcommand is " << r_curr_subcommand << "\n";
+//				}
 				switch (r_curr_subcommand) {
 					case '#':
 					{
 						r_curr_servo = r_curr_servo*10 + to_int(data);
-						if (VERBOSE==1) {
-							cout << "Set current servo to:" << r_curr_servo << "\n";
-						}
+//						if (VERBOSE==1) {
+//							cout << "Set current servo to:" << r_curr_servo << "\n";
+//						}
 						break;
 					}
 					case 'P':
 					{
 						command_receiving.servo_target_positions[r_curr_servo] = command_receiving.servo_target_positions[r_curr_servo]*10 + to_int(data);
 						command_receiving.has_changed[r_curr_servo] = 1;
-						if (VERBOSE==1) {
-							cout << "Set current servo target position to:" << command_receiving.servo_target_positions[r_curr_servo] << "\n";
-						}
+//						if (VERBOSE==1) {
+//							cout << "Set current servo target position to:" << command_receiving.servo_target_positions[r_curr_servo] << "\n";
+//						}
 						break;
 					}
 					case 'S':
 					{
 						command_receiving.servo_speeds[r_curr_servo] = command_receiving.servo_speeds[r_curr_servo]*10 + to_int(data);
-						if (VERBOSE==1) {
-							cout << "Set current servo speed to:" << command_receiving.servo_speeds[r_curr_servo] << "\n";
-						}
+//						if (VERBOSE==1) {
+//							cout << "Set current servo speed to:" << command_receiving.servo_speeds[r_curr_servo] << "\n";
+//						}
 						break;
 					}
 					case 'T':
 					{
 						command_receiving.time = command_receiving.time*10 + to_int(data);
-						if (VERBOSE==1) {
-							cout << "Set movement time to:" << command_receiving.time << "\n";
-						}
+//						if (VERBOSE==1) {
+//							cout << "Set movement time to:" << command_receiving.time << "\n";
+//						}
 						break;
 					}
 					default:
@@ -246,8 +244,8 @@ TICK_COUNT appControl(LOOP_COUNT loopCount, TICK_COUNT loopStart) {
 				initialize_command(&command_receiving);
 				
 				if (VERBOSE==1) {
-					cout << "After copy.\nReceived ";
-					print_command(&command_receiving, NULL);
+//					cout << "After copy.\nReceived ";
+//					print_command(&command_receiving, NULL);
 					cout << "In process ";
 					print_command(&command_in_process, NULL);
 				}
@@ -273,6 +271,9 @@ TICK_COUNT appControl(LOOP_COUNT loopCount, TICK_COUNT loopStart) {
 			DRIVE_SPEED speed = interpolate((int16_t)command_in_process.servo_target_positions[jk], MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX, DRIVE_SPEED_MIN,DRIVE_SPEED_MAX);
 			(*servos[jk]).setSpeed(speed);  
 			command_in_process.has_changed[jk] = 0;
+//			if (jk == 11) {
+//				cout << "11!!\n";
+//			}
 			//command_in_process.servo_current_positions = (*servos[jk]).getSpeed();
 				// cout << "#" << jk << " Chgd?:" << command_in_process.has_changed[jk] << " Trgt:" << speed << "\n";
 		}
