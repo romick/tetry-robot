@@ -40,6 +40,7 @@ class SerialConfigDialog(wx.Dialog):
         del kwds['settings']
 
         self.bot = kwds['bot']
+        #print 1
         del kwds['bot']
 
         # begin wxGlade: SerialConfigDialog.__init__
@@ -75,6 +76,17 @@ class SerialConfigDialog(wx.Dialog):
 
         #Bot settings
         self.radio_box_protocol = wx.RadioBox(self, -1, "Protocol", choices=self.bot.protocol_list, majorDimension=0, style=wx.RA_SPECIFY_ROWS)
+        self.panel = wx.Panel(self)
+        self.nb = wx.Notebook(self.panel)
+        self.pages = []
+        #self.nb.AddPage(self.pages, "e")
+        i=0
+        for l in self.bot.legs:
+            print i, l.name
+            i=i+1
+            cp = LegPanel(self.nb)
+            self.pages.append(cp)
+            self.nb.AddPage(cp, l.name)
 
         self.__set_properties()
         self.__do_layout()
@@ -225,6 +237,10 @@ class SerialConfigDialog(wx.Dialog):
         sizer_9 = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Bot"), wx.VERTICAL)
         sizer_9.Add(self.radio_box_protocol, 0, 0, 0)
         sizer_1.Add(sizer_9, 0, wx.ALL|wx.EXPAND, 4)
+        sizer_nb = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Legs"), wx.VERTICAL)
+        sizer_nb.Add(self.nb, 0, wx.ALL|wx.EXPAND, 4)
+        self.panel.SetSizer(sizer_nb)
+        sizer_1.Add(sizer_nb, 0, wx.ALL|wx.EXPAND, 4)
 
         sizer_main.Add(sizer_1, 0, wx.ALL, 4)
 
@@ -289,6 +305,21 @@ class SerialConfigDialog(wx.Dialog):
             self.text_ctrl_timeout.Enable(False)
 
 # end of class SerialConfigDialog
+
+
+class LegPanel(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent=parent, id=wx.ID_ANY)
+
+        txtOne = wx.TextCtrl(self, wx.ID_ANY, "")
+        txtTwo = wx.TextCtrl(self, wx.ID_ANY, "")
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(txtOne, 0, wx.ALL, 5)
+        sizer.Add(txtTwo, 0, wx.ALL, 5)
+
+        self.SetSizer(sizer)
+
 
 
 class MyApp(wx.App):
