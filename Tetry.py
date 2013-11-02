@@ -20,10 +20,11 @@ class Robot:
     """
     def __init__(self, **kwds):
             self.protocol_list = ['Custom tetry', 'Compact', 'Pololu', 'MiniSSC']
-            self.legFR = legIK.leg(offset=[25,25],   coxa=45, temur=45, tibia=85, servos=[0,1,2],   name="FR leg", debug=True)
-            self.legFL = legIK.leg(offset=[-25,25],  coxa=45, temur=45, tibia=85, servos=[3,4,5],   name="FL leg", debug=True)
-            self.legBR = legIK.leg(offset=[25,-25],  coxa=45, temur=45, tibia=85, servos=[6,7,8],   name="BR leg", debug=True)
-            self.legBL = legIK.leg(offset=[-25,-25], coxa=45, temur=45, tibia=85, servos=[9,10,11], name="BL leg", debug=True)
+            self.legs = []
+            self.legs.append(legIK.leg(offset=[25,25],   coxa=45, temur=45, tibia=85, servos=[0,1,2],   name="FR leg", debug=True))
+            self.legs.append(legIK.leg(offset=[-25,25],  coxa=45, temur=45, tibia=85, servos=[3,4,5],   name="FL leg", debug=True))
+            self.legs.append(legIK.leg(offset=[25,-25],  coxa=45, temur=45, tibia=85, servos=[6,7,8],   name="BR leg", debug=True))
+            self.legs.append(legIK.leg(offset=[-25,-25], coxa=45, temur=45, tibia=85, servos=[9,10,11], name="BL leg", debug=True))
             self.sender = kwds['sender']
             self.inverted = [2,5,8,11]
 
@@ -39,41 +40,24 @@ class Robot:
             a = 65
             b = 65
             c = 60
-            self._send(self.legFR.gCExactCoordinates(a, b, c)+self.legFL.gCExactCoordinates(-a, b, c)+self.legBR.gCExactCoordinates(a, -b, c)+self.legBL.gCExactCoordinates(-a, -b, c))
+            self._send(self.leg[0].gCExactCoordinates(a, b, c)+self.leg[1].gCExactCoordinates(-a, b, c)+self.leg[2].gCExactCoordinates(a, -b, c)+self.leg[3].gCExactCoordinates(-a, -b, c))
 
     def makeStep(self, angle):
-
-
-            angle = math.radians(angle)
-
-            s,t = math.sin(angle)*10, math.cos(angle)*10
-
-            print "Offsets are: %f, %f" % (s,t)
-
             d=10
             sleep1=0.1
             sleep2=0.5
 
-            #assume to start from BasePose
-            #raise Front Right leg , move forward by 20mm, lower it, then move body forward by 5mm
-            self._legTranspose(self.legFR, s, t, d, sleep1)
-            self._shiftBody(-s, -t)
-            time.sleep(sleep2)
+            angle = math.radians(angle)
+            s,t = math.sin(angle)*d, math.cos(angle)*d
+            print "Offsets are: %f, %f" % (s,t)
 
-            #raise Back Left leg , move forward by 20mm, lower it, then move body forward by 5mm
-            self._legTranspose(self.legBL, s, t, d, sleep1)
-            self._shiftBody(-s, -t)
-            time.sleep(sleep2)
+            for leg in self.legs:
+                #assume to start from BasePose
+                #raise each of legs , move forward by 4*d mm, lower it, then move body forward by d mm
+                self._legTranspose(leg, s, t, d, sleep1)
+                self._shiftBody(-s, -t)
+                time.sleep(sleep2)
 
-            #raise Front Left leg , move forward by 20mm, lower it, then move body forward by 5mm
-            self._legTranspose(self.legFL, s, t, d, sleep1)
-            self._shiftBody(-s, -t)
-            time.sleep(sleep2)
-
-            #raise Back Right leg , move forward by 20mm, lower it, then move body forward by 5mm
-            self._legTranspose(self.legBR, s, t, d, sleep1)
-            self._shiftBody(-s, -t)
-            time.sleep(sleep2)
             pass
 
 
@@ -136,10 +120,8 @@ class Robot:
 
     def _shiftBody(self, xOffset, yOffset):
             clist = []
-            clist.extend(self._angles2positions(self.legFR.gCOffset(xOffset, yOffset, 0)))
-            clist.extend(self._angles2positions(self.legFL.gCOffset(xOffset, yOffset, 0)))
-            clist.extend(self._angles2positions(self.legBR.gCOffset(xOffset, yOffset, 0)))
-            clist.extend(self._angles2positions(self.legBL.gCOffset(xOffset, yOffset, 0)))
+            for l in self.legs:
+                clist.extend(self._angles2positions(l.gCOffset(xOffset, yOffset, 0)))
             self._send(clist)
             pass
 
