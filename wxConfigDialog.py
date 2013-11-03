@@ -25,7 +25,7 @@ class SerialConfigDialog(wx.Dialog):
        settings. The default is SHOW_ALL which coresponds to 
        SHOW_BAUDRATE|SHOW_FORMAT|SHOW_FLOW|SHOW_TIMEOUT. All constants can be
        found in ths module (not the class)."""
-    
+
     def __init__(self, *args, **kwds):
         #grab the serial keyword and remove it from the dict
         self.serial = kwds['serial']
@@ -47,6 +47,18 @@ class SerialConfigDialog(wx.Dialog):
         # end wxGlade
         kwds["style"] = wx.DEFAULT_DIALOG_STYLE
         wx.Dialog.__init__(self, *args, **kwds)
+
+        #For some strange reason MacOSX require it to be defined before controls, which would added to it.
+        #Otherwise they are simply disabled.
+        self.sizer_basics = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Basics"), wx.VERTICAL)
+        self.sizer_4 = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Input/Output"), wx.VERTICAL)
+        self.sizer_nb = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Legs"), wx.VERTICAL)
+        self.sizer_timeout = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Timeout"), wx.HORIZONTAL)
+        self.sizer_flow = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Flow Control"), wx.HORIZONTAL)
+        self.sizer_format = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Data Format"), wx.VERTICAL)
+        self.sizer_9 = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Bot"), wx.VERTICAL)
+
+
         self.label_2 = wx.StaticText(self, -1, "Port")
         self.combo_box_port = wx.ComboBox(self, -1, choices=["dummy1", "dummy2", "dummy3", "dummy4", "dummy5"], style=wx.CB_DROPDOWN)
         if self.show & SHOW_BAUDRATE:
@@ -105,7 +117,7 @@ class SerialConfigDialog(wx.Dialog):
                 self.choice_baudrate.Append(str(baudrate))
                 if self.serial.baudrate == baudrate:
                     index = n
-            #self.choice_baudrate.SetSelection(index)
+                    #self.choice_baudrate.SetSelection(index)
             self.choice_baudrate.SetSelection(len(self.serial.BAUDRATES)-1)
         if self.show & SHOW_FORMAT:
             #fill in databits and select current setting
@@ -178,44 +190,40 @@ class SerialConfigDialog(wx.Dialog):
 
         sizer_2 = wx.BoxSizer(wx.VERTICAL)
         sizer_3 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_basics = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Basics"), wx.VERTICAL)
         sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_5.Add(self.label_2, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 4)
         sizer_5.Add(self.combo_box_port, 1, 0, 0)
-        sizer_basics.Add(sizer_5, 0, wx.RIGHT|wx.EXPAND, 0)
+        self.sizer_basics.Add(sizer_5, 0, wx.RIGHT|wx.EXPAND, 0)
         if self.show & SHOW_BAUDRATE:
             sizer_baudrate = wx.BoxSizer(wx.HORIZONTAL)
             sizer_baudrate.Add(self.label_1, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 4)
             sizer_baudrate.Add(self.choice_baudrate, 1, wx.ALIGN_RIGHT, 0)
-            sizer_basics.Add(sizer_baudrate, 0, wx.EXPAND, 0)
-        sizer_2.Add(sizer_basics, 0, wx.EXPAND, 0)
+            self.sizer_basics.Add(sizer_baudrate, 0, wx.EXPAND, 0)
+        sizer_2.Add(self.sizer_basics, 0, wx.EXPAND, 0)
         if self.show & SHOW_FORMAT:
             sizer_8 = wx.BoxSizer(wx.HORIZONTAL)
             sizer_7 = wx.BoxSizer(wx.HORIZONTAL)
             sizer_6 = wx.BoxSizer(wx.HORIZONTAL)
-            sizer_format = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Data Format"), wx.VERTICAL)
             sizer_6.Add(self.label_3, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 4)
             sizer_6.Add(self.choice_databits, 1, wx.ALIGN_RIGHT, 0)
-            sizer_format.Add(sizer_6, 0, wx.EXPAND, 0)
+            self.sizer_format.Add(sizer_6, 0, wx.EXPAND, 0)
             sizer_7.Add(self.label_4, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 4)
             sizer_7.Add(self.choice_stopbits, 1, wx.ALIGN_RIGHT, 0)
-            sizer_format.Add(sizer_7, 0, wx.EXPAND, 0)
+            self.sizer_format.Add(sizer_7, 0, wx.EXPAND, 0)
             sizer_8.Add(self.label_5, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 4)
             sizer_8.Add(self.choice_parity, 1, wx.ALIGN_RIGHT, 0)
-            sizer_format.Add(sizer_8, 0, wx.EXPAND, 0)
-            sizer_2.Add(sizer_format, 0, wx.EXPAND, 0)
+            self.sizer_format.Add(sizer_8, 0, wx.EXPAND, 0)
+            sizer_2.Add(self.sizer_format, 0, wx.EXPAND, 0)
         if self.show & SHOW_TIMEOUT:
-            sizer_timeout = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Timeout"), wx.HORIZONTAL)
-            sizer_timeout.Add(self.checkbox_timeout, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 4)
-            sizer_timeout.Add(self.text_ctrl_timeout, 0, 0, 0)
-            sizer_timeout.Add(self.label_6, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 4)
-            sizer_2.Add(sizer_timeout, 0, 0, 0)
+            self.sizer_timeout.Add(self.checkbox_timeout, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 4)
+            self.sizer_timeout.Add(self.text_ctrl_timeout, 0, 0, 0)
+            self.sizer_timeout.Add(self.label_6, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 4)
+            sizer_2.Add(self.sizer_timeout, 0, 0, 0)
         if self.show & SHOW_FLOW:
-            sizer_flow = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Flow Control"), wx.HORIZONTAL)
-            sizer_flow.Add(self.checkbox_rtscts, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 4)
-            sizer_flow.Add(self.checkbox_xonxoff, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 4)
-            sizer_flow.Add((10,10), 1, wx.EXPAND, 0)
-            sizer_2.Add(sizer_flow, 0, wx.EXPAND, 0)
+            self.sizer_flow.Add(self.checkbox_rtscts, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 4)
+            self.sizer_flow.Add(self.checkbox_xonxoff, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 4)
+            self.sizer_flow.Add((10,10), 1, wx.EXPAND, 0)
+            sizer_2.Add(self.sizer_flow, 0, wx.EXPAND, 0)
 
         sizer_3.Add(self.button_ok, 0, 0, 0)
         sizer_3.Add(self.button_cancel, 0, 0, 0)
@@ -223,25 +231,22 @@ class SerialConfigDialog(wx.Dialog):
 
 
         #Terminal settings layout
-        sizer_4 = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Input/Output"), wx.VERTICAL)
-        sizer_4.Add(self.checkbox_echo, 0, wx.ALL, 4)
-        sizer_4.Add(self.checkbox_unprintable, 0, wx.ALL, 4)
-        sizer_4.Add(self.radio_box_newline, 0, 0, 0)
-        sizer_1.Add(sizer_4, 0, wx.ALL|wx.EXPAND, 4)
+        self.sizer_4.Add(self.checkbox_echo, 0, wx.ALL, 4)
+        self.sizer_4.Add(self.checkbox_unprintable, 0, wx.ALL, 4)
+        self.sizer_4.Add(self.radio_box_newline, 0, 0, 0)
+        sizer_1.Add(self.sizer_4, 0, wx.ALL|wx.EXPAND, 4)
 
         #Bot setting layout
-        sizer_9 = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Bot"), wx.VERTICAL)
-        sizer_9.Add(self.radio_box_protocol, 0, 0, 0)
-        sizer_1.Add(sizer_9, 0, wx.ALL|wx.EXPAND, 4)
+        self.sizer_9.Add(self.radio_box_protocol, 0, 0, 0)
+        sizer_1.Add(self.sizer_9, 0, wx.ALL|wx.EXPAND, 4)
 
-        sizer_nb = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Legs"), wx.VERTICAL)
-        sizer_nb.Add(self.nb, 0, wx.ALL|wx.EXPAND, 4)
+        self.sizer_nb.Add(self.nb, 0, wx.ALL|wx.EXPAND, 4)
         #self.panel.SetAutoLayout(1)
-        #self.panel.SetSizer(sizer_nb)
+        #self.panel.SetSizer(self.sizer_nb)
         #self.panel.Layout()
 
         sizer_main.Add(sizer_1, 0, wx.ALL, 4)
-        sizer_main.Add(sizer_nb, 0, wx.ALL|wx.EXPAND, 4)
+        sizer_main.Add(self.sizer_nb, 0, wx.ALL|wx.EXPAND, 4)
         sizer_main.Add(sizer_3, 0, wx.ALL|wx.ALIGN_RIGHT, 4)
 
         self.SetAutoLayout(1)
@@ -274,7 +279,7 @@ class SerialConfigDialog(wx.Dialog):
                     self.serial.timeout = float(self.text_ctrl_timeout.GetValue())
                 except ValueError:
                     dlg = wx.MessageDialog(self, 'Timeout must be a numeric value',
-                                                'Value Error', wx.OK | wx.ICON_ERROR)
+                                           'Value Error', wx.OK | wx.ICON_ERROR)
                     dlg.ShowModal()
                     dlg.Destroy()
                     success = False
