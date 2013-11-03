@@ -10,7 +10,7 @@ MY_DRIVE_SPEED_MAX = 2500
 #The class is based on a work by Rob Cook.
 # Please visit www.robcook.eu for more details on algorithm and calculations behind it.
 
-class Robot:
+class Controller:
     """Tetrym
 
      legFL   --##--  legFR

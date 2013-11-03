@@ -5,8 +5,7 @@ import sys
 import wxConfigDialog
 import serial
 import threading
-import Tetry
-#import legIK
+import Crawler
 import cPickle
 
 #----------------------------------------------------------------------
@@ -70,7 +69,7 @@ class TerminalFrame(wx.Frame):
     """Simple terminal program for wxPython"""
     
     def __init__(self, *args, **kwds):
-        self.bot = Tetry.Robot(sender = self.Sender)
+        self.bot = Crawler.Controller(sender = self.Sender)
         #bot_settings_file = open('./tetry.ini',mode='w+')
         #cPickle.dump(self.bot,bot_settings_file)
 

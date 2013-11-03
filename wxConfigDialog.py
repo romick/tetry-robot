@@ -165,6 +165,7 @@ class SerialConfigDialog(wx.Dialog):
         if self.show & SHOW_TIMEOUT:
             self.text_ctrl_timeout.Enable(0)
         self.button_ok.SetDefault()
+        self.SetBackgroundColour(wx.SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW))
         self.radio_box_newline.SetSelection(0)
 
 
