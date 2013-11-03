@@ -36,12 +36,21 @@ class Controller:
 
     """
     def __init__(self, **kwds):
+            self.sender = kwds['sender']
+
             self.PROTOCOLS = ['Custom tetry', 'Compact', 'Pololu', 'MiniSSC']
+            if 'protocol' in kwds.keys():
+                self.protocol = self.PROTOCOLS[(kwds['protocol'])]
+            else:
+                self.protocol = self.PROTOCOLS[0]
+            print "Protocol is %s" % self.protocol
+
+            #load legs from json file
             self.legs = []
             try:
                 sfile = open('./tetry.json','r')
                 jsettings = json.load(sfile)
-                for j in jsettings:
+                for j in jsettings['legs']:
                     self.legs.append(legIK.Leg(name     = j['name'],
                                                offset   = j['offset'],
                                                coxa     = j['coxa'],
@@ -49,31 +58,28 @@ class Controller:
                                                tibia    = j['tibia'],
                                                servos   = j['servos'],
                                                debug    = j['debug']))
-
+                self.inverted = jsettings['inverted']
+                sfile.close()
             except ValueError:
-                pass
+                    pass
 
-            self.servo_number = 12
-            self.sender = kwds['sender']
-            self.inverted = [2,5,8,11]
+            #calculate number of servos
+            self.servo_number = 0
+            for l in self.legs:
+                self.servo_number = self.servo_number + len(l.servos)
 
-            if 'protocol' in kwds.keys():
-                self.protocol = self.PROTOCOLS[(kwds['protocol'])]
-            else:
-                self.protocol = self.PROTOCOLS[0]
-            print "Protocol is %s" % self.protocol
 
             self.inited = False
 
-            #self.dumpSettings()
+            self.dumpSettings()
 
 
             # self.initBot()
 
     def dumpSettings(self):
             sfile = open('./tetry.json','w')
-            json.dump(self.legs, sfile, cls=LegEncoder)
-            #print LegEncoder().dump(self.legs)
+            json.dump(dict(legs = self.legs, inverted = self.inverted),
+                      sfile, cls=LegEncoder, indent=2, separators=(',', ': '))
 
 
 
