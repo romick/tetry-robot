@@ -300,6 +300,8 @@ class SerialConfigDialog(wx.Dialog):
                                      int(lp.text_ctrl_15.GetValue())]
             lp.leg.debug =          lp.checkbox_1.GetValue()
 
+        self.bot.dumpSettings()
+
 
         if success:
             self.EndModal(wx.ID_OK)

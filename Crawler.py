@@ -3,12 +3,28 @@
 import legIK
 import time
 import math
+import json
 
 MY_DRIVE_SPEED_MIN = 500
 MY_DRIVE_SPEED_MAX = 2500
 
 #The class is based on a work by Rob Cook.
 # Please visit www.robcook.eu for more details on algorithm and calculations behind it.
+
+
+class LegEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, legIK.Leg):
+            return dict(name    = obj.name,
+                        offset  = obj.legOffset,
+                        coxa    = obj.coxaLengh,
+                        temur   = obj.temurLengh,
+                        tibia   = obj.tibiaLengh,
+                        servos  = obj.servos,
+                        debug   = obj.debug)
+        # Let the base class default method raise the TypeError
+        return json.JSONEncoder.default(self, obj)
+
 
 class Controller:
     """Tetrym
@@ -22,12 +38,21 @@ class Controller:
     def __init__(self, **kwds):
             self.PROTOCOLS = ['Custom tetry', 'Compact', 'Pololu', 'MiniSSC']
             self.legs = []
-            self.legs.append(legIK.leg(offset=[25,25],   coxa=45, temur=45, tibia=85, servos=[0,1,2],   name="FR leg", debug=True))
-            self.legs.append(legIK.leg(offset=[-25,25],  coxa=45, temur=45, tibia=85, servos=[3,4,5],   name="FL leg", debug=True))
-            self.legs.append(legIK.leg(offset=[25,-25],  coxa=45, temur=45, tibia=85, servos=[6,7,8],   name="BR leg", debug=True))
-            self.legs.append(legIK.leg(offset=[-25,-25], coxa=45, temur=45, tibia=85, servos=[9,10,11], name="BL leg", debug=True))
-            for l in self.legs:
-                print l.name
+            try:
+                sfile = open('./tetry.json','r')
+                jsettings = json.load(sfile)
+                for j in jsettings:
+                    self.legs.append(legIK.Leg(name     = j['name'],
+                                               offset   = j['offset'],
+                                               coxa     = j['coxa'],
+                                               temur    = j['temur'],
+                                               tibia    = j['tibia'],
+                                               servos   = j['servos'],
+                                               debug    = j['debug']))
+
+            except ValueError:
+                pass
+
             self.servo_number = 12
             self.sender = kwds['sender']
             self.inverted = [2,5,8,11]
@@ -40,7 +65,17 @@ class Controller:
 
             self.inited = False
 
+            #self.dumpSettings()
+
+
             # self.initBot()
+
+    def dumpSettings(self):
+            sfile = open('./tetry.json','w')
+            json.dump(self.legs, sfile, cls=LegEncoder)
+            #print LegEncoder().dump(self.legs)
+
+
 
     def initBot(self):
             a = 55

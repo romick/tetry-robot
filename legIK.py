@@ -1,7 +1,7 @@
 import math
 
 
-class leg:
+class Leg:
     """ new legIK(offset=[-65.8, 76.3], angle=-2.2829, coxa=29.0, temur=49, tibia=52)  docstring for legIK"""
     def __init__(self, *args, **kwds):
         self.legOffset = kwds['offset']
