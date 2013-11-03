@@ -6,7 +6,6 @@ import wxConfigDialog
 import serial
 import threading
 import Crawler
-import cPickle
 
 #----------------------------------------------------------------------
 # Create an own event type, so that GUI updates can be delegated
@@ -69,7 +68,7 @@ class TerminalFrame(wx.Frame):
     """Simple terminal program for wxPython"""
     
     def __init__(self, *args, **kwds):
-        self.bot = Crawler.Controller(sender = self.Sender)
+        self.bot = Crawler.Controller(sender = self.Sender, settings = './tetry.json')
         #bot_settings_file = open('./tetry.ini',mode='w+')
         #cPickle.dump(self.bot,bot_settings_file)
 
@@ -112,7 +111,9 @@ class TerminalFrame(wx.Frame):
 
         self.sliders=[]
         for i in range(self.bot.servo_number):
-            self.sliders.append(wx.Slider(self, wx.ID_ANY, 1500, 500, 2500, style=wx.SL_HORIZONTAL | wx.SL_LABELS | wx.SL_TOP, name="servo%i" % i))
+            self.sliders.append(wx.Slider(self, wx.ID_ANY, 1500, 500, 2500,
+                                          style=wx.SL_HORIZONTAL | wx.SL_LABELS | wx.SL_TOP,
+                                          name="servo%i" % i))
 
 
         self.__set_properties()

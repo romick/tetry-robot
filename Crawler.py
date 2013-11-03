@@ -45,10 +45,12 @@ class Controller:
                 self.protocol = self.PROTOCOLS[0]
             print "Protocol is %s" % self.protocol
 
+            self.settingsFileName = kwds['settings']
+
             #load legs from json file
             self.legs = []
             try:
-                sfile = open('./tetry.json','r')
+                sfile = open(self.settingsFileName,'r')
                 jsettings = json.load(sfile)
                 for j in jsettings['legs']:
                     self.legs.append(legIK.Leg(name     = j['name'],
@@ -77,7 +79,7 @@ class Controller:
             # self.initBot()
 
     def dumpSettings(self):
-            sfile = open('./tetry.json','w')
+            sfile = open(self.settingsFileName,'w')
             json.dump(dict(legs = self.legs, inverted = self.inverted),
                       sfile, cls=LegEncoder, indent=2, separators=(',', ': '))
 
