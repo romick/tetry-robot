@@ -146,6 +146,7 @@ class TerminalFrame(wx.Frame):
         
     def __set_properties(self):
         self.SetTitle("Robot Terminal")
+        self.SetBackgroundColour(wx.SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW))
         self.SetSize((1000, 800))
 
         self.button_3.SetMinSize((140, 140))

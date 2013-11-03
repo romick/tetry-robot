@@ -75,17 +75,12 @@ class SerialConfigDialog(wx.Dialog):
         self.radio_box_newline = wx.RadioBox(self, -1, "Newline Handling", choices=["CR only", "LF only", "CR+LF"], majorDimension=0, style=wx.RA_SPECIFY_ROWS)
 
         #Bot settings
-        self.radio_box_protocol = wx.RadioBox(self, -1, "Protocol", choices=self.bot.protocol_list, majorDimension=0, style=wx.RA_SPECIFY_ROWS)
-        self.panel = wx.Panel(self)
-        self.nb = wx.Notebook(self.panel)
-        self.pages = []
-        #self.nb.AddPage(self.pages, "e")
-        i=0
+        self.radio_box_protocol = wx.RadioBox(self, -1, "Protocol", choices=self.bot.PROTOCOLS, majorDimension=0, style=wx.RA_SPECIFY_ROWS)
+        self.nb = wx.Notebook(self, wx.ID_ANY, style=0)
+        self.legPages = []
         for l in self.bot.legs:
-            print i, l.name
-            i=i+1
-            cp = LegPanel(self.nb)
-            self.pages.append(cp)
+            cp = LegPanel(self.nb, leg=l)
+            self.legPages.append(cp)
             self.nb.AddPage(cp, l.name)
 
         self.__set_properties()
@@ -157,7 +152,7 @@ class SerialConfigDialog(wx.Dialog):
         self.radio_box_newline.SetSelection(self.settings.newline)
 
         #Bot settings
-        self.radio_box_protocol.SetSelection(self.bot.protocol_list.index(self.bot.protocol))
+        self.radio_box_protocol.SetSelection(self.bot.PROTOCOLS.index(self.bot.protocol))
 
 
         #attach the event handlers
@@ -237,13 +232,15 @@ class SerialConfigDialog(wx.Dialog):
         sizer_9 = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Bot"), wx.VERTICAL)
         sizer_9.Add(self.radio_box_protocol, 0, 0, 0)
         sizer_1.Add(sizer_9, 0, wx.ALL|wx.EXPAND, 4)
+
         sizer_nb = wx.StaticBoxSizer(wx.StaticBox(self, -1, "Legs"), wx.VERTICAL)
         sizer_nb.Add(self.nb, 0, wx.ALL|wx.EXPAND, 4)
-        self.panel.SetSizer(sizer_nb)
-        sizer_1.Add(sizer_nb, 0, wx.ALL|wx.EXPAND, 4)
+        #self.panel.SetAutoLayout(1)
+        #self.panel.SetSizer(sizer_nb)
+        #self.panel.Layout()
 
         sizer_main.Add(sizer_1, 0, wx.ALL, 4)
-
+        sizer_main.Add(sizer_nb, 0, wx.ALL|wx.EXPAND, 4)
         sizer_main.Add(sizer_3, 0, wx.ALL|wx.ALIGN_RIGHT, 4)
 
         self.SetAutoLayout(1)
@@ -289,7 +286,18 @@ class SerialConfigDialog(wx.Dialog):
         self.settings.newline = self.radio_box_newline.GetSelection()
 
         #save bot settings
-        self.bot.protocol = self.bot.protocol_list[self.radio_box_protocol.GetSelection()]
+        self.bot.protocol = self.bot.PROTOCOLS[self.radio_box_protocol.GetSelection()]
+        for lp in self.legPages:
+            lp.leg.name =           lp.text_ctrl_16.GetValue()
+            lp.leg.legOffset[0] =   int(lp.text_ctrl_8.GetValue())
+            lp.leg.legOffset[1] =   int(lp.text_ctrl_9.GetValue())
+            lp.leg.coxaLengh =      int(lp.text_ctrl_10.GetValue())
+            lp.leg.temurLengh =     int(lp.text_ctrl_11.GetValue())
+            lp.leg.coxaLengh =      int(lp.text_ctrl_12.GetValue())
+            lp.leg.servos =         [int(lp.text_ctrl_13.GetValue()),
+                                     int(lp.text_ctrl_14.GetValue()),
+                                     int(lp.text_ctrl_15.GetValue())]
+            lp.leg.debug =          lp.checkbox_1.GetValue()
 
 
         if success:
@@ -308,17 +316,58 @@ class SerialConfigDialog(wx.Dialog):
 
 
 class LegPanel(wx.Panel):
-    def __init__(self, parent):
+    def __init__(self, parent, **kwds):
         wx.Panel.__init__(self, parent=parent, id=wx.ID_ANY)
+        self.leg = kwds['leg']
 
-        txtOne = wx.TextCtrl(self, wx.ID_ANY, "")
-        txtTwo = wx.TextCtrl(self, wx.ID_ANY, "")
+        self.label_13 = wx.StaticText(self, wx.ID_ANY, "Name:")
+        self.text_ctrl_16 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.name))
+        self.label_5 = wx.StaticText(self, wx.ID_ANY, "Offset X:")
+        self.text_ctrl_8 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.legOffset[0]))
+        self.label_6 = wx.StaticText(self, wx.ID_ANY, "Offset Y:")
+        self.text_ctrl_9 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.legOffset[1]))
+        self.label_7 = wx.StaticText(self, wx.ID_ANY, "Coxa length:")
+        self.text_ctrl_10 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.coxaLengh))
+        self.label_10 = wx.StaticText(self, wx.ID_ANY, "Coxa servo:")
+        self.text_ctrl_13 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.servos[0]))
+        self.label_8 = wx.StaticText(self, wx.ID_ANY, "Temur length:")
+        self.text_ctrl_11 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.temurLengh))
+        self.label_11 = wx.StaticText(self, wx.ID_ANY, "Temur servo:")
+        self.text_ctrl_14 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.servos[1]))
+        self.label_9 = wx.StaticText(self, wx.ID_ANY, "Tibia length:")
+        self.text_ctrl_12 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.tibiaLengh))
+        self.label_12 = wx.StaticText(self, wx.ID_ANY, "Tibia servo:")
+        self.text_ctrl_15 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.servos[2]))
+        self.label_14 = wx.StaticText(self, wx.ID_ANY, "Verbose?:")
+        self.checkbox_1 = wx.CheckBox(self, wx.ID_ANY, "")
+        self.checkbox_1.SetValue(self.leg.debug)
 
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(txtOne, 0, wx.ALL, 5)
-        sizer.Add(txtTwo, 0, wx.ALL, 5)
 
-        self.SetSizer(sizer)
+        grid_sizer_1 = wx.FlexGridSizer(8, 4, 1, 1)
+        grid_sizer_1.Add(self.label_13, 0,  wx.ALL, 4)
+        grid_sizer_1.Add(self.text_ctrl_16, 0, wx.ALL, 4)
+        grid_sizer_1.Add((1, 1), 0, wx.ALL, 4)
+        grid_sizer_1.Add((1, 1), 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.label_5, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.text_ctrl_8, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.label_6, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.text_ctrl_9, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.label_7, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.text_ctrl_10, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.label_10, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.text_ctrl_13, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.label_8, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.text_ctrl_11, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.label_11, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.text_ctrl_14, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.label_9, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.text_ctrl_12, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.label_12, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.text_ctrl_15, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.label_14, 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.checkbox_1, 0, wx.ALL, 4)
+
+        self.SetSizer(grid_sizer_1)
 
 
 

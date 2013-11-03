@@ -20,12 +20,12 @@ class Robot:
 
     """
     def __init__(self, **kwds):
-            self.protocol_list = ['Custom tetry', 'Compact', 'Pololu', 'MiniSSC']
+            self.PROTOCOLS = ['Custom tetry', 'Compact', 'Pololu', 'MiniSSC']
             self.legs = []
-            self.legs.append(legIK.leg(offset=[25,25],   coxa=45, temur=45, tibia=85, servos=[0,1,2],   name="FR leg", debug=False))
-            self.legs.append(legIK.leg(offset=[-25,25],  coxa=45, temur=45, tibia=85, servos=[3,4,5],   name="FL leg", debug=False))
-            self.legs.append(legIK.leg(offset=[25,-25],  coxa=45, temur=45, tibia=85, servos=[6,7,8],   name="BR leg", debug=False))
-            self.legs.append(legIK.leg(offset=[-25,-25], coxa=45, temur=45, tibia=85, servos=[9,10,11], name="BL leg", debug=False))
+            self.legs.append(legIK.leg(offset=[25,25],   coxa=45, temur=45, tibia=85, servos=[0,1,2],   name="FR leg", debug=True))
+            self.legs.append(legIK.leg(offset=[-25,25],  coxa=45, temur=45, tibia=85, servos=[3,4,5],   name="FL leg", debug=True))
+            self.legs.append(legIK.leg(offset=[25,-25],  coxa=45, temur=45, tibia=85, servos=[6,7,8],   name="BR leg", debug=True))
+            self.legs.append(legIK.leg(offset=[-25,-25], coxa=45, temur=45, tibia=85, servos=[9,10,11], name="BL leg", debug=True))
             for l in self.legs:
                 print l.name
             self.servo_number = 12
@@ -33,9 +33,9 @@ class Robot:
             self.inverted = [2,5,8,11]
 
             if 'protocol' in kwds.keys():
-                self.protocol = self.protocol_list[(kwds['protocol'])]
+                self.protocol = self.PROTOCOLS[(kwds['protocol'])]
             else:
-                self.protocol = self.protocol_list[0]
+                self.protocol = self.PROTOCOLS[0]
             print "Protocol is %s" % self.protocol
 
             self.inited = False
@@ -43,9 +43,9 @@ class Robot:
             # self.initBot()
 
     def initBot(self):
-            a = 65
-            b = 65
-            c = 60
+            a = 55
+            b = 55
+            c = 40
             self._send(self.legs[0].gCExactCoordinates(a, b, c) +
                        self.legs[1].gCExactCoordinates(-a, b, c)+
                        self.legs[2].gCExactCoordinates(a, -b, c)+
@@ -174,9 +174,13 @@ class Robot:
             for a in alist:
                 if 'position' not in a.keys():
                     if a['servo'] in self.inverted:
-                        a['position'] = int(round(self._interpolate(a['angle'], 180, -180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX)))
+                        a['position'] = int(round(
+                            self._interpolate(a['angle'], 180, -180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX)
+                        ))
                     else:
-                        a['position'] = int(round(self._interpolate(a['angle'], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX)))
+                        a['position'] = int(round(
+                            self._interpolate(a['angle'], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX)
+                        ))
                 plist.append(a)
             return plist
 
