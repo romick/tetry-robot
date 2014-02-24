@@ -1,4 +1,5 @@
 import math
+import sys
 
 
 class Leg:
@@ -115,6 +116,7 @@ class Leg:
         self.stateX = x
         self.stateY = y
         self.stateZ = z
+        #print >> sys.stderr, self.stateX, self.stateY, self.stateZ
         
         [xp,yp,zp] = self._getAngles(x,y,z)
         commandlist =  []

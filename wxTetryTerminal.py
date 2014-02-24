@@ -97,23 +97,28 @@ class TerminalFrame(wx.Frame):
         wxglade_tmp_menu.Append(ID_EXIT, "&Exit", "", wx.ITEM_NORMAL)
         self.frame_terminal_menubar.Append(wxglade_tmp_menu, "&File")
 
-        #Bot mgmt buttons
-        self.button_3 = wx.Button(self, wx.ID_ANY, ("forward"))
-        self.button_2 = wx.Button(self, wx.ID_ANY, ("left"))
-        self.button_4 = wx.Button(self, wx.ID_ANY, ("right"))
-        self.button_5 = wx.Button(self, wx.ID_ANY, ("backward"))
+        #Bot mgmt panels & buttons
+        self.nbtop = wx.Notebook(self, wx.ID_ANY, style=0)
+        self.nbbottom = wx.Notebook(self, wx.ID_ANY, style=0)
+
+        self.directionPanel = DirectionPanel(self.nbtop, bot=self.bot)
+        self.nbtop.AddPage(self.directionPanel, "Direction")
+
+        self.movesPanel = MovesPanel(self.nbtop, bot=self.bot)
+        self.nbtop.AddPage(self.movesPanel, "Moves")
+
+        self.coordinatsPanel = CoordinatsPanel(self.nbbottom, bot=self.bot)
+        self.nbbottom.AddPage(self.coordinatsPanel, "Coordinates")
+
+        self.anglesPanel = AnglesPanel(self.nbbottom, bot=self.bot)
+        self.nbbottom.AddPage(self.anglesPanel, "Angles")
+
         self.button_6 = wx.Button(self, wx.ID_ANY, ("reset all servos"))
         self.button_7 = wx.Button(self, wx.ID_ANY, ("Start robot"))
 
         #clean log buttons
         self.button_clear_1 = wx.Button(self, wx.ID_ANY, ("clear log"), style= wx.BU_EXACTFIT)
         self.button_clear_2 = wx.Button(self, wx.ID_ANY, ("clear log"), style= wx.BU_EXACTFIT)
-
-        self.sliders=[]
-        for i in range(self.bot.servo_number):
-            self.sliders.append(wx.Slider(self, wx.ID_ANY, 1500, 500, 2500,
-                                          style=wx.SL_HORIZONTAL | wx.SL_LABELS | wx.SL_TOP,
-                                          name="servo%i" % i))
 
 
         self.__set_properties()
@@ -149,38 +154,18 @@ class TerminalFrame(wx.Frame):
         self.SetBackgroundColour(wx.SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW))
         self.SetSize((1000, 800))
 
-        self.button_3.SetMinSize((140, 140))
-        self.button_2.SetMinSize((140, 140))
-        self.button_4.SetMinSize((140, 140))
-        self.button_5.SetMinSize((140, 140))
         
-        for i in range(self.bot.servo_number):
-            self.sliders[i].SetMinSize((150, -1))
-
 
     def __do_layout(self):
         sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_2 = wx.BoxSizer(wx.VERTICAL)
+        sizer_2.Add(self.nbtop, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
+        sizer_2.Add(self.nbbottom, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
 
-        grid_sizer_1 = wx.FlexGridSizer(8, 3, 2, 2)
-        grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.button_3, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.button_2, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add((150, 150), 0, 0, 0)
-        grid_sizer_1.Add(self.button_4, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.button_5, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        for i in range(self.bot.servo_number):
-            grid_sizer_1.Add(self.sliders[i], 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.button_6, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        grid_sizer_1.Add(self.button_7, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
 
-        sizer_2.Add(grid_sizer_1, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
+        sizer_2.Add(self.button_6, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        sizer_2.Add(self.button_7, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+
         sizer_1.Add(sizer_2, 1, wx.ALL | wx.EXPAND, 0)
 
         self.SetAutoLayout(1)
@@ -214,10 +199,14 @@ class TerminalFrame(wx.Frame):
         self.Bind(EVT_SERIALRX, self.OnSerialRead)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
 
-        self.Bind(wx.EVT_BUTTON, self.forward_button_pressed, self.button_3)
-        self.Bind(wx.EVT_BUTTON, self.left_button_pressed, self.button_2)
-        self.Bind(wx.EVT_BUTTON, self.right_button_pressed, self.button_4)
-        self.Bind(wx.EVT_BUTTON, self.back_button_pressed, self.button_5)
+        
+        
+        self.Bind(wx.EVT_BUTTON, self.forward_button_pressed, self.directionPanel.button_forward)
+        self.Bind(wx.EVT_BUTTON, self.left_button_pressed, self.directionPanel.button_left)
+        self.Bind(wx.EVT_BUTTON, self.right_button_pressed, self.directionPanel.button_right)
+        self.Bind(wx.EVT_BUTTON, self.back_button_pressed, self.directionPanel.button_back)
+        self.Bind(wx.EVT_BUTTON, self.gocoord_button_pressed, self.coordinatsPanel.button_go)
+
         self.Bind(wx.EVT_BUTTON, self.reset_button_pressed, self.button_6)
         self.Bind(wx.EVT_BUTTON, self.OnStartRobot, self.button_7)
 
@@ -225,7 +214,7 @@ class TerminalFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.clean_log, self.button_clear_2)
 
         for i in range(self.bot.servo_number):
-            self.Bind(wx.EVT_SCROLL_CHANGED , self.servo_move, self.sliders[i])
+            self.Bind(wx.EVT_SCROLL_CHANGED , self.servo_move, self.anglesPanel.sliders[i])
 
     def OnExit(self, event):
         """Menu point Exit"""
@@ -364,12 +353,15 @@ class TerminalFrame(wx.Frame):
                     self.bot.makeStep(180)
 
     def reset_button_pressed(self, event): 
-                self.bot.initBot()
+                    self.bot.initBot()
+
+    def gocoord_button_pressed(self, event):
+                    self.bot.
 
     def servo_move(self, event):  
                 command = []
                 for s in range(self.bot.servo_number):
-                    command.append(dict(servo=s, position=self.sliders[s].GetValue()))
+                    command.append(dict(servo=s, position=self.anglesPanel.sliders[s].GetValue()))
                 self.bot._send(command)
 
 
@@ -386,12 +378,131 @@ class TerminalFrame(wx.Frame):
                 if self.settings.echo:          #do echo if needed
                     self.text_ctrl_output.WriteText(message + '\n')
                 self.serial.write(message)         #send the charcater
+                
+                #Update GUI with new bot state
                 if botcommand:
 	                for x in botcommand: 
-	                    self.sliders[x['servo']].SetValue(x['position'])
+	                    self.anglesPanel.sliders[x['servo']].SetValue(x['position'])
+                n=0
+                for l in self.bot.legs:
+                    #print >> sys.stderr, l.stateX, l.stateY, l.stateZ
+                    self.coordinatsPanel.text_x_coor[n].SetValue(str(l.stateX))
+                    self.coordinatsPanel.text_y_coor[n].SetValue(str(l.stateY))
+                    self.coordinatsPanel.text_z_coor[n].SetValue(str(l.stateZ))
+                    self.coordinatsPanel.Update()
+                    n += 1
 
             
 # end of class TerminalFrame
+
+
+
+class AnglesPanel(wx.Panel):
+    def __init__(self, parent, **kwds):
+        wx.Panel.__init__(self, parent=parent, id=wx.ID_ANY)
+        self.bot = kwds['bot']
+
+        grid_sizer_1     = wx.FlexGridSizer(len(self.bot.legs)*2, 3, 2, 2)
+        self.sliders     = []
+        #self.name_label  = []
+
+        #n=0
+        for i in range(self.bot.servo_number):
+            #self.name_label.append(wx.StaticText(self, wx.ID_ANY, str(l.name)))
+            #grid_sizer_1.Add(self.name_label[n], 0,  wx.ALL, 4)
+            #for j in range(2):
+            #    grid_sizer_1.Add((1, 1), 0, wx.ALL, 4)
+
+            self.sliders.append(wx.Slider(self, wx.ID_ANY, 1500, 500, 2500,
+                                          style=wx.SL_HORIZONTAL | wx.SL_LABELS | wx.SL_TOP,
+                                          name="servo%i" % i))
+            self.sliders[i].SetMinSize((150, -1))
+            grid_sizer_1.Add(self.sliders[i], 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+            #n += 1
+
+        self.SetSizer(grid_sizer_1)
+
+
+class CoordinatsPanel(wx.Panel):
+    def __init__(self, parent, **kwds):
+        wx.Panel.__init__(self, parent=parent, id=wx.ID_ANY)
+        self.bot = kwds['bot']
+
+        grid_sizer_1 = wx.FlexGridSizer(len(self.bot.legs)*2, 6, 1, 1)
+        self.name_label  = []
+        self.text_x_coor = []
+        self.text_y_coor = []
+        self.text_z_coor = []
+
+        self.button_go = wx.Button(self, wx.ID_ANY, ("Go!"))
+
+        n=0
+        for l in self.bot.legs:
+            #print >> sys.stderr, l
+
+            self.label_x = wx.StaticText(self, wx.ID_ANY, "X:")
+            self.label_y = wx.StaticText(self, wx.ID_ANY, "Y:")
+            self.label_z = wx.StaticText(self, wx.ID_ANY, "Z:")
+
+            self.name_label.append(wx.StaticText(self, wx.ID_ANY, str(l.name)))
+            self.text_x_coor.append(wx.TextCtrl(self, wx.ID_ANY, str(l.stateX)))
+            self.text_y_coor.append(wx.TextCtrl(self, wx.ID_ANY, str(l.stateY)))
+            self.text_z_coor.append(wx.TextCtrl(self, wx.ID_ANY, str(l.stateZ)))
+
+            grid_sizer_1.Add(self.name_label[n], 0,  wx.ALL, 4)
+            for i in range(5):
+                grid_sizer_1.Add((1, 1), 0, wx.ALL, 4)
+
+            grid_sizer_1.Add(self.label_x, 0, wx.ALL, 4)
+            grid_sizer_1.Add(self.text_x_coor[n], 0, wx.ALL, 4)
+            grid_sizer_1.Add(self.label_y, 0, wx.ALL, 4)
+            grid_sizer_1.Add(self.text_y_coor[n], 0, wx.ALL, 4)
+            grid_sizer_1.Add(self.label_z, 0, wx.ALL, 4)
+            grid_sizer_1.Add(self.text_z_coor[n], 0, wx.ALL, 4)
+            n = n+1
+
+        for i in range(11):
+            grid_sizer_1.Add((1, 1), 0, wx.ALL, 4)
+        grid_sizer_1.Add(self.button_go, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        
+        self.SetSizer(grid_sizer_1)
+
+
+
+class DirectionPanel(wx.Panel):
+    def __init__(self, parent, **kwds):
+        wx.Panel.__init__(self, parent=parent, id=wx.ID_ANY)
+        #self.bot = kwds['bot']
+
+        self.button_forward = wx.Button(self, wx.ID_ANY, ("forward"))
+        self.button_left = wx.Button(self, wx.ID_ANY, ("left"))
+        self.button_right = wx.Button(self, wx.ID_ANY, ("right"))
+        self.button_back = wx.Button(self, wx.ID_ANY, ("backward"))
+
+        self.button_forward.SetMinSize((140, 140))
+        self.button_left.SetMinSize((140, 140))
+        self.button_right.SetMinSize((140, 140))
+        self.button_back.SetMinSize((140, 140))
+
+        grid_sizer_1 = wx.FlexGridSizer(3, 3, 1, 1)
+        grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        grid_sizer_1.Add(self.button_forward, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        grid_sizer_1.Add(self.button_left, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        grid_sizer_1.Add((150, 150), 0, 0, 0)
+        grid_sizer_1.Add(self.button_right, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        grid_sizer_1.Add(self.button_back, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+
+        self.SetSizer(grid_sizer_1)
+
+
+class MovesPanel(wx.Panel):
+    def __init__(self, parent, **kwds):
+        wx.Panel.__init__(self, parent=parent, id=wx.ID_ANY)
+        #self.bot = kwds['bot']
+
 
 
 class MyApp(wx.App):
