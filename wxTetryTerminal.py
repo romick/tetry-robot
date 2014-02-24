@@ -356,7 +356,13 @@ class TerminalFrame(wx.Frame):
                     self.bot.initBot()
 
     def gocoord_button_pressed(self, event):
-                    self.bot.moveToCoordinates()
+                    coord_d = {}
+                    for n in self.coordinatsPanel.leg_coords:
+                        coord_d[n]=[int(self.coordinatsPanel.leg_coords[n][1].GetValue()),
+                                    int(self.coordinatsPanel.leg_coords[n][2].GetValue()),
+                                    int(self.coordinatsPanel.leg_coords[n][3].GetValue())]
+                                                                    
+                    self.bot.moveToCoordinates(coord_d)
 
     def servo_move(self, event):  
                 command = []
@@ -384,11 +390,11 @@ class TerminalFrame(wx.Frame):
 	                for x in botcommand: 
 	                    self.anglesPanel.sliders[x['servo']].SetValue(x['position'])
                 n=0
-                for l in self.bot.legs.values():
+                for l in self.bot.legs.keys():
                     #print >> sys.stderr, l.stateX, l.stateY, l.stateZ
-                    self.coordinatsPanel.text_x_coor[n].SetValue(str(l.stateX))
-                    self.coordinatsPanel.text_y_coor[n].SetValue(str(l.stateY))
-                    self.coordinatsPanel.text_z_coor[n].SetValue(str(l.stateZ))
+                    self.coordinatsPanel.leg_coords[l][1].SetValue(str(self.bot.legs[l].stateX))
+                    self.coordinatsPanel.leg_coords[l][2].SetValue(str(self.bot.legs[l].stateY))
+                    self.coordinatsPanel.leg_coords[l][3].SetValue(str(self.bot.legs[l].stateZ))
                     self.coordinatsPanel.Update()
                     n += 1
 
@@ -429,10 +435,7 @@ class CoordinatsPanel(wx.Panel):
         self.bot = kwds['bot']
 
         grid_sizer_1 = wx.FlexGridSizer(len(self.bot.legs)*2, 6, 1, 1)
-        self.name_label  = []
-        self.text_x_coor = []
-        self.text_y_coor = []
-        self.text_z_coor = []
+        self.leg_coords  = {}
 
         self.button_go = wx.Button(self, wx.ID_ANY, ("Go!"))
 
@@ -444,21 +447,21 @@ class CoordinatsPanel(wx.Panel):
             self.label_y = wx.StaticText(self, wx.ID_ANY, "Y:")
             self.label_z = wx.StaticText(self, wx.ID_ANY, "Z:")
 
-            self.name_label.append(wx.StaticText(self, wx.ID_ANY, str(l.name)))
-            self.text_x_coor.append(wx.TextCtrl(self, wx.ID_ANY, str(l.stateX)))
-            self.text_y_coor.append(wx.TextCtrl(self, wx.ID_ANY, str(l.stateY)))
-            self.text_z_coor.append(wx.TextCtrl(self, wx.ID_ANY, str(l.stateZ)))
+            self.leg_coords[l.name]  = [wx.StaticText(self, wx.ID_ANY, str(l.name)),
+                                        wx.TextCtrl(self, wx.ID_ANY, str(l.stateX)),
+                                        wx.TextCtrl(self, wx.ID_ANY, str(l.stateY)),
+                                        wx.TextCtrl(self, wx.ID_ANY, str(l.stateZ))]
 
-            grid_sizer_1.Add(self.name_label[n], 0,  wx.ALL, 4)
+            grid_sizer_1.Add(self.leg_coords[l.name][0], 0,  wx.ALL, 4)
             for i in range(5):
                 grid_sizer_1.Add((1, 1), 0, wx.ALL, 4)
 
             grid_sizer_1.Add(self.label_x, 0, wx.ALL, 4)
-            grid_sizer_1.Add(self.text_x_coor[n], 0, wx.ALL, 4)
+            grid_sizer_1.Add(self.leg_coords[l.name][1], 0, wx.ALL, 4)
             grid_sizer_1.Add(self.label_y, 0, wx.ALL, 4)
-            grid_sizer_1.Add(self.text_y_coor[n], 0, wx.ALL, 4)
+            grid_sizer_1.Add(self.leg_coords[l.name][2], 0, wx.ALL, 4)
             grid_sizer_1.Add(self.label_z, 0, wx.ALL, 4)
-            grid_sizer_1.Add(self.text_z_coor[n], 0, wx.ALL, 4)
+            grid_sizer_1.Add(self.leg_coords[l.name][3], 0, wx.ALL, 4)
             n = n+1
 
         for i in range(11):

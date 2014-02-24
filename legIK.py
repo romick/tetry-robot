@@ -113,9 +113,9 @@ class Leg:
         if z is None: z = self.stateZ 
 
         #save current position
-        self.stateX = x
-        self.stateY = y
-        self.stateZ = z
+        self.stateX = int(x)
+        self.stateY = int(y)
+        self.stateZ = int(z)
         #print >> sys.stderr, self.stateX, self.stateY, self.stateZ
         
         [xp,yp,zp] = self._getAngles(x,y,z)

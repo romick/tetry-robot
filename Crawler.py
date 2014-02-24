@@ -99,6 +99,16 @@ class Controller:
                        self.legs['BR leg'].gCExactCoordinates(-a, -b, c))
             self.inited = True
 
+    def moveToCoordinates(self, coord_d):
+            command=[]
+            print coord_d
+            for lc in coord_d.keys():
+                print coord_d[lc][0], coord_d[lc][1], coord_d[lc][2]
+                command += self.legs[lc].gCExactCoordinates(coord_d[lc][0], coord_d[lc][1], coord_d[lc][2])
+            self._send(command)
+
+
+
     def makeStep(self, angle):
             if not self.inited:
                 self.initBot()
