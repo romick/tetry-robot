@@ -194,7 +194,7 @@ class Controller:
             else:
                 print "No protocol defined!"
 
-            self.sender(message)
+            self.sender(message, botcommand)
 
     def _legTranspose (self, leg, xOffset, yOffset, depth, sleeptime1):
             self._send(leg.gCOffset(xOffset,  yOffset, -depth))

@@ -381,11 +381,14 @@ class TerminalFrame(wx.Frame):
             self.text_ctrl_log.Clear()
             pass
     
-    def Sender(self, message):
+    def Sender(self, message, botcommand):
                 print "Sending message:%s" % message
                 if self.settings.echo:          #do echo if needed
                     self.text_ctrl_output.WriteText(message + '\n')
                 self.serial.write(message)         #send the charcater
+                if botcommand:
+	                for x in botcommand: 
+	                    self.sliders[x['servo']].SetValue(x['position'])
 
             
 # end of class TerminalFrame
