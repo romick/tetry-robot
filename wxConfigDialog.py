@@ -90,7 +90,7 @@ class SerialConfigDialog(wx.Dialog):
         self.radio_box_protocol = wx.RadioBox(self, -1, "Protocol", choices=self.bot.PROTOCOLS, majorDimension=0, style=wx.RA_SPECIFY_ROWS)
         self.nb = wx.Notebook(self, wx.ID_ANY, style=0)
         self.legPages = []
-        for l in self.bot.legs:
+        for l in self.bot.legs.values():
             cp = LegPanel(self.nb, leg=l)
             self.legPages.append(cp)
             self.nb.AddPage(cp, l.name)

@@ -356,7 +356,7 @@ class TerminalFrame(wx.Frame):
                     self.bot.initBot()
 
     def gocoord_button_pressed(self, event):
-                    self.bot.
+                    self.bot.moveToCoordinates()
 
     def servo_move(self, event):  
                 command = []
@@ -384,7 +384,7 @@ class TerminalFrame(wx.Frame):
 	                for x in botcommand: 
 	                    self.anglesPanel.sliders[x['servo']].SetValue(x['position'])
                 n=0
-                for l in self.bot.legs:
+                for l in self.bot.legs.values():
                     #print >> sys.stderr, l.stateX, l.stateY, l.stateZ
                     self.coordinatsPanel.text_x_coor[n].SetValue(str(l.stateX))
                     self.coordinatsPanel.text_y_coor[n].SetValue(str(l.stateY))
@@ -437,7 +437,7 @@ class CoordinatsPanel(wx.Panel):
         self.button_go = wx.Button(self, wx.ID_ANY, ("Go!"))
 
         n=0
-        for l in self.bot.legs:
+        for l in self.bot.legs.values():
             #print >> sys.stderr, l
 
             self.label_x = wx.StaticText(self, wx.ID_ANY, "X:")

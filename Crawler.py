@@ -4,6 +4,7 @@ import legIK
 import time
 import math
 import json
+import sys
 
 MY_DRIVE_SPEED_MIN = 500
 MY_DRIVE_SPEED_MAX = 2500
@@ -48,12 +49,14 @@ class Controller:
             self.settingsFileName = kwds['settings']
 
             #load legs from json file
-            self.legs = []
+            self.legs = {}
             try:
                 sfile = open(self.settingsFileName,'r')
                 jsettings = json.load(sfile)
-                for j in jsettings['legs']:
-                    self.legs.append(legIK.Leg(name     = j['name'],
+                for j in jsettings['legs'].values():
+                    #print >> sys.stderr, j
+                    nm = j['name']
+                    self.legs[nm] = (legIK.Leg(name     = nm,
                                                offset   = j['offset'],
                                                coxa     = j['coxa'],
                                                temur    = j['temur'],
@@ -67,7 +70,7 @@ class Controller:
 
             #calculate number of servos
             self.servo_number = 0
-            for l in self.legs:
+            for l in self.legs.values():
                 self.servo_number = self.servo_number + len(l.servos)
 
 
@@ -86,13 +89,15 @@ class Controller:
 
 
     def initBot(self):
+            #TODO: totally rewrite - should be configurable via json
             a = 55
             b = 55
             c = 40
-            self._send(self.legs[0].gCExactCoordinates(a, b, c) +
-                       self.legs[1].gCExactCoordinates(-a, b, c)+
-                       self.legs[2].gCExactCoordinates(a, -b, c)+
-                       self.legs[3].gCExactCoordinates(-a, -b, c))
+            self._send(self.legs['FL leg'].gCExactCoordinates(a, b, c) +
+                       self.legs['FR leg'].gCExactCoordinates(-a, b, c)+
+                       self.legs['BL leg'].gCExactCoordinates(a, -b, c)+
+                       self.legs['BR leg'].gCExactCoordinates(-a, -b, c))
+            self.inited = True
 
     def makeStep(self, angle):
             if not self.inited:
@@ -106,7 +111,8 @@ class Controller:
             s,t = math.sin(angle)*d, math.cos(angle)*d
             print "Offsets are: %f, %f" % (s,t)
 
-            for leg in self.legs:
+            #TODO: Shouldn\t be simple iteration over legs - it should choose prioritise them
+            for leg in self.legs.values():
                 #assume to start from BasePose
                 #raise each of legs , move forward by 4*d mm, lower it, then move body forward by d mm
                 self._legTranspose(leg, s, t, d, sleep1)
@@ -207,7 +213,7 @@ class Controller:
 
     def _shiftBody(self, xOffset, yOffset):
             clist = []
-            for l in self.legs:
+            for l in self.legs.values():
                 clist.extend(l.gCOffset(xOffset, yOffset, 0))
             self._send(clist)
             pass
