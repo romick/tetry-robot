@@ -13,10 +13,10 @@ class DirectionPanel(wx.Panel):
         self.button_right = wx.Button(self, wx.ID_ANY, ("right"))
         self.button_back = wx.Button(self, wx.ID_ANY, ("backward"))
 
-        self.button_forward.SetMinSize((140, 140))
-        self.button_left.SetMinSize((140, 140))
-        self.button_right.SetMinSize((140, 140))
-        self.button_back.SetMinSize((140, 140))
+        self.button_forward.SetMinSize((100, 100))
+        self.button_left.SetMinSize((100, 100))
+        self.button_right.SetMinSize((100, 100))
+        self.button_back.SetMinSize((100, 100))
 
         grid_sizer_1 = wx.FlexGridSizer(3, 3, 1, 1)
         grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)

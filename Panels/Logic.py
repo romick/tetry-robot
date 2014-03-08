@@ -23,7 +23,7 @@ class LogicPanel(wx.Panel):
         self.button_clear_2 = wx.Button(self, wx.ID_ANY, ("clear log"), style= wx.BU_EXACTFIT)
 
         sizer_3 = wx.BoxSizer(wx.VERTICAL)
-        sizer_3.Add(self.text_ctrl_log, 1, wx.EXPAND, 0)
+        sizer_3.Add(self.text_ctrl_log, 10, wx.EXPAND, 0)
         sizer_3.Add(self.button_clear_2, 1,  wx.ALIGN_LEFT | wx.ALIGN_BOTTOM, 0)
         self.SetSizer(sizer_3)
 
