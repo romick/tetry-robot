@@ -1,7 +1,6 @@
 #!/usr/bin/env python_32
 
 import wx
-import sys
 import inspect
 import wxConfigDialog
 import serial
@@ -58,12 +57,6 @@ class TerminalSetup:
         self.unprintable = False
         self.newline = NEWLINE_CRLF
 
-class RedirectText:
-    def __init__(self,aWxTextCtrl):
-        self.out=aWxTextCtrl
-
-    def write(self,string):
-        self.out.WriteText(string) #supporting class to redirect stdout to textcontrol
 
 
 class TerminalFrame(wx.Frame):
@@ -83,10 +76,7 @@ class TerminalFrame(wx.Frame):
         wx.Frame.__init__(self, *args, **kwds)
         self.text_ctrl_output = wx.TextCtrl(self, -1, "", style=wx.TE_MULTILINE|wx.TE_READONLY)
 
-        #redirect stdout to text_ctrl_log
-        self.text_ctrl_log = wx.TextCtrl(self, -1, "", style=wx.TE_MULTILINE|wx.TE_READONLY|wx.HSCROLL)
-        sys.stdout = RedirectText(self.text_ctrl_log)
-        
+
         # Menu Bar
         self.frame_terminal_menubar = wx.MenuBar()
         self.SetMenuBar(self.frame_terminal_menubar)
@@ -104,39 +94,21 @@ class TerminalFrame(wx.Frame):
 
         self.nbtop_left = wx.Notebook(self, wx.ID_ANY, style=0)
         self.nbbottom_left = wx.Notebook(self, wx.ID_ANY, style=0)
+        self.nbtop_right = wx.Notebook(self, wx.ID_ANY, style=0)
+        self.nbbottom_right = wx.Notebook(self, wx.ID_ANY, style=0)
 
         for name, obj in inspect.getmembers(Panels):
-            if inspect.isclass(obj):
-                print name
-                self.panels[name] = obj(mainnb, bot=self.bot)
+            if inspect.isclass(obj) and "Panel" in name:
+                #print name
+                self.panels[name] = obj(self.nbtop_left, bot=self.bot)
                 self.nbtop_left.AddPage(self.panels[name], name)
 
-
-        # #1
-        #
-        # self.directionPanel = Panels.DirectionPanel(mainnb, bot=self.bot)
-        # mainnb.AddPage(self.directionPanel, "Direction")
-        #
-        # self.movesPanel = Panels.MovesPanel(mainnb, bot=self.bot)
-        # mainnb.AddPage(self.movesPanel, "Moves")
-        #
-        # #2
-        # mainnb = self.nbbottom_left
-        #
-        # self.coordinatsPanel = Panels.CoordinatsPanel(mainnb, bot=self.bot)
-        # mainnb.AddPage(self.coordinatsPanel, "Coordinates")
-        #
-        # self.anglesPanel = Panels.AnglesPanel(mainnb, bot=self.bot)
-        # mainnb.AddPage(self.anglesPanel, "Angles")
-        #
-        # #3
 
         self.button_6 = wx.Button(self, wx.ID_ANY, ("reset all servos"))
         self.button_7 = wx.Button(self, wx.ID_ANY, ("Start robot"))
 
         #clean log buttons
         self.button_clear_1 = wx.Button(self, wx.ID_ANY, ("clear log"), style= wx.BU_EXACTFIT)
-        self.button_clear_2 = wx.Button(self, wx.ID_ANY, ("clear log"), style= wx.BU_EXACTFIT)
 
 
         self.__set_properties()
@@ -176,35 +148,28 @@ class TerminalFrame(wx.Frame):
 
     def __do_layout(self):
         sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_2 = wx.BoxSizer(wx.VERTICAL)
-        sizer_2.Add(self.nbtop_left, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
-        sizer_2.Add(self.nbbottom_left, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
+        sizer_left = wx.BoxSizer(wx.VERTICAL)
+        sizer_right = wx.BoxSizer(wx.VERTICAL)
 
+        sizer_left.Add(self.nbtop_left, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
+        sizer_left.Add(self.nbbottom_left, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
+        sizer_left.Add(self.button_6, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        sizer_left.Add(self.button_7, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
 
-        sizer_2.Add(self.button_6, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        sizer_2.Add(self.button_7, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        sizer_right.Add(self.nbtop_right, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
+        sizer_right.Add(self.nbbottom_right, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
 
-        sizer_1.Add(sizer_2, 1, wx.ALL | wx.EXPAND, 0)
+        sizer_1.Add(sizer_left, 1, wx.ALL | wx.EXPAND, 0)
+        sizer_1.Add(sizer_right, 1, wx.ALL | wx.EXPAND, 0)
+
+        sizer_right.Add(self.text_ctrl_output, 1, wx.EXPAND, 0)
+        sizer_right.Add(self.button_clear_1, 1,  wx.ALIGN_LEFT | wx.ALIGN_BOTTOM, 0)
 
         self.SetAutoLayout(1)
         self.SetSizer(sizer_1)
         self.Layout()
 
-        sizer_3 = wx.BoxSizer(wx.VERTICAL)
-        sizer_4 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_5 = wx.BoxSizer(wx.HORIZONTAL)
 
-
-
-        sizer_3.Add(self.text_ctrl_output, 1, wx.EXPAND, 0)
-        sizer_4.Add(self.button_clear_1, 1,  wx.ALIGN_LEFT | wx.ALIGN_BOTTOM, 0)
-        sizer_3.Add(sizer_4, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 1)
-
-        sizer_3.Add(self.text_ctrl_log, 1, wx.EXPAND, 0)
-        sizer_5.Add(self.button_clear_2, 1,  wx.ALIGN_LEFT | wx.ALIGN_BOTTOM, 0)
-        sizer_3.Add(sizer_5, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 1)
-
-        sizer_1.Add(sizer_3, 1,  wx.ALL | wx.EXPAND, 0)
 
 
     def __attach_events(self):
@@ -217,22 +182,11 @@ class TerminalFrame(wx.Frame):
         self.Bind(EVT_SERIALRX, self.OnSerialRead)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
 
-        
-        
-        self.Bind(wx.EVT_BUTTON, self.forward_button_pressed, self.panels["Direction"].button_forward)
-        self.Bind(wx.EVT_BUTTON, self.left_button_pressed, self.panels["Direction"].button_left)
-        self.Bind(wx.EVT_BUTTON, self.right_button_pressed, self.panels["Direction"].button_right)
-        self.Bind(wx.EVT_BUTTON, self.back_button_pressed, self.panels["Direction"].button_back)
-        self.Bind(wx.EVT_BUTTON, self.gocoord_button_pressed, self.panels["Coordinats"].button_go)
-
         self.Bind(wx.EVT_BUTTON, self.reset_button_pressed, self.button_6)
         self.Bind(wx.EVT_BUTTON, self.OnStartRobot, self.button_7)
 
         self.Bind(wx.EVT_BUTTON, self.clean_terminal, self.button_clear_1)
-        self.Bind(wx.EVT_BUTTON, self.clean_log, self.button_clear_2)
 
-        for i in range(self.bot.servo_number):
-            self.Bind(wx.EVT_SCROLL_CHANGED , self.servo_move, self.panels["Angles"].sliders[i])
 
     def OnExit(self, event):
         """Menu point Exit"""
@@ -358,63 +312,25 @@ class TerminalFrame(wx.Frame):
     def OnStartRobot(self, event):
         self.bot.initBot()
 
-    def forward_button_pressed(self, event):  
-                    self.bot.makeStep(0)
-
-    def left_button_pressed(self, event):  
-                    self.bot.makeStep(270)
-
-    def right_button_pressed(self, event): 
-                    self.bot.makeStep(90)
-
-    def back_button_pressed(self, event):  
-                    self.bot.makeStep(180)
-
-    def reset_button_pressed(self, event): 
+    def reset_button_pressed(self, event):
                     self.bot.initBot()
 
-    def gocoord_button_pressed(self, event):
-                    coord_d = {}
-                    for n in self.coordinatsPanel.leg_coords:
-                        coord_d[n]=[int(self.coordinatsPanel.leg_coords[n][1].GetValue()),
-                                    int(self.coordinatsPanel.leg_coords[n][2].GetValue()),
-                                    int(self.coordinatsPanel.leg_coords[n][3].GetValue())]
-                                                                    
-                    self.bot.moveToCoordinates(coord_d)
-
-    def servo_move(self, event):  
-                command = []
-                for s in range(self.bot.servo_number):
-                    command.append(dict(servo=s, position=self.anglesPanel.sliders[s].GetValue()))
-                self.bot._send(command)
 
 
     def clean_terminal(self, event):
             self.text_ctrl_output.Clear()
             pass
 
-    def clean_log(self, event):
-            self.text_ctrl_log.Clear()
-            pass
-    
-    def Sender(self, message, botcommand):
+
+    def Sender(self, message, bc):
                 print "Sending message:%s" % message
                 if self.settings.echo:          #do echo if needed
                     self.text_ctrl_output.WriteText(message + '\n')
                 self.serial.write(message)         #send the charcater
                 
                 #Update GUI with new bot state
-                if botcommand:
-	                for x in botcommand: 
-	                    self.anglesPanel.sliders[x['servo']].SetValue(x['position'])
-                n=0
-                for l in self.bot.legs.keys():
-                    #print >> sys.stderr, l.stateX, l.stateY, l.stateZ
-                    self.coordinatsPanel.leg_coords[l][1].SetValue(str(self.bot.legs[l].stateX))
-                    self.coordinatsPanel.leg_coords[l][2].SetValue(str(self.bot.legs[l].stateY))
-                    self.coordinatsPanel.leg_coords[l][3].SetValue(str(self.bot.legs[l].stateZ))
-                    self.coordinatsPanel.Update()
-                    n += 1
+                for obj in self.panels.itervalues():
+                    obj.update(botcommand = bc)
 
             
 # end of class TerminalFrame
