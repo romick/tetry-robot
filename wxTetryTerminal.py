@@ -2,11 +2,13 @@
 
 import wx
 import inspect
-import wxConfigDialog
+import sys
 import serial
 import threading
+import json
+import wxConfigDialog
 import Crawler
-import Panels
+from Panels import *
 
 #----------------------------------------------------------------------
 # Create an own event type, so that GUI updates can be delegated
@@ -64,8 +66,6 @@ class TerminalFrame(wx.Frame):
     
     def __init__(self, *args, **kwds):
         self.bot = Crawler.Controller(sender = self.Sender, settings = './tetry.json')
-        #bot_settings_file = open('./tetry.ini',mode='w+')
-        #cPickle.dump(self.bot,bot_settings_file)
 
         self.serial = serial.Serial()
         self.serial.timeout = 0.5   #make sure that the alive event can be checked from time to time
@@ -92,29 +92,77 @@ class TerminalFrame(wx.Frame):
         #Bot mgmt panels & buttons
         self.panels = {}
 
-        self.nbtop_left = wx.Notebook(self, wx.ID_ANY, style=0)
-        self.nbbottom_left = wx.Notebook(self, wx.ID_ANY, style=0)
-        self.nbtop_right = wx.Notebook(self, wx.ID_ANY, style=0)
+        self.nbtop_left     = wx.Notebook(self, wx.ID_ANY, style=0)
+        self.nbbottom_left  = wx.Notebook(self, wx.ID_ANY, style=0)
+        self.nbtop_right    = wx.Notebook(self, wx.ID_ANY, style=0)
         self.nbbottom_right = wx.Notebook(self, wx.ID_ANY, style=0)
 
-        for name, obj in inspect.getmembers(Panels):
-            if inspect.isclass(obj) and "Panel" in name:
-                #print name
-                self.panels[name] = obj(self.nbtop_left, bot=self.bot)
-                self.nbtop_left.AddPage(self.panels[name], name)
+        #TODO: add loading from settings file
+        lo_topleft      = ["General", "Direction", "Moves"]
+        lo_bottomleft   = ["Angles", "Coordinates"]
+        lo_topright     = ["Serial"]
+        lo_bottomright  = ["Logic"]
 
 
-        self.button_6 = wx.Button(self, wx.ID_ANY, ("reset all servos"))
-        self.button_7 = wx.Button(self, wx.ID_ANY, ("Start robot"))
+
+        #TODO: add sorting and load order
+        for mod in sys.modules:
+            if mod[:7] == "Panels.":
+                for name, obj in inspect.getmembers(sys.modules[mod]):
+                    if inspect.isclass(obj) and name[-5:] == "Panel":
+                        #print name
+                        name = name[:-5]
+                        if name in lo_topleft:
+                            nb = self.nbtop_left
+                        elif name in lo_bottomleft:
+                            nb = self.nbbottom_left
+                        elif name in lo_topright:
+                            nb = self.nbtop_right
+                        else:
+                            nb = self.nbbottom_right
+                        self.panels[name] = obj(nb, bot=self.bot)
+                        nb.AddPage(self.panels[name], name)
+
 
         #clean log buttons
         self.button_clear_1 = wx.Button(self, wx.ID_ANY, ("clear log"), style= wx.BU_EXACTFIT)
 
+        self.SetTitle("Robot Terminal")
+        self.SetBackgroundColour(wx.SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW))
+        self.SetSize((1000, 800))
 
-        self.__set_properties()
-        self.__do_layout()
-        self.__attach_events()          #register events
+        #Do layout
+        sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_left = wx.BoxSizer(wx.VERTICAL)
+        sizer_right = wx.BoxSizer(wx.VERTICAL)
 
+        sizer_left.Add(self.nbtop_left, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
+        sizer_left.Add(self.nbbottom_left, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
+
+        sizer_right.Add(self.nbtop_right, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
+        sizer_right.Add(self.nbbottom_right, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
+
+        sizer_1.Add(sizer_left, 1, wx.ALL | wx.EXPAND, 0)
+        sizer_1.Add(sizer_right, 1, wx.ALL | wx.EXPAND, 0)
+
+        sizer_right.Add(self.text_ctrl_output, 1, wx.EXPAND, 0)
+        sizer_right.Add(self.button_clear_1, 1,  wx.ALIGN_LEFT | wx.ALIGN_BOTTOM, 0)
+
+        self.SetAutoLayout(1)
+        self.SetSizer(sizer_1)
+        self.Layout()
+
+        #register events at the controls
+        self.Bind(wx.EVT_MENU, self.OnClear, id = ID_CLEAR)
+        self.Bind(wx.EVT_MENU, self.OnSaveAs, id = ID_SAVEAS)
+        self.Bind(wx.EVT_MENU, self.OnExit, id = ID_EXIT)
+        self.Bind(wx.EVT_MENU, self.onSettings, id = ID_SETTINGS)
+        self.text_ctrl_output.Bind(wx.EVT_CHAR, self.OnKey)
+        self.Bind(EVT_SERIALRX, self.OnSerialRead)
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
+
+
+        self.Bind(wx.EVT_BUTTON, self.clean_terminal, self.button_clear_1)
 
 
         self.onSettings(None)       #call setup dialog on startup, opens port
@@ -139,53 +187,9 @@ class TerminalFrame(wx.Frame):
             self.thread.join()          #wait until thread has finished
             self.thread = None
         
-    def __set_properties(self):
-        self.SetTitle("Robot Terminal")
-        self.SetBackgroundColour(wx.SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW))
-        self.SetSize((1000, 800))
-
-        
-
-    def __do_layout(self):
-        sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_left = wx.BoxSizer(wx.VERTICAL)
-        sizer_right = wx.BoxSizer(wx.VERTICAL)
-
-        sizer_left.Add(self.nbtop_left, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
-        sizer_left.Add(self.nbbottom_left, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
-        sizer_left.Add(self.button_6, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        sizer_left.Add(self.button_7, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-
-        sizer_right.Add(self.nbtop_right, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
-        sizer_right.Add(self.nbbottom_right, 0, wx.LEFT | wx.RIGHT | wx.EXPAND, 3)
-
-        sizer_1.Add(sizer_left, 1, wx.ALL | wx.EXPAND, 0)
-        sizer_1.Add(sizer_right, 1, wx.ALL | wx.EXPAND, 0)
-
-        sizer_right.Add(self.text_ctrl_output, 1, wx.EXPAND, 0)
-        sizer_right.Add(self.button_clear_1, 1,  wx.ALIGN_LEFT | wx.ALIGN_BOTTOM, 0)
-
-        self.SetAutoLayout(1)
-        self.SetSizer(sizer_1)
-        self.Layout()
 
 
 
-
-    def __attach_events(self):
-        #register events at the controls
-        self.Bind(wx.EVT_MENU, self.OnClear, id = ID_CLEAR)
-        self.Bind(wx.EVT_MENU, self.OnSaveAs, id = ID_SAVEAS)
-        self.Bind(wx.EVT_MENU, self.OnExit, id = ID_EXIT)
-        self.Bind(wx.EVT_MENU, self.onSettings, id = ID_SETTINGS)
-        self.text_ctrl_output.Bind(wx.EVT_CHAR, self.OnKey)
-        self.Bind(EVT_SERIALRX, self.OnSerialRead)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
-
-        self.Bind(wx.EVT_BUTTON, self.reset_button_pressed, self.button_6)
-        self.Bind(wx.EVT_BUTTON, self.OnStartRobot, self.button_7)
-
-        self.Bind(wx.EVT_BUTTON, self.clean_terminal, self.button_clear_1)
 
 
     def OnExit(self, event):
@@ -308,12 +312,6 @@ class TerminalFrame(wx.Frame):
                 event = SerialRxEvent(self.GetId(), text)
                 self.GetEventHandler().AddPendingEvent(event)
                 #~ self.OnSerialRead(text)         #output text in window
-
-    def OnStartRobot(self, event):
-        self.bot.initBot()
-
-    def reset_button_pressed(self, event):
-                    self.bot.initBot()
 
 
 
