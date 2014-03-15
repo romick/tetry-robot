@@ -331,7 +331,6 @@ class SerialConfigDialog(wx.Dialog):
 
     def onRobotChoice(self, events=None):
         sel = self.choice_robots.GetCurrentSelection()
-        print './Robots/' + self.robots[sel] + '.json'
         self.bot.loadSettings('./Robots/' + self.robots[sel] + '.json')
 
         self.nb.DeleteAllPages()

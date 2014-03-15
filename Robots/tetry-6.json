@@ -1,21 +1,5 @@
 {
   "legs": {
-    "FL leg": {
-      "temur": 45,
-      "name": "FL leg",
-      "offset": [
-        -25,
-        25
-      ],
-      "debug": false,
-      "coxa": 85,
-      "servos": [
-        3,
-        4,
-        5
-      ],
-      "tibia": 85
-    },
     "FR leg": {
       "temur": 45,
       "name": "FR leg",
@@ -29,6 +13,54 @@
         0,
         1,
         2
+      ],
+      "tibia": 85
+    },
+    "MR leg": {
+      "temur": 45,
+      "name": "MR leg",
+      "offset": [
+        25,
+        0
+      ],
+      "debug": false,
+      "coxa": 85,
+      "servos": [
+        0,
+        1,
+        2
+      ],
+      "tibia": 85
+    },
+    "BR leg": {
+      "temur": 45,
+      "name": "BR leg",
+      "offset": [
+        25,
+        -25
+      ],
+      "debug": false,
+      "coxa": 85,
+      "servos": [
+        6,
+        7,
+        8
+      ],
+      "tibia": 85
+    },
+    "FL leg": {
+      "temur": 45,
+      "name": "FL leg",
+      "offset": [
+        -25,
+        25
+      ],
+      "debug": false,
+      "coxa": 85,
+      "servos": [
+        3,
+        4,
+        5
       ],
       "tibia": 85
     },
@@ -48,19 +80,19 @@
       ],
       "tibia": 85
     },
-    "BR leg": {
+    "ML leg": {
       "temur": 45,
-      "name": "BR leg",
+      "name": "ML leg",
       "offset": [
-        25,
-        -25
+        -25,
+        0
       ],
       "debug": false,
       "coxa": 85,
       "servos": [
-        6,
-        7,
-        8
+        3,
+        4,
+        5
       ],
       "tibia": 85
     }

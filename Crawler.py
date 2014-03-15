@@ -61,7 +61,7 @@ class Controller:
             self.settingsFileName = settingsFileName
             self.legs = {}
             try:
-                print self.settingsFileName
+                print "Loaded settings from file:", self.settingsFileName
                 sfile = open(self.settingsFileName,'r')
                 jsettings = json.load(sfile)
                 for j in jsettings['legs'].values():
@@ -83,9 +83,10 @@ class Controller:
             self.servo_number = 0
             for l in self.legs.values():
                 self.servo_number = self.servo_number + len(l.servos)
-            self.inited = True
 
-            self.sender(start=0)
+            self.sender(start=1)
+            # self.initBot()
+            self.inited = True
 
 
 
