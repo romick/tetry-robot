@@ -39,6 +39,7 @@ class DirectionPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.right_button_pressed, self.button_right)
         self.Bind(wx.EVT_BUTTON, self.back_button_pressed, self.button_back)
 
+    #TODO: change to non-blocking GUI
     def forward_button_pressed(self, event):
                     self.bot.makeStep(0)
 
@@ -50,7 +51,3 @@ class DirectionPanel(wx.Panel):
 
     def back_button_pressed(self, event):
                     self.bot.makeStep(180)
-
-    def update (self, **kwds):
-        botcommand = kwds['botcommand']
-

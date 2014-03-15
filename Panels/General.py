@@ -22,6 +22,3 @@ class GeneralPanel(wx.Panel):
     def reset_button_pressed(self, event):
                     self.bot.initBot()
 
-    def update (self, **kwds):
-        #botcommand = kwds['botcommand']
-        pass
