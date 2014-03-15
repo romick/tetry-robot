@@ -5,15 +5,17 @@ import sys
 class Leg:
     """ new legIK(offset=[-65.8, 76.3], angle=-2.2829, coxa=29.0, temur=49, tibia=52)  docstring for legIK"""
     def __init__(self, *args, **kwds):
-        self.legOffset = kwds['offset']
-        self.coxaLengh = kwds['coxa']
-        self.temurLengh = kwds['temur']
-        self.tibiaLengh = kwds['tibia']
-        self.servos = kwds['servos']
-        self.name = kwds['name']
-        self.stateX = 0
-        self.stateY = 0
-        self.stateZ = 0
+        self.legOffset      = kwds['offset']
+        self.coxaLengh      = kwds['coxa']
+        self.temurLengh     = kwds['temur']
+        self.tibiaLengh     = kwds['tibia']
+        self.servos         = kwds['servos']
+        self.initial_state  = kwds['initial_state']
+        self.name           = kwds['name']
+        self.id             = kwds['id']
+        self.stateX         = 0
+        self.stateY         = 0
+        self.stateZ         = 0
         if 'debug' in kwds.keys():
             self.debug = kwds['debug']
         else:
@@ -119,11 +121,15 @@ class Leg:
         #print >> sys.stderr, self.stateX, self.stateY, self.stateZ
         
         [xp,yp,zp] = self._getAngles(x,y,z)
+        print >> sys.stderr,xp,yp,zp
         commandlist =  []
         commandlist.append(dict(servo=self.servos[0], angle=int(xp)))
         commandlist.append(dict(servo=self.servos[1], angle=int(yp)))
         commandlist.append(dict(servo=self.servos[2], angle=int(zp)))
         return commandlist
+
+    def setInitalState(self):
+        return self.gCExactCoordinates(self.initial_state[0],self.initial_state[1],self.initial_state[2])
 
     def gCOffset(self, xOffset, yOffset, zOffset):
         return self.gCExactCoordinates(self.stateX + xOffset, self.stateY + yOffset, self.stateZ + zOffset)

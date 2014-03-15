@@ -16,13 +16,15 @@ MY_DRIVE_SPEED_MAX = 2500
 class LegEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, legIK.Leg):
-            return dict(name    = obj.name,
-                        offset  = obj.legOffset,
-                        coxa    = obj.coxaLengh,
-                        temur   = obj.temurLengh,
-                        tibia   = obj.tibiaLengh,
-                        servos  = obj.servos,
-                        debug   = obj.debug)
+            return dict(name            = obj.name,
+                        id              = obj.id,
+                        offset          = obj.legOffset,
+                        coxa            = obj.coxaLengh,
+                        temur           = obj.temurLengh,
+                        tibia           = obj.tibiaLengh,
+                        servos          = obj.servos,
+                        initial_state   = obj.initial_state,
+                        debug           = obj.debug)
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
 
@@ -40,6 +42,7 @@ class Controller:
             self.sender = kwds['sender']
 
             self.PROTOCOLS = ['Custom tetry', 'Compact', 'Pololu', 'MiniSSC']
+            self.GAITS = ["tripod", "wave", "ripple"]
             if 'protocol' in kwds.keys():
                 self.protocol = self.PROTOCOLS[(kwds['protocol'])]
             else:
@@ -50,30 +53,33 @@ class Controller:
             if 'settings' in kwds:
                 self.settingsFileName = kwds['settings']
                 self.loadSettings(self.settingsFileName)
+            self.gait = 1
 
     def dumpSettings(self):
             sfile = open(self.settingsFileName,'w')
             json.dump(dict(legs = self.legs, inverted = self.inverted),
-                      sfile, cls=LegEncoder, indent=2, separators=(',', ': '))
+                      sfile, cls=LegEncoder, indent=1, separators=(',', ': '))
 
     def loadSettings(self, settingsFileName):
             #load legs from json file
             self.settingsFileName = settingsFileName
             self.legs = {}
             try:
-                print "Loaded settings from file:", self.settingsFileName
+                print >>sys.stderr, "Loaded settings from file:", self.settingsFileName
                 sfile = open(self.settingsFileName,'r')
                 jsettings = json.load(sfile)
                 for j in jsettings['legs'].values():
                     #print >> sys.stderr, j
                     nm = j['name']
-                    self.legs[nm] = (legIK.Leg(name     = nm,
-                                               offset   = j['offset'],
-                                               coxa     = j['coxa'],
-                                               temur    = j['temur'],
-                                               tibia    = j['tibia'],
-                                               servos   = j['servos'],
-                                               debug    = j['debug']))
+                    self.legs[nm] = (legIK.Leg(name             = nm,
+                                               id               = j['id'],
+                                               offset           = j['offset'],
+                                               coxa             = j['coxa'],
+                                               temur            = j['temur'],
+                                               tibia            = j['tibia'],
+                                               servos           = j['servos'],
+                                               initial_state    = j['initial_state'],
+                                               debug            = j['debug']))
                 self.inverted = jsettings['inverted']
                 sfile.close()
             except ValueError:
@@ -85,20 +91,14 @@ class Controller:
                 self.servo_number = self.servo_number + len(l.servos)
 
             self.sender(start=1)
-            # self.initBot()
-            self.inited = True
 
 
 
     def initBot(self):
-            #TODO: totally rewrite - should be configurable via json
-            a = 55
-            b = 55
-            c = 40
-            self._send(self.legs['FL leg'].gCExactCoordinates(a, b, c) +
-                       self.legs['FR leg'].gCExactCoordinates(-a, b, c)+
-                       self.legs['BL leg'].gCExactCoordinates(a, -b, c)+
-                       self.legs['BR leg'].gCExactCoordinates(-a, -b, c))
+            bc = []
+            for leg in self.legs.itervalues():
+                bc += leg.setInitalState()
+            self._send(bc)
             self.inited = True
 
     def moveToCoordinates(self, coord_d):
@@ -112,6 +112,8 @@ class Controller:
 
 
     def makeStep(self, angle):
+        #TODO: add gaits
+        #TODO: select closest leg to direction to start with
             if not self.inited:
                 self.initBot()
 
@@ -123,16 +125,24 @@ class Controller:
             s,t = math.sin(angle)*d, math.cos(angle)*d
             print "Offsets are: %f, %f" % (s,t)
 
-            #TODO: Shouldn\t be simple iteration over legs - it should choose prioritise them
-            for leg in self.legs.values():
-                #assume to start from BasePose
-                #raise each of legs , move forward by 4*d mm, lower it, then move body forward by d mm
-                self._legTranspose(leg, s, t, d, sleep1)
-                self._shiftBody(-s, -t)
-                time.sleep(sleep2)
+            if self.GAITS[self.gait] == "wave":
+                for leg in self._sortLegsAngle(angle):
+                    #assume to start from BasePose
+                    #raise each of legs , move forward by 4*d mm, lower it, then move body forward by d mm
+                    self._legTranspose(leg, s, t, d, sleep1)
+                    self._shiftBody(-s, -t)
+                    time.sleep(sleep2)
+            elif self.GAITS[self.gait] == "ripple":
+                pass
+            else:
+                pass
+
 
             pass
 
+    def _sortLegsAngle(self, angle):
+        #TODO: Shouldn\t be simple iteration over legs - it should choose prioritise them
+        return self.legs.values()
 
     def _send(self, botcommand):
             print botcommand

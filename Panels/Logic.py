@@ -32,7 +32,3 @@ class LogicPanel(wx.Panel):
     def clean_log(self, event):
             self.text_ctrl_log.Clear()
             pass
-
-    def update (self, **kwds):
-        #botcommand = kwds['botcommand']
-        pass

@@ -66,7 +66,7 @@ class MainFrame(wx.Frame):
 
         self.SetTitle("Robot Terminal")
         self.SetBackgroundColour(wx.SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW))
-        self.SetSize((1000, 900))
+        self.SetSize((1500, 900))
 
         #Do layout
         self.nbtop_left.SetMinSize((500, 400))
@@ -85,7 +85,7 @@ class MainFrame(wx.Frame):
         sizer_right.Add(self.nbbottom_right, 0, wx.LEFT | wx.RIGHT | wx.TOP | wx.BOTTOM | wx.EXPAND, 3)
 
         sizer_1.Add(sizer_left, 1, wx.ALL | wx.EXPAND, 0)
-        sizer_1.Add(sizer_right, 1, wx.ALL | wx.EXPAND, 0)
+        sizer_1.Add(sizer_right, 2, wx.ALL | wx.EXPAND, 0)
 
 
         self.SetAutoLayout(1)
@@ -100,7 +100,7 @@ class MainFrame(wx.Frame):
                     if name == "onStart":
                         panel.onStart()
 
-
+        self.bot.initBot()
 
     def OnExit(self, event):
         """Menu point Exit"""
@@ -110,7 +110,7 @@ class MainFrame(wx.Frame):
     def Sender(self, **kwds):
         #Update GUI with new bot state
 
-        for panel in self.panels.itervalues():
+        for (pname, panel) in self.panels.iteritems():
             for name, obj in inspect.getmembers(panel):
                 if 'start' in kwds:
                     if name == "start":
@@ -118,6 +118,7 @@ class MainFrame(wx.Frame):
                 if 'botcommand' in kwds or 'message' in kwds:
                     if name == "update":
                         bc, ms = kwds['botcommand'], kwds['message']
+                        # print >> sys.stderr, pname, bc, ms
                         panel.update(botcommand = bc, message=ms)
 
 

@@ -1,6 +1,7 @@
 __author__ = 'roman_000'
 
 import wx
+import sys
 
 
 class AnglesPanel(wx.Panel):
@@ -48,7 +49,9 @@ class AnglesPanel(wx.Panel):
 
     def update (self, **kwds):
                 botcommand  = kwds['botcommand']
+                # print >> sys.stderr, botcommand
                 if botcommand:
                     for x in botcommand:
+                        # print >> sys.stderr, x
                         self.sliders[x['servo']].SetValue(x['position'])
 

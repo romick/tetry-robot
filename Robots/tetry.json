@@ -1,74 +1,98 @@
 {
-  "legs": {
-    "FL leg": {
-      "temur": 45,
-      "name": "FL leg",
-      "offset": [
-        -25,
-        25
-      ],
-      "debug": false,
-      "coxa": 85,
-      "servos": [
-        3,
-        4,
-        5
-      ],
-      "tibia": 85
-    },
-    "FR leg": {
-      "temur": 45,
-      "name": "FR leg",
-      "offset": [
-        25,
-        25
-      ],
-      "debug": false,
-      "coxa": 85,
-      "servos": [
-        0,
-        1,
-        2
-      ],
-      "tibia": 85
-    },
-    "BL leg": {
-      "temur": 45,
-      "name": "BL leg",
-      "offset": [
-        -25,
-        -25
-      ],
-      "debug": false,
-      "coxa": 85,
-      "servos": [
-        9,
-        10,
-        11
-      ],
-      "tibia": 85
-    },
-    "BR leg": {
-      "temur": 45,
-      "name": "BR leg",
-      "offset": [
-        25,
-        -25
-      ],
-      "debug": false,
-      "coxa": 85,
-      "servos": [
-        6,
-        7,
-        8
-      ],
-      "tibia": 85
-    }
+ "legs": {
+  "FL leg": {
+   "temur": 45,
+   "coxa": 85,
+   "name": "FL leg",
+   "offset": [
+    -25,
+    25
+   ],
+   "debug": false,
+   "initial_state": [
+    -55,
+    55,
+    40
+   ],
+   "servos": [
+    3,
+    4,
+    5
+   ],
+   "id": 3,
+   "tibia": 85
   },
-  "inverted": [
-    2,
-    5,
-    8,
+  "FR leg": {
+   "temur": 45,
+   "coxa": 85,
+   "name": "FR leg",
+   "offset": [
+    25,
+    25
+   ],
+   "debug": false,
+   "initial_state": [
+    55,
+    55,
+    40
+   ],
+   "servos": [
+    0,
+    1,
+    2
+   ],
+   "id": 0,
+   "tibia": 85
+  },
+  "BL leg": {
+   "temur": 45,
+   "coxa": 85,
+   "name": "BL leg",
+   "offset": [
+    -25,
+    -25
+   ],
+   "debug": false,
+   "initial_state": [
+    -55,
+    -55,
+    40
+   ],
+   "servos": [
+    9,
+    10,
     11
-  ]
+   ],
+   "id": 2,
+   "tibia": 85
+  },
+  "BR leg": {
+   "temur": 45,
+   "coxa": 85,
+   "name": "BR leg",
+   "offset": [
+    25,
+    -25
+   ],
+   "debug": false,
+   "initial_state": [
+    55,
+    -55,
+    40
+   ],
+   "servos": [
+    6,
+    7,
+    8
+   ],
+   "id": 1,
+   "tibia": 85
+  }
+ },
+ "inverted": [
+  2,
+  5,
+  8,
+  11
+ ]
 }

@@ -19,6 +19,9 @@ class DirectionPanel(wx.Panel):
         self.button_back.SetMinSize((100, 100))
 
         grid_sizer_1 = wx.FlexGridSizer(3, 3, 1, 1)
+
+        self.gaits = ["tripod", "wave", ""]
+
         grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_1.Add(self.button_forward, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_1.Add((60, 60), 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
