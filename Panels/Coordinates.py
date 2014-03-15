@@ -7,6 +7,12 @@ class CoordinatesPanel(wx.Panel):
         wx.Panel.__init__(self, parent=parent, id=wx.ID_ANY)
         self.bot = kwds['bot']
 
+        if self.bot.inited:
+            self.start()
+
+
+
+    def start(self):
         grid_sizer_1 = wx.FlexGridSizer(len(self.bot.legs)*2, 6, 1, 1)
         self.leg_coords  = {}
 
@@ -42,15 +48,16 @@ class CoordinatesPanel(wx.Panel):
         grid_sizer_1.Add(self.button_go, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
 
         self.SetSizer(grid_sizer_1)
+        self.Layout()
 
         self.Bind(wx.EVT_BUTTON, self.gocoord_button_pressed, self.button_go)
 
     def gocoord_button_pressed(self, event):
                     coord_d = {}
-                    for n in self.coordinatsPanel.leg_coords:
-                        coord_d[n]=[int(self.coordinatsPanel.leg_coords[n][1].GetValue()),
-                                    int(self.coordinatsPanel.leg_coords[n][2].GetValue()),
-                                    int(self.coordinatsPanel.leg_coords[n][3].GetValue())]
+                    for n in self.leg_coords:
+                        coord_d[n]=[int(self.leg_coords[n][1].GetValue()),
+                                    int(self.leg_coords[n][2].GetValue()),
+                                    int(self.leg_coords[n][3].GetValue())]
 
                     self.bot.moveToCoordinates(coord_d)
 

@@ -117,33 +117,6 @@ class SerialPanel(wx.Panel):
         if not self.alive.isSet():
             self.Close()
 
-
-    def OnClose(self, event):
-        """Called on application shutdown."""
-        self.StopThread()               #stop reader thread
-        self.serial.close()             #cleanup
-        self.Destroy()                  #close windows, exit app
-
-    def OnClear(self, event):
-        """Clear contents of output window."""
-        self.text_ctrl_output.Clear()
-
-    def OnSaveAs(self, event):
-        """Save contents of output window."""
-        filename = None
-        dlg = wx.FileDialog(None, "Save Text As...", ".", "", "Text File|*.txt|All Files|*",  wx.SAVE)
-        if dlg.ShowModal() ==  wx.ID_OK:
-            filename = dlg.GetPath()
-        dlg.Destroy()
-
-        if filename is not None:
-            f = file(filename, 'w')
-            text = self.text_ctrl_output.GetValue()
-            if type(text) == unicode:
-                text = text.encode("latin1")    #hm, is that a good asumption?
-            f.write(text)
-            f.close()
-
     def onSettings(self, event=None):
         """Show the portsettings dialog. The reader thread is stopped for the
            settings change."""
@@ -185,6 +158,34 @@ class SerialPanel(wx.Panel):
                 #on startup, dialog aborted
                 self.alive.clear()
                 ok = True
+
+
+    def OnClose(self, event):
+        """Called on application shutdown."""
+        self.StopThread()               #stop reader thread
+        self.serial.close()             #cleanup
+        self.Destroy()                  #close windows, exit app
+
+    def OnClear(self, event):
+        """Clear contents of output window."""
+        self.text_ctrl_output.Clear()
+
+    def OnSaveAs(self, event):
+        """Save contents of output window."""
+        filename = None
+        dlg = wx.FileDialog(None, "Save Text As...", ".", "", "Text File|*.txt|All Files|*",  wx.SAVE)
+        if dlg.ShowModal() ==  wx.ID_OK:
+            filename = dlg.GetPath()
+        dlg.Destroy()
+
+        if filename is not None:
+            f = file(filename, 'w')
+            text = self.text_ctrl_output.GetValue()
+            if type(text) == unicode:
+                text = text.encode("latin1")    #hm, is that a good asumption?
+            f.write(text)
+            f.close()
+
 
     def OnKey(self, event):
         """Key event handler. if the key is in the ASCII range, write it to the serial port.

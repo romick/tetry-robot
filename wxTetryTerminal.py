@@ -16,7 +16,7 @@ class MainFrame(wx.Frame):
     """Simple terminal program for wxPython"""
     
     def __init__(self, *args, **kwds):
-        self.bot = Crawler.Controller(sender = self.Sender, settings = './tetry.json')
+        self.bot = Crawler.Controller(sender = self.Sender)
 
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
@@ -106,11 +106,18 @@ class MainFrame(wx.Frame):
         """Menu point Exit"""
         self.Close()
 
-    def Sender(self, ms, bc):
+
+    def Sender(self, **kwds):
         #Update GUI with new bot state
+
         for panel in self.panels.itervalues():
             for name, obj in inspect.getmembers(panel):
+                if 'start' in kwds:
+                    if name == "start":
+                        panel.start()
+                if 'botcommand' in kwds or 'message' in kwds:
                     if name == "update":
+                        bc, ms = kwds['botcommand'], kwds['message']
                         panel.update(botcommand = bc, message=ms)
 
 

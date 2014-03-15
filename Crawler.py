@@ -46,11 +46,22 @@ class Controller:
                 self.protocol = self.PROTOCOLS[0]
             print "Protocol is %s" % self.protocol
 
-            self.settingsFileName = kwds['settings']
+            self.inited = False
+            if 'settings' in kwds:
+                self.settingsFileName = kwds['settings']
+                self.loadSettings(self.settingsFileName)
 
+    def dumpSettings(self):
+            sfile = open(self.settingsFileName,'w')
+            json.dump(dict(legs = self.legs, inverted = self.inverted),
+                      sfile, cls=LegEncoder, indent=2, separators=(',', ': '))
+
+    def loadSettings(self, settingsFileName):
             #load legs from json file
+            self.settingsFileName = settingsFileName
             self.legs = {}
             try:
+                print self.settingsFileName
                 sfile = open(self.settingsFileName,'r')
                 jsettings = json.load(sfile)
                 for j in jsettings['legs'].values():
@@ -72,19 +83,9 @@ class Controller:
             self.servo_number = 0
             for l in self.legs.values():
                 self.servo_number = self.servo_number + len(l.servos)
+            self.inited = True
 
-
-            self.inited = False
-
-            self.dumpSettings()
-
-
-            # self.initBot()
-
-    def dumpSettings(self):
-            sfile = open(self.settingsFileName,'w')
-            json.dump(dict(legs = self.legs, inverted = self.inverted),
-                      sfile, cls=LegEncoder, indent=2, separators=(',', ': '))
+            self.sender(start=0)
 
 
 
@@ -210,7 +211,7 @@ class Controller:
             else:
                 print "No protocol defined!"
 
-            self.sender(message, botcommand)
+            self.sender(message = message, botcommand = botcommand)
 
     def _legTranspose (self, leg, xOffset, yOffset, depth, sleeptime1):
             self._send(leg.gCOffset(xOffset,  yOffset, -depth))

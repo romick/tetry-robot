@@ -8,6 +8,10 @@ class AnglesPanel(wx.Panel):
         wx.Panel.__init__(self, parent=parent, id=wx.ID_ANY)
         self.bot = kwds['bot']
 
+        if self.bot.inited:
+            self.start()
+
+    def start(self):
         grid_sizer_1     = wx.FlexGridSizer(len(self.bot.legs)*2, 3, 2, 2)
         self.sliders     = []
         #self.name_label  = []
@@ -27,9 +31,11 @@ class AnglesPanel(wx.Panel):
             #n += 1
 
         self.SetSizer(grid_sizer_1)
+        self.Layout()
 
         for i in range(self.bot.servo_number):
             self.Bind(wx.EVT_SCROLL_CHANGED , self.servo_move, self.sliders[i])
+
 
     def servo_move(self, event):
                 command = []
@@ -38,7 +44,7 @@ class AnglesPanel(wx.Panel):
                 self.bot._send(command)
 
     def update (self, **kwds):
-                botcommand = kwds['botcommand']
+                botcommand  = kwds['botcommand']
                 if botcommand:
                     for x in botcommand:
                         self.sliders[x['servo']].SetValue(x['position'])
