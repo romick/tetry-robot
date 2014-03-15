@@ -63,23 +63,24 @@ class Controller:
     def loadSettings(self, settingsFileName):
             #load legs from json file
             self.settingsFileName = settingsFileName
-            self.legs = {}
+            self.legs = []
             try:
                 print >>sys.stderr, "Loaded settings from file:", self.settingsFileName
                 sfile = open(self.settingsFileName,'r')
                 jsettings = json.load(sfile)
-                for j in jsettings['legs'].values():
+                self.legs = range(len(jsettings['legs']))
+                for j in jsettings['legs']:
                     #print >> sys.stderr, j
-                    nm = j['name']
-                    self.legs[nm] = (legIK.Leg(name             = nm,
-                                               id               = j['id'],
-                                               offset           = j['offset'],
-                                               coxa             = j['coxa'],
-                                               temur            = j['temur'],
-                                               tibia            = j['tibia'],
-                                               servos           = j['servos'],
-                                               initial_state    = j['initial_state'],
-                                               debug            = j['debug']))
+                    # nm = j['name']
+                    self.legs[j['id']] = (legIK.Leg(name            = j['name'],
+                                                   id               = j['id'],
+                                                   offset           = j['offset'],
+                                                   coxa             = j['coxa'],
+                                                   temur            = j['temur'],
+                                                   tibia            = j['tibia'],
+                                                   servos           = j['servos'],
+                                                   initial_state    = j['initial_state'],
+                                                   debug            = j['debug']))
                 self.inverted = jsettings['inverted']
                 sfile.close()
             except ValueError:
@@ -87,7 +88,7 @@ class Controller:
 
             #calculate number of servos
             self.servo_number = 0
-            for l in self.legs.values():
+            for l in self.legs:
                 self.servo_number = self.servo_number + len(l.servos)
 
             self.sender(start=1)
@@ -96,7 +97,7 @@ class Controller:
 
     def initBot(self):
             bc = []
-            for leg in self.legs.itervalues():
+            for leg in self.legs:
                 bc += leg.setInitalState()
             self._send(bc)
             self.inited = True
@@ -129,6 +130,7 @@ class Controller:
                 for leg in self._sortLegsAngle(angle):
                     #assume to start from BasePose
                     #raise each of legs , move forward by 4*d mm, lower it, then move body forward by d mm
+                    print leg.id
                     self._legTranspose(leg, s, t, d, sleep1)
                     self._shiftBody(-s, -t)
                     time.sleep(sleep2)
@@ -141,8 +143,10 @@ class Controller:
             pass
 
     def _sortLegsAngle(self, angle):
-        #TODO: Shouldn\t be simple iteration over legs - it should choose prioritise them
-        return self.legs.values()
+        legs_angles = [abs(math.degrees(x.legOffsetAngle-angle)) for x in self.legs]
+        min_angle = min(legs_angles)
+        closest_legs = [i for i,j in enumerate(legs_angles) if j==min_angle]
+        return self.legs[closest_legs[0]:] + self.legs[:closest_legs[0]]
 
     def _send(self, botcommand):
             print botcommand
@@ -235,7 +239,7 @@ class Controller:
 
     def _shiftBody(self, xOffset, yOffset):
             clist = []
-            for l in self.legs.values():
+            for l in self.legs:
                 clist.extend(l.gCOffset(xOffset, yOffset, 0))
             self._send(clist)
             pass

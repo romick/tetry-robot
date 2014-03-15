@@ -31,7 +31,7 @@ class CoordinatesPanel(wx.Panel):
         self.clean()
         self.grid_sizer_1 = wx.FlexGridSizer(len(self.bot.legs), 7, 1, 1)
 
-        for l in self.bot.legs.values():
+        for l in self.bot.legs:
             self.leg_coords[l.name]  = [wx.StaticText(self, wx.ID_ANY, str(l.name)),
                                         wx.StaticText(self, wx.ID_ANY, "X:"),
                                         wx.TextCtrl(self, wx.ID_ANY, str(l.stateX)),
@@ -64,9 +64,9 @@ class CoordinatesPanel(wx.Panel):
                     self.bot.moveToCoordinates(coord_d)
 
     def update (self, **kwds):
-                for l in self.bot.legs.keys():
+                for l in self.bot.legs:
                     # print >> sys.stderr, l #.stateX, l.stateY, l.stateZ
-                    self.leg_coords[l][2].SetValue(str(self.bot.legs[l].stateX))
-                    self.leg_coords[l][4].SetValue(str(self.bot.legs[l].stateY))
-                    self.leg_coords[l][6].SetValue(str(self.bot.legs[l].stateZ))
+                    self.leg_coords[l.name][2].SetValue(str(self.bot.legs[l.id].stateX))
+                    self.leg_coords[l.name][4].SetValue(str(self.bot.legs[l.id].stateY))
+                    self.leg_coords[l.name][6].SetValue(str(self.bot.legs[l.id].stateZ))
                     self.Update()

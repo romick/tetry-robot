@@ -1,28 +1,6 @@
 {
- "legs": {
-  "FL leg": {
-   "temur": 45,
-   "coxa": 85,
-   "name": "FL leg",
-   "offset": [
-    -25,
-    25
-   ],
-   "debug": false,
-   "initial_state": [
-    -55,
-    55,
-    40
-   ],
-   "servos": [
-    3,
-    4,
-    5
-   ],
-   "id": 3,
-   "tibia": 85
-  },
-  "FR leg": {
+ "legs": [
+  {
    "temur": 45,
    "coxa": 85,
    "name": "FR leg",
@@ -44,7 +22,29 @@
    "id": 0,
    "tibia": 85
   },
-  "BL leg": {
+  {
+   "temur": 45,
+   "coxa": 85,
+   "name": "BR leg",
+   "offset": [
+    25,
+    -25
+   ],
+   "debug": false,
+   "initial_state": [
+    55,
+    -55,
+    40
+   ],
+   "servos": [
+    6,
+    7,
+    8
+   ],
+   "id": 1,
+   "tibia": 85
+  },
+  {
    "temur": 45,
    "coxa": 85,
    "name": "BL leg",
@@ -66,29 +66,29 @@
    "id": 2,
    "tibia": 85
   },
-  "BR leg": {
+  {
    "temur": 45,
    "coxa": 85,
-   "name": "BR leg",
+   "name": "FL leg",
    "offset": [
-    25,
-    -25
+    -25,
+    25
    ],
    "debug": false,
    "initial_state": [
-    55,
     -55,
+    55,
     40
    ],
    "servos": [
-    6,
-    7,
-    8
+    3,
+    4,
+    5
    ],
-   "id": 1,
+   "id": 3,
    "tibia": 85
   }
- },
+ ],
  "inverted": [
   2,
   5,

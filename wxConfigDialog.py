@@ -335,7 +335,7 @@ class SerialConfigDialog(wx.Dialog):
 
         self.nb.DeleteAllPages()
         self.legPages = []
-        for l in self.bot.legs.values():
+        for l in self.bot.legs:
             cp = LegPanel(self.nb, leg=l)
             self.legPages.append(cp)
             self.nb.AddPage(cp, l.name)

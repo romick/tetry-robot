@@ -121,7 +121,7 @@ class Leg:
         #print >> sys.stderr, self.stateX, self.stateY, self.stateZ
         
         [xp,yp,zp] = self._getAngles(x,y,z)
-        print >> sys.stderr,xp,yp,zp
+        # print >> sys.stderr,xp,yp,zp
         commandlist =  []
         commandlist.append(dict(servo=self.servos[0], angle=int(xp)))
         commandlist.append(dict(servo=self.servos[1], angle=int(yp)))
