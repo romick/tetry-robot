@@ -6,17 +6,29 @@ import wx
 class DirectionPanel(wx.Panel):
     def __init__(self, parent, **kwds):
         wx.Panel.__init__(self, parent=parent, id=wx.ID_ANY)
-        self.bot    = kwds['bot']
+        self.bot = kwds['bot']
         self.runner = kwds['runner']
         self.buttons = []
 
-        b_metadata = {"forward-left":315, "forward": 0,"forward-right":45, "left":270, "right":90,"backward-left":225, "backward":180, "backward-right":135}
-        for button_label, angle in b_metadata.iteritems():
-            b = wx.Button(self, wx.ID_ANY, (button_label))
+        b_labels = ["forward-left",
+                      "forward",
+                      "forward-right",
+                      "left",
+                      "right",
+                      "backward-left",
+                      "backward",
+                      "backward-right"]
+        b_angles = [315, 0, 45, 270, 90, 225, 180, 135]
+        for i in range(len(b_labels)):
+            print b_angles[i]
+            b = wx.Button(self, wx.ID_ANY, b_labels[i])
             self.buttons.append(b)
             b.SetMinSize((50, 50))
-            self.Bind(wx.EVT_BUTTON, lambda evt, an = angle: self.button_pressed(evt, an))
+            def onButton (event, angle = b_angles[i]):
+                print angle
+                self.runner(self.bot.makeStep, angle)
 
+            b.Bind(wx.EVT_BUTTON, onButton)
 
         grid_sizer_1 = wx.FlexGridSizer(3, 3, 1, 1)
 
@@ -36,5 +48,5 @@ class DirectionPanel(wx.Panel):
 
 
     def button_pressed(self, event, angle):
-                    self.runner(self.bot.makeStep,angle)
+        self.runner(self.bot.makeStep, angle)
 
