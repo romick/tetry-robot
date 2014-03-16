@@ -1,7 +1,8 @@
 __author__ = 'roman_000'
 
 import wx
-import os
+# import os
+
 
 class TiltBodyPanel(wx.Panel):
     def __init__(self, parent, **kwds):

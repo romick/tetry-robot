@@ -2,6 +2,8 @@ __author__ = 'roman_000'
 
 import wx
 import os
+import re
+
 
 class MovesPanel(wx.Panel):
     def __init__(self, parent, **kwds):
@@ -13,4 +15,3 @@ class MovesPanel(wx.Panel):
             fileName = os.path.splitext(fileName)[0]
             s1 = re.sub('(.)([A-Z][a-z]+)', r'\1 \2', fileName)
             moves.append(s1)
-

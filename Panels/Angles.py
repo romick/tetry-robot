@@ -1,31 +1,31 @@
 __author__ = 'roman_000'
 
 import wx
-import sys
+# import sys
 
 
 class AnglesPanel(wx.Panel):
     def __init__(self, parent, **kwds):
         wx.Panel.__init__(self, parent=parent, id=wx.ID_ANY)
         self.bot = kwds['bot']
+        self.runner = kwds['runner']
 
         if self.bot.inited:
             self.start()
-        self.grid_sizer_1   = wx.FlexGridSizer(1, 1, 2, 2)
-        self.sliders        = []
+        self.grid_sizer_1 = wx.FlexGridSizer(1, 1, 2, 2)
+        self.sliders = []
 
     def clean(self):
         for sl in self.sliders:
             sl.Destroy()
         self.grid_sizer_1.Clear()
         self.grid_sizer_1.Destroy()
-        self.sliders        = []
-
+        self.sliders = []
 
     def start(self):
         self.clean()
-        self.grid_sizer_1   = wx.FlexGridSizer(len(self.bot.legs)*2, 3, 2, 2)
-        self.sliders        = []
+        self.grid_sizer_1 = wx.FlexGridSizer(len(self.bot.legs)*2, 3, 2, 2)
+        self.sliders = []
         for i in range(self.bot.servo_number):
 
             self.sliders.append(wx.Slider(self, wx.ID_ANY, 1500, 500, 2500,
@@ -38,20 +38,18 @@ class AnglesPanel(wx.Panel):
         self.Layout()
 
         for i in range(self.bot.servo_number):
-            self.Bind(wx.EVT_SCROLL_CHANGED , self.servo_move, self.sliders[i])
-
+            self.Bind(wx.EVT_SCROLL_CHANGED, self.servo_move, self.sliders[i])
 
     def servo_move(self, event):
                 command = []
                 for s in range(self.bot.servo_number):
                     command.append(dict(servo=s, position=self.sliders[s].GetValue()))
-                self.bot._send(command)
+                self.runner(self.bot._send, command)
 
-    def update (self, **kwds):
-                botcommand  = kwds['botcommand']
-                # print >> sys.stderr, botcommand
-                if botcommand:
-                    for x in botcommand:
+    def update(self, **kwds):
+                bot_command = kwds['bot_command']
+                # print >> sys.stderr, bot_command
+                if bot_command:
+                    for x in bot_command:
                         # print >> sys.stderr, x
                         self.sliders[x['servo']].SetValue(x['position'])
-

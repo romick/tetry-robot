@@ -1,35 +1,31 @@
 import math
-import sys
+# import sys
 
 
 class Leg:
     """ new legIK(offset=[-65.8, 76.3], angle=-2.2829, coxa=29.0, temur=49, tibia=52)  docstring for legIK"""
-    def __init__(self, *args, **kwds):
-        self.legOffset      = kwds['offset']
-        self.coxaLengh      = kwds['coxa']
-        self.temurLengh     = kwds['temur']
-        self.tibiaLengh     = kwds['tibia']
-        self.servos         = kwds['servos']
-        self.initial_state  = kwds['initial_state']
-        self.name           = kwds['name']
-        self.id             = kwds['id']
-        self.stateX         = 0
-        self.stateY         = 0
-        self.stateZ         = 0
+    def __init__(self, **kwds):
+        self.legOffset = kwds['offset']
+        self.coxaLengh = kwds['coxa']
+        self.temurLengh = kwds['temur']
+        self.tibiaLengh = kwds['tibia']
+        self.servos = kwds['servos']
+        self.initial_state = kwds['initial_state']
+        self.name = kwds['name']
+        self.id = kwds['id']
+        self.stateX = 0
+        self.stateY = 0
+        self.stateZ = 0
         if 'debug' in kwds.keys():
             self.debug = kwds['debug']
         else:
             self.debug = False
-
-        
         self.legOffsetAngle = math.atan2(self.legOffset[0], self.legOffset[1])
         if self.legOffsetAngle < 0:
-            self.legOffsetAngle = 2*math.pi + self.legOffsetAngle
+            self.legOffsetAngle += 2 * math.pi
         if self.debug:
             print self.name, ": legOffsetAngle(radians)=", self.legOffsetAngle
             print self.name, ": legOffsetAngle(degrees)=", math.degrees(self.legOffsetAngle)
-
-
 
     def _ikLowerLeg(self, x, y):
         #print "IK function called. x=", x, "y=", y
@@ -47,8 +43,8 @@ class Leg:
             if self.debug:
                 print "Math function error. Probably square root of negative number. No valid joint solution."
             return
-        theta = math.degrees(math.atan2(float(y),float(x))-math.atan2(m,k))
-        phi   = math.degrees(math.atan2(m,k)+math.atan2(m,(d-k)))
+        theta = math.degrees(math.atan2(float(y), float(x))-math.atan2(m, k))
+        phi = math.degrees(math.atan2(m, k)+math.atan2(m, (d-k)))
         returnAngles = [theta, phi]
         #print "theta=", theta, "phi=", phi
         return returnAngles        
@@ -58,7 +54,7 @@ class Leg:
         # if alpha < 0:
             # alpha = 360 + alpha
         lowerLegAngles = self._ikLowerLeg(math.sqrt(x**2+y**2) - self.coxaLengh, z)
-        if (lowerLegAngles == None):
+        if lowerLegAngles is None:
             if self.debug:
                 print "No ikFullLeg calculation available!"
             return 
@@ -68,7 +64,7 @@ class Leg:
             returnAngles = [alpha, lowerLegAngles[0], lowerLegAngles[1]] 
             return returnAngles
 
-    def _getAngles(self,x,y,z):
+    def _getAngles(self, x, y, z):
         if self.debug:
             print
             print self.name, ": Global targets are:", x, y, z
@@ -82,21 +78,19 @@ class Leg:
         if self.debug:
             print "Cosa", cosa, "Sina",  sina
             print "Leg local targets in global coordinates are x=", x, " y=", y, "z=", z
-        legx=cosa*x - sina*y
-        legy=sina*x + cosa*y
+        legx = cosa*x - sina*y
+        legy = sina*x + cosa*y
         # get IK solution and move leg
         if self.debug:
             print "Leg targets in local coordinates are legX=%.2f" % legx, " legY=%.2f" % legy, z
-        s = self._ikFullLeg(legx,legy,z)
-        if (s==None):
+        s = self._ikFullLeg(legx, legy, z)
+        if s is None:
             if self.debug:
                 print "No angles available!"
             return [0, 0, 0]
         else:
             #print "%.2f" % s[0], "%.2f" % s[1], "%.2f" % s[2]
             return s
-
-
     #def _getPositions (self, x, y, z):
     #    some = self._getAngles(x, y, z)
     #    some[0] = round(self._interpolate(some[0], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
@@ -106,13 +100,16 @@ class Leg:
     #        print "Positions:", some
     #    return some
 
-    def gCExactCoordinates(self,x,y,z):
+    def gCExactCoordinates(self, x, y, z):
         #TODO: move state storage to separate class (is it really needed?)
 
         #check if targets set
-        if x is None: x = self.stateX 
-        if y is None: y = self.stateY 
-        if z is None: z = self.stateZ 
+        if x is None:
+            x = self.stateX
+        if y is None:
+            y = self.stateY
+        if z is None:
+            z = self.stateZ
 
         #save current position
         self.stateX = int(x)
@@ -120,16 +117,15 @@ class Leg:
         self.stateZ = int(z)
         #print >> sys.stderr, self.stateX, self.stateY, self.stateZ
         
-        [xp,yp,zp] = self._getAngles(x,y,z)
+        [xp, yp, zp] = self._getAngles(x, y, z)
         # print >> sys.stderr,xp,yp,zp
-        commandlist =  []
-        commandlist.append(dict(servo=self.servos[0], angle=int(xp)))
-        commandlist.append(dict(servo=self.servos[1], angle=int(yp)))
-        commandlist.append(dict(servo=self.servos[2], angle=int(zp)))
+        commandlist = [dict(servo=self.servos[0], angle=int(xp)),
+                       dict(servo=self.servos[1], angle=int(yp)),
+                       dict(servo=self.servos[2], angle=int(zp))]
         return commandlist
 
     def setInitalState(self):
-        return self.gCExactCoordinates(self.initial_state[0],self.initial_state[1],self.initial_state[2])
+        return self.gCExactCoordinates(self.initial_state[0], self.initial_state[1], self.initial_state[2])
 
     def gCOffset(self, xOffset, yOffset, zOffset):
         return self.gCExactCoordinates(self.stateX + xOffset, self.stateY + yOffset, self.stateZ + zOffset)

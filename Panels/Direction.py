@@ -9,19 +9,15 @@ class DirectionPanel(wx.Panel):
         self.bot = kwds['bot']
         self.runner = kwds['runner']
         self.buttons = []
-
-
         self.choice_gait = wx.Choice(self, -1, choices=self.bot.GAITS)
-
-
         b_labels = ["forward-left",
-                      "forward",
-                      "forward-right",
-                      "left",
-                      "right",
-                      "backward-left",
-                      "backward",
-                      "backward-right"]
+                    "forward",
+                    "forward-right",
+                    "left",
+                    "right",
+                    "backward-left",
+                    "backward",
+                    "backward-right"]
         b_angles = [315, 0, 45, 270, 90, 225, 180, 135]
         for i in range(len(b_labels)):
             print b_angles[i]
@@ -29,9 +25,9 @@ class DirectionPanel(wx.Panel):
             self.buttons.append(b)
             b.SetMinSize((80, 80))
 
-            def on_button(event, angle = b_angles[i]):
+            def on_button(event, angle=b_angles[i]):
                 print angle
-                self.runner(self.bot.makeStep, angle)
+                self.runner(self.bot.make_step, angle)
 
             b.Bind(wx.EVT_BUTTON, on_button)
 
