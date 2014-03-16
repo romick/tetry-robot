@@ -80,7 +80,7 @@ class SerialPanel(wx.Panel):
         #Add events
         self.text_ctrl_output.Bind(wx.EVT_CHAR, self.OnKey)
         self.Bind(EVT_SERIALRX, self.OnSerialRead)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
+        self.Bind(wx.EVT_CLOSE, self.on_close)
         self.Bind(wx.EVT_BUTTON, self.clean_terminal, self.button_clear_1)
         #TODO: fix menus
         self.menu.Bind(wx.EVT_MENU, self.OnClear, id = ID_CLEAR)
@@ -160,7 +160,7 @@ class SerialPanel(wx.Panel):
                 ok = True
 
 
-    def OnClose(self, event):
+    def on_close(self, event=None):
         """Called on application shutdown."""
         self.StopThread()               #stop reader thread
         self.serial.close()             #cleanup

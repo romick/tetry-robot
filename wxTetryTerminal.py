@@ -112,6 +112,7 @@ class MainFrame(wx.Frame):
 
         #register events at the controls
         self.Bind(wx.EVT_MENU, self.OnExit, id = ID_EXIT)
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
         for panel in self.panels.itervalues():
             for name, obj in inspect.getmembers(panel):
@@ -123,6 +124,13 @@ class MainFrame(wx.Frame):
     def OnExit(self, event):
         """Menu point Exit"""
         self.Close()
+
+    def OnClose(self, event):
+        for (pname, panel) in self.panels.iteritems():
+            for name, obj in inspect.getmembers(panel):
+                    if name == "on_close":
+                        panel.on_close()
+        self.Destroy()
 
 
     def Sender(self, **kwds):
