@@ -6,7 +6,8 @@ import wx
 class DirectionPanel(wx.Panel):
     def __init__(self, parent, **kwds):
         wx.Panel.__init__(self, parent=parent, id=wx.ID_ANY)
-        self.bot = kwds['bot']
+        self.bot    = kwds['bot']
+        self.runner = kwds['runner']
 
         self.button_forward = wx.Button(self, wx.ID_ANY, ("forward"))
         self.button_left = wx.Button(self, wx.ID_ANY, ("left"))
@@ -39,15 +40,14 @@ class DirectionPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.right_button_pressed, self.button_right)
         self.Bind(wx.EVT_BUTTON, self.back_button_pressed, self.button_back)
 
-    #TODO: change to non-blocking GUI
     def forward_button_pressed(self, event):
-                    self.bot.makeStep(0)
+                    self.runner(self.bot.makeStep,0)
 
     def left_button_pressed(self, event):
-                    self.bot.makeStep(270)
+                    self.runner(self.bot.makeStep, 270)
 
     def right_button_pressed(self, event):
-                    self.bot.makeStep(90)
+                    self.runner(self.bot.makeStep, 90)
 
     def back_button_pressed(self, event):
-                    self.bot.makeStep(180)
+                    self.runner(self.bot.makeStep, 180)

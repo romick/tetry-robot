@@ -4,12 +4,27 @@ import wx
 import inspect
 import sys
 import json
+import threading
+import time
+import Queue
 import Crawler
 from Panels import *
 
 
 ID_EXIT         = wx.NewId()
 
+class LogicThread(threading.Thread):
+    def __init__(self, queue):
+        threading.Thread.__init__(self)
+        self.queue = queue
+    def run(self):
+        while 1:
+            if not self.queue.empty():
+                task = self.queue.get()
+                print task
+                task[0](*task[1:])
+            else:
+                time.sleep(0.1)
 
 
 class MainFrame(wx.Frame):
@@ -17,6 +32,9 @@ class MainFrame(wx.Frame):
     
     def __init__(self, *args, **kwds):
         self.bot = Crawler.Controller(sender = self.Sender)
+        self.queue = Queue.Queue()
+        thread = LogicThread(self.queue)
+        thread.start()
 
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
@@ -39,7 +57,7 @@ class MainFrame(wx.Frame):
         self.nbbottom_right = wx.Notebook(self, wx.ID_ANY, style=0)
 
         #TODO: add loading from settings file
-        lo_topleft      = ["General", "Direction", "Moves"]
+        lo_topleft      = ["General", "Direction", "Moves", "TiltBody"]
         lo_bottomleft   = ["Angles", "Coordinates"]
         lo_topright     = ["Serial"]
         lo_bottomright  = ["Logic"]
@@ -61,7 +79,7 @@ class MainFrame(wx.Frame):
                             nb = self.nbtop_right
                         else:
                             nb = self.nbbottom_right
-                        self.panels[name] = obj(nb, bot=self.bot, menubar=self.frame_terminal_menubar)
+                        self.panels[name] = obj(nb, bot=self.bot, menubar=self.frame_terminal_menubar, runner = self.runner)
                         nb.AddPage(self.panels[name], name)
 
         self.SetTitle("Robot Terminal")
@@ -121,7 +139,9 @@ class MainFrame(wx.Frame):
                         # print >> sys.stderr, pname, bc, ms
                         panel.update(botcommand = bc, message=ms)
 
-
+    def runner(self, *args):
+        # print args
+        self.queue.put(args)
 
 class MyApp(wx.App):
     def OnInit(self):

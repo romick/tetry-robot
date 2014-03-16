@@ -1,6 +1,7 @@
 __author__ = 'roman_000'
 
 import wx
+import os
 
 class MovesPanel(wx.Panel):
     def __init__(self, parent, **kwds):
