@@ -35,11 +35,11 @@ class CoordinatesPanel(wx.Panel):
         for l in self.bot.legs:
             self.leg_coordinates[l.id] = [wx.StaticText(self, wx.ID_ANY, str(l.name)),
                                      wx.StaticText(self, wx.ID_ANY, "X:"),
-                                     wx.TextCtrl(self, wx.ID_ANY, str(l.stateX)),
+                                     wx.TextCtrl(self, wx.ID_ANY, str(l.state_x)),
                                      wx.StaticText(self, wx.ID_ANY, "Y:"),
-                                     wx.TextCtrl(self, wx.ID_ANY, str(l.stateY)),
+                                     wx.TextCtrl(self, wx.ID_ANY, str(l.state_y)),
                                      wx.StaticText(self, wx.ID_ANY, "Z:"),
-                                     wx.TextCtrl(self, wx.ID_ANY, str(l.stateZ))]
+                                     wx.TextCtrl(self, wx.ID_ANY, str(l.state_z))]
 
             for t in self.leg_coordinates[l.id]:
                 self.grid_sizer_1.Add(t, 0, wx.ALL, 4)
@@ -64,8 +64,8 @@ class CoordinatesPanel(wx.Panel):
 
     def update(self, **kwds):
         for l in self.bot.legs:
-            # print >> sys.stderr, l #.stateX, l.stateY, l.stateZ
-            self.leg_coordinates[l.id][2].SetValue(str(self.bot.legs[l.id].stateX))
-            self.leg_coordinates[l.id][4].SetValue(str(self.bot.legs[l.id].stateY))
-            self.leg_coordinates[l.id][6].SetValue(str(self.bot.legs[l.id].stateZ))
+            # print >> sys.stderr, l #.state_x, l.state_y, l.state_z
+            self.leg_coordinates[l.id][2].SetValue(str(self.bot.legs[l.id].state_x))
+            self.leg_coordinates[l.id][4].SetValue(str(self.bot.legs[l.id].state_y))
+            self.leg_coordinates[l.id][6].SetValue(str(self.bot.legs[l.id].state_z))
             self.Update()

@@ -18,10 +18,10 @@ class LegEncoder(json.JSONEncoder):
         if isinstance(obj, legIK.Leg):
             return dict(name=obj.name,
                         id=obj.id,
-                        offset=obj.legOffset,
-                        coxa=obj.coxaLengh,
-                        temur=obj.temurLengh,
-                        tibia=obj.tibiaLengh,
+                        offset=obj.leg_offset,
+                        coxa=obj.coxa_length,
+                        temur=obj.temur_length,
+                        tibia=obj.tibia_length,
                         servos=obj.servos,
                         initial_state=obj.initial_state,
                         debug=obj.debug)
@@ -42,13 +42,13 @@ class Controller:
     def __init__(self, **kwds):
         self.sender = kwds['sender']
 
-        self.PROTOCOLS = ['Custom tetry', 'Compact', 'Pololu', 'MiniSSC']
-        self.GAITS = ["tripod", "wave", "ripple"]
-        if 'protocol' in kwds.keys():
-            self.protocol = self.PROTOCOLS[(kwds['protocol'])]
+        self.protocols = ['Custom tetry', 'Compact', 'Pololu', 'MiniSSC']
+        self.gaits = ["tripod", "wave", "ripple"]
+        if 'current_protocol' in kwds.keys():
+            self.current_protocol = self.protocols[(kwds['current_protocol'])]
         else:
-            self.protocol = self.PROTOCOLS[0]
-        print "Protocol is %s" % self.protocol
+            self.current_protocol = self.protocols[0]
+        print "Protocol is %s" % self.current_protocol
 
         self.inited = False
         if 'settings' in kwds:
@@ -100,7 +100,7 @@ class Controller:
     def init_bot(self):
         bc = []
         for leg in self.legs:
-            bc += leg.setInitalState()
+            bc += leg.set_initial_state()
         self._send(bc)
         self.inited = True
 
@@ -109,7 +109,7 @@ class Controller:
         print coord_d
         for lc in range(len(coord_d)):
             print coord_d[lc][0], coord_d[lc][1], coord_d[lc][2]
-            command += self.legs[lc].gCExactCoordinates(coord_d[lc][0], coord_d[lc][1], coord_d[lc][2])
+            command += self.legs[lc].go_exact_coordinates(coord_d[lc][0], coord_d[lc][1], coord_d[lc][2])
         self._send(command)
 
     def make_step(self, angle):
@@ -126,7 +126,7 @@ class Controller:
         s, t = math.sin(angle) * d, math.cos(angle) * d
         print "Offsets are: %f, %f" % (s, t)
 
-        if self.GAITS[self.gait] == "wave":
+        if self.gaits[self.gait] == "wave":
             for leg in self._sort_legs_angle(angle):
                 #assume to start from BasePose
                 #raise each of legs , move forward by 4*d mm, lower it, then move body forward by d mm
@@ -134,14 +134,14 @@ class Controller:
                 self._leg_transpose(leg, s, t, d, sleep1)
                 self._shift_body(-s, -t)
                 time.sleep(sleep2)
-        elif self.GAITS[self.gait] == "ripple":
+        elif self.gaits[self.gait] == "ripple":
             pass
         else:
             pass
         pass
 
     def _sort_legs_angle(self, angle):
-        legs_angles = [abs(math.degrees(x.legOffsetAngle - angle)) for x in self.legs]
+        legs_angles = [abs(math.degrees(x.leg_offset_angle - angle)) for x in self.legs]
         min_angle = min(legs_angles)
         closest_legs = [i for i, j in enumerate(legs_angles) if j == min_angle]
         return self.legs[closest_legs[0]:] + self.legs[:closest_legs[0]]
@@ -154,17 +154,17 @@ class Controller:
 
         bot_command = self._angles2positions(bot_command)
 
-        if self.protocol == 'Custom tetry':
+        if self.current_protocol == 'Custom tetry':
             for x in bot_command:
                 message += '#%iP%i' % (x['servo'], x['position'])
                 # self.sliders[x['servo']].SetValue(x['position'])
             #message = message[::-1]
             message += '\n'
 
-        elif self.protocol == 'Compact':
+        elif self.current_protocol == 'Compact':
             if len(bot_command) > 1:
                 #Set Multiple Targets
-                #Compact protocol:
+                #Compact current_protocol:
                 # 0x9F,
                 # number of targets,
                 # first channel number,
@@ -187,11 +187,11 @@ class Controller:
                           chr(posi & 0x7F) + \
                           chr((posi >> 7) & 0x7F)
 
-        elif self.protocol == 'Pololu':
+        elif self.current_protocol == 'Pololu':
             pololu_device_number = 12
             if len(bot_command) > 1:
                 #Set Multiple Targets
-                #Pololu protocol:
+                #Pololu current_protocol:
                 # 0xAA,
                 # device number,
                 # 0x1F,
@@ -218,27 +218,27 @@ class Controller:
                           chr(posi & 0x7F) + \
                           chr((posi >> 7) & 0x7F)
 
-        elif self.protocol == 'MiniSSC':
-            print "MiniSSC protocol has not been implemented yet!"
+        elif self.current_protocol == 'MiniSSC':
+            print "MiniSSC current_protocol has not been implemented yet!"
 
         else:
-            print "No protocol defined!"
+            print "No current_protocol defined!"
 
-        self.sender(message=message, botcommand=bot_command)
+        self.sender(message=message, bot_command=bot_command)
 
     def _leg_transpose(self, leg, x_offset, y_offset, depth, sleep_time1):
-        self._send(leg.gCOffset(x_offset, y_offset, -depth))
+        self._send(leg.go_offset(x_offset, y_offset, -depth))
         time.sleep(sleep_time1)
-        self._send(leg.gCOffset(x_offset * 2, y_offset * 2, 0))
+        self._send(leg.go_offset(x_offset * 2, y_offset * 2, 0))
         time.sleep(sleep_time1)
-        self._send(leg.gCOffset(x_offset, y_offset, depth))
+        self._send(leg.go_offset(x_offset, y_offset, depth))
         time.sleep(sleep_time1)
         pass
 
     def _shift_body(self, x_offset, y_offset):
         clist = []
         for l in self.legs:
-            clist.extend(l.gCOffset(x_offset, y_offset, 0))
+            clist.extend(l.go_offset(x_offset, y_offset, 0))
         self._send(clist)
         pass
 

@@ -96,17 +96,17 @@ class SerialConfigDialog(wx.Dialog):
                                              majorDimension=0, style=wx.RA_SPECIFY_ROWS)
 
         #set Bot settings
-        self.radio_box_protocol = wx.RadioBox(self, -1, "Protocol", choices=self.bot.PROTOCOLS, majorDimension=0,
+        self.radio_box_protocol = wx.RadioBox(self, -1, "Protocol", choices=self.bot.protocols, majorDimension=0,
                                               style=wx.RA_SPECIFY_ROWS)
         self.nb = wx.Notebook(self, wx.ID_ANY, style=0)
-        self.legPages = []
+        self.leg_pages = []
 
         #TODO: read initial settings from file
         self.robots = []
-        for fileName in os.listdir('Robots'):
-            if os.path.splitext(fileName)[1] == '.json':
-                fileName = os.path.splitext(fileName)[0]
-                s1 = re.sub('(.)([A-Z][a-z]+)', r'\1 \2', fileName)
+        for file_name in os.listdir('Robots'):
+            if os.path.splitext(file_name)[1] == '.json':
+                file_name = os.path.splitext(file_name)[0]
+                s1 = re.sub('(.)([A-Z][a-z]+)', r'\1 \2', file_name)
                 self.robots.append(s1)
         self.choice_robots = wx.Choice(self, -1, choices=self.robots)
 
@@ -177,7 +177,7 @@ class SerialConfigDialog(wx.Dialog):
         self.radio_box_newline.SetSelection(self.settings.newline)
 
         #Bot settings
-        self.radio_box_protocol.SetSelection(self.bot.PROTOCOLS.index(self.bot.protocol))
+        self.radio_box_protocol.SetSelection(self.bot.protocols.index(self.bot.current_protocol))
 
         #attach the event handlers
         self.__attach_events()
@@ -308,14 +308,14 @@ class SerialConfigDialog(wx.Dialog):
         self.settings.newline = self.radio_box_newline.GetSelection()
 
         #save bot settings
-        self.bot.protocol = self.bot.PROTOCOLS[self.radio_box_protocol.GetSelection()]
-        for lp in self.legPages:
+        self.bot.protocol = self.bot.protocols[self.radio_box_protocol.GetSelection()]
+        for lp in self.leg_pages:
             lp.leg.name = lp.text_ctrl_16.GetValue()
-            lp.leg.legOffset[0] = int(lp.text_ctrl_8.GetValue())
-            lp.leg.legOffset[1] = int(lp.text_ctrl_9.GetValue())
-            lp.leg.coxaLengh = int(lp.text_ctrl_10.GetValue())
-            lp.leg.temurLengh = int(lp.text_ctrl_11.GetValue())
-            lp.leg.coxaLengh = int(lp.text_ctrl_12.GetValue())
+            lp.leg.leg_offset[0] = int(lp.text_ctrl_8.GetValue())
+            lp.leg.leg_offset[1] = int(lp.text_ctrl_9.GetValue())
+            lp.leg.coxa_length = int(lp.text_ctrl_10.GetValue())
+            lp.leg.temur_length = int(lp.text_ctrl_11.GetValue())
+            lp.leg.coxa_length = int(lp.text_ctrl_12.GetValue())
             lp.leg.servos = [int(lp.text_ctrl_13.GetValue()),
                              int(lp.text_ctrl_14.GetValue()),
                              int(lp.text_ctrl_15.GetValue())]
@@ -334,10 +334,10 @@ class SerialConfigDialog(wx.Dialog):
         self.bot.load_settings('./Robots/' + self.robots[sel] + '.json')
 
         self.nb.DeleteAllPages()
-        self.legPages = []
+        self.leg_pages = []
         for l in self.bot.legs:
             cp = LegPanel(self.nb, leg=l)
-            self.legPages.append(cp)
+            self.leg_pages.append(cp)
             self.nb.AddPage(cp, l.name)
         self.Layout()
         self.sizer_main.Fit(self)
@@ -360,19 +360,19 @@ class LegPanel(wx.Panel):
         self.label_13 = wx.StaticText(self, wx.ID_ANY, "Name:")
         self.text_ctrl_16 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.name))
         self.label_5 = wx.StaticText(self, wx.ID_ANY, "Offset X:")
-        self.text_ctrl_8 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.legOffset[0]))
+        self.text_ctrl_8 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.leg_offset[0]))
         self.label_6 = wx.StaticText(self, wx.ID_ANY, "Offset Y:")
-        self.text_ctrl_9 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.legOffset[1]))
+        self.text_ctrl_9 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.leg_offset[1]))
         self.label_7 = wx.StaticText(self, wx.ID_ANY, "Coxa length:")
-        self.text_ctrl_10 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.coxaLengh))
+        self.text_ctrl_10 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.coxa_length))
         self.label_10 = wx.StaticText(self, wx.ID_ANY, "Coxa servo:")
         self.text_ctrl_13 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.servos[0]))
         self.label_8 = wx.StaticText(self, wx.ID_ANY, "Temur length:")
-        self.text_ctrl_11 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.temurLengh))
+        self.text_ctrl_11 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.temur_length))
         self.label_11 = wx.StaticText(self, wx.ID_ANY, "Temur servo:")
         self.text_ctrl_14 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.servos[1]))
         self.label_9 = wx.StaticText(self, wx.ID_ANY, "Tibia length:")
-        self.text_ctrl_12 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.tibiaLengh))
+        self.text_ctrl_12 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.tibia_length))
         self.label_12 = wx.StaticText(self, wx.ID_ANY, "Tibia servo:")
         self.text_ctrl_15 = wx.TextCtrl(self, wx.ID_ANY, str(self.leg.servos[2]))
         self.label_14 = wx.StaticText(self, wx.ID_ANY, "Verbose?:")

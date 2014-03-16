@@ -9,7 +9,7 @@ class DirectionPanel(wx.Panel):
         self.bot = kwds['bot']
         self.runner = kwds['runner']
         self.buttons = []
-        self.choice_gait = wx.Choice(self, -1, choices=self.bot.GAITS)
+        self.choice_gait = wx.Choice(self, -1, choices=self.bot.gaits)
         b_labels = ["forward-left",
                     "forward",
                     "forward-right",

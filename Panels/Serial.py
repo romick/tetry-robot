@@ -20,8 +20,8 @@ EVT_SERIALRX = wx.PyEventBinder(SERIALRX, 0)
 class SerialRxEvent(wx.PyCommandEvent):
     eventType = SERIALRX
 
-    def __init__(self, windowID, data):
-        wx.PyCommandEvent.__init__(self, self.eventType, windowID)
+    def __init__(self, window_id, data):
+        wx.PyCommandEvent.__init__(self, self.eventType, window_id)
         self.data = data
 
     def Clone(self):
@@ -84,23 +84,23 @@ class SerialPanel(wx.Panel):
         self.menu.Append(panels_menu, "&Serial")
 
         #Add events
-        self.text_ctrl_output.Bind(wx.EVT_CHAR, self.OnKey)
-        self.Bind(EVT_SERIALRX, self.OnSerialRead)
+        self.text_ctrl_output.Bind(wx.EVT_CHAR, self.on_key)
+        self.Bind(EVT_SERIALRX, self.on_serial_read)
         self.Bind(wx.EVT_CLOSE, self.on_close)
         self.Bind(wx.EVT_BUTTON, self.clean_terminal, self.button_clear_1)
         #TODO: fix menus
-        self.Bind(wx.EVT_MENU, self.OnClear, id=ID_CLEAR)
-        self.window.Bind(wx.EVT_MENU, self.OnSaveAs, id=ID_SAVEAS)
-        self.window.Bind(wx.EVT_MENU, self.onSettings, id=ID_SETTINGS)
+        self.Bind(wx.EVT_MENU, self.on_clear, id=ID_CLEAR)
+        self.window.Bind(wx.EVT_MENU, self.on_save_as, id=ID_SAVEAS)
+        self.window.Bind(wx.EVT_MENU, self.on_settings, id=ID_SETTINGS)
 
-    def StartThread(self):
+    def start_thread(self):
         """Start the receiver thread"""
-        self.thread = threading.Thread(target=self.ComPortThread)
+        self.thread = threading.Thread(target=self.com_port_thread)
         self.thread.setDaemon(1)
         self.alive.set()
         self.thread.start()
 
-    def StopThread(self):
+    def stop_thread(self):
         """Stop the receiver thread, wait util it's finished."""
         if self.thread is not None:
             self.alive.clear()  # clear alive event for thread
@@ -115,16 +115,16 @@ class SerialPanel(wx.Panel):
         self.serial.write(message)  # send the character
         pass
 
-    def onStart(self):
-        self.onSettings(None)  # call setup dialog on startup, opens port
+    def on_start(self):
+        self.on_settings(None)  # call setup dialog on startup, opens port
         if not self.alive.isSet():
             self.Close()
 
-    def onSettings(self, event=None):
+    def on_settings(self, event=None):
         """Show the port_settings dialog. The reader thread is stopped for the
            settings change."""
         if event is not None:  # will be none when called on startup
-            self.StopThread()
+            self.stop_thread()
             self.serial.close()
         ok = False
         while not ok:
@@ -147,7 +147,7 @@ class SerialPanel(wx.Panel):
                     dlg.ShowModal()
                     dlg.Destroy()
                 else:
-                    self.StartThread()
+                    self.start_thread()
                     ok = True
             else:
                 #on startup, dialog aborted
@@ -156,16 +156,16 @@ class SerialPanel(wx.Panel):
 
     def on_close(self, event=None):
         """Called on application shutdown."""
-        self.StopThread()  # stop reader thread
+        self.stop_thread()  # stop reader thread
         self.serial.close()  # cleanup
         self.Destroy()  # close windows, exit app
 
-    def OnClear(self, event):
+    def on_clear(self, event):
         """Clear contents of output window."""
         print "Clear!!!"
         self.text_ctrl_output.Clear()
 
-    def OnSaveAs(self, event):
+    def on_save_as(self, event):
         """Save contents of output window."""
         filename = None
         dlg = wx.FileDialog(None, "Save Text As...", ".", "", "Text File|*.txt|All Files|*", wx.SAVE)
@@ -181,7 +181,7 @@ class SerialPanel(wx.Panel):
             f.write(text)
             f.close()
 
-    def OnKey(self, event):
+    def on_key(self, event):
         """Key event handler. if the key is in the ASCII range, write it to the serial port.
            Newline handling and local echo is also done here."""
         code = event.GetKeyCode()
@@ -203,14 +203,14 @@ class SerialPanel(wx.Panel):
         else:
             print "Extra Key:", code
 
-    def OnSerialRead(self, event):
+    def on_serial_read(self, event):
         """Handle input from the serial port."""
         text = event.data
         if self.settings.unprintable:
             text = ''.join([(c >= ' ') and c or '<%d>' % ord(c) for c in text])
         self.text_ctrl_output.AppendText(text)
 
-    def ComPortThread(self):
+    def com_port_thread(self):
         """Thread that handles the incoming traffic. Does the basic input
            transformation (newlines) and generates an SerialRxEvent"""
         while self.alive.isSet():  # loop while alive event is true
@@ -228,7 +228,7 @@ class SerialPanel(wx.Panel):
                     text = text.replace('\r\n', '\n')
                 event = SerialRxEvent(self.GetId(), text)
                 self.GetEventHandler().AddPendingEvent(event)
-                #~ self.OnSerialRead(text)         #output text in window
+                #~ self.on_serial_read(text)         #output text in window
 
     def clean_terminal(self, event):
         self.text_ctrl_output.Clear()

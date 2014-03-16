@@ -33,7 +33,7 @@ class MainFrame(wx.Frame):
     """Simple terminal program for wxPython"""
     
     def __init__(self, *args, **kwds):
-        self.bot = Crawler.Controller(sender=self.Sender)
+        self.bot = Crawler.Controller(sender=self.sender)
         self.queue = Queue.Queue()
         thread = LogicThread(self.queue)
         thread.start()
@@ -113,28 +113,28 @@ class MainFrame(wx.Frame):
         self.Layout()
 
         #register events at the controls
-        self.Bind(wx.EVT_MENU, self.OnExit, id=ID_EXIT)
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
+        self.Bind(wx.EVT_MENU, self.on_exit, id=ID_EXIT)
+        self.Bind(wx.EVT_CLOSE, self.on_close)
 
         for panel in self.panels.itervalues():
             for name, obj in inspect.getmembers(panel):
-                    if name == "onStart":
-                        panel.onStart()
+                    if name == "on_start":
+                        panel.on_start()
 
         self.bot.init_bot()
 
-    def OnExit(self, event):
+    def on_exit(self, event):
         """Menu point Exit"""
         self.Close()
 
-    def OnClose(self, event):
+    def on_close(self, event):
         for (pname, panel) in self.panels.iteritems():
             for name, obj in inspect.getmembers(panel):
                     if name == "on_close":
                         panel.on_close()
         self.Destroy()
 
-    def Sender(self, **kwds):
+    def sender(self, **kwds):
         #Update GUI with new bot state
 
         for (pname, panel) in self.panels.iteritems():
@@ -142,11 +142,11 @@ class MainFrame(wx.Frame):
                 if 'start' in kwds:
                     if name == "start":
                         panel.start()
-                if 'botcommand' in kwds or 'message' in kwds:
+                if 'bot_command' in kwds or 'message' in kwds:
                     if name == "update":
-                        bc, ms = kwds['botcommand'], kwds['message']
+                        bc, ms = kwds['bot_command'], kwds['message']
                         # print >> sys.stderr, pname, bc, ms
-                        panel.update(botcommand=bc, message=ms)
+                        panel.update(bot_command=bc, message=ms)
 
     def runner(self, *args):
         # print args
