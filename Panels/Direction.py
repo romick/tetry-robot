@@ -31,7 +31,7 @@ class DirectionPanel(wx.Panel):
 
             b.Bind(wx.EVT_BUTTON, on_button)
 
-        grid_sizer_1 = wx.FlexGridSizer(3, 3, 1, 1)
+        grid_sizer_1 = wx.FlexGridSizer(5, 3, 1, 1)
 
         # self.gaits = ["tripod", "wave", ""]
         grid_sizer_1.Add(self.choice_gait, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)

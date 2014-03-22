@@ -28,18 +28,18 @@ class CoordinatesPanel(wx.Panel):
     def start(self):
 
         self.clean()
-        self.grid_sizer_1 = wx.FlexGridSizer(len(self.bot.legs), 7, 1, 1)
+        self.grid_sizer_1 = wx.FlexGridSizer(len(self.bot.legs) + 3, 7, 1, 1)
 
         self.leg_coordinates = range(len(self.bot.legs))
 
         for l in self.bot.legs:
             self.leg_coordinates[l.id] = [wx.StaticText(self, wx.ID_ANY, str(l.name)),
-                                     wx.StaticText(self, wx.ID_ANY, "X:"),
-                                     wx.TextCtrl(self, wx.ID_ANY, str(l.state_x)),
-                                     wx.StaticText(self, wx.ID_ANY, "Y:"),
-                                     wx.TextCtrl(self, wx.ID_ANY, str(l.state_y)),
-                                     wx.StaticText(self, wx.ID_ANY, "Z:"),
-                                     wx.TextCtrl(self, wx.ID_ANY, str(l.state_z))]
+                                          wx.StaticText(self, wx.ID_ANY, "X:"),
+                                          wx.TextCtrl(self, wx.ID_ANY, str(l.state_x)),
+                                          wx.StaticText(self, wx.ID_ANY, "Y:"),
+                                          wx.TextCtrl(self, wx.ID_ANY, str(l.state_y)),
+                                          wx.StaticText(self, wx.ID_ANY, "Z:"),
+                                          wx.TextCtrl(self, wx.ID_ANY, str(l.state_z))]
 
             for t in self.leg_coordinates[l.id]:
                 self.grid_sizer_1.Add(t, 0, wx.ALL, 4)
