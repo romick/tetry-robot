@@ -20,7 +20,7 @@ class DirectionPanel(wx.Panel):
                     "backward-right"]
         b_angles = [315, 0, 45, 270, 90, 225, 180, 135]
         for i in range(len(b_labels)):
-            print b_angles[i]
+            # print b_angles[i]
             b = wx.Button(self, wx.ID_ANY, b_labels[i])
             self.buttons.append(b)
             b.SetMinSize((80, 80))

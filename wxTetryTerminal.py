@@ -62,38 +62,60 @@ class MainFrame(wx.Frame):
         #Bot mgmt panels & buttons
         self.mgr = aui.AuiManager()
         self.mgr.SetManagedWindow(self)
-
+        self.mgr.SetAutoNotebookStyle(aui.AUI_NB_TAB_EXTERNAL_MOVE |
+                                      aui.AUI_NB_TAB_MOVE |
+                                      aui.AUI_NB_BOTTOM |
+                                      aui.AUI_NB_WINDOWLIST_BUTTON |
+                                      aui.AUI_NB_CLOSE_ON_ALL_TABS |
+                                      aui.AUI_NB_HIDE_ON_SINGLE_TAB |
+                                      aui.AUI_NB_ORDER_BY_ACCESS |
+                                      aui.AUI_NB_NO_TAB_FOCUS)
+        self.mgr.SetAutoNotebookTabArt(aui.ChromeTabArt())
         self.panels = {}
 
-        #TODO: add loading from settings file
-        lo_commands = ["Direction", "General", "Moves", "TiltBody"]
-        lo_state = ["Angles", "Coordinates", "JobList"]
-        lo_logs = ["Serial", "Logic"]
-
-        left_nb = None
-        center_nb = None
+        #Find all panels
+        panel_list = {}
         for mod in sys.modules:
             if mod[:7] == "Panels.":
                 for name, obj in inspect.getmembers(sys.modules[mod]):
                     if inspect.isclass(obj) and name[-5:] == "Panel":
                         name = name[:-5]
-                        self.panels[name] = obj(self,
-                                                bot=self.bot,
-                                                menubar=self.frame_terminal_menubar,
-                                                window=self,
-                                                queue=self.queue,
-                                                runner=self.runner)
-                        pane = aui.AuiPaneInfo().Caption(name).MinSize(350, 300)
-                        if name in  lo_commands:
-                            self.mgr.AddPane(self.panels[name], pane.Left(), target=left_nb)
-                            if left_nb is None:
-                                left_nb = pane
-                        if name in  lo_logs:
-                            self.mgr.AddPane(self.panels[name], pane.Bottom())
-                        if name in  lo_state:
-                            self.mgr.AddPane(self.panels[name], pane.Center(), target=center_nb)
-                            if center_nb is None:
-                                center_nb = pane
+                        panel_list[name] = obj
+        # print panel_list
+
+        #TODO: add loading from settings file
+        ui_setting = [(["Direction", "General", "Moves", "TiltBody"], "Left"),
+                      (["Serial", "Logic"], "Bottom"),
+                      (["Angles", "Coordinates", "JobList"], "Center")]
+        activate_tabs = ["Direction", "Angles"]
+
+        for (plist, direction) in ui_setting:
+            position_target = None
+            for nm in plist:
+                # print nm, position_target, direction
+                self.panels[nm] = panel_list[nm](self,
+                                                    bot=self.bot,
+                                                    menubar=self.frame_terminal_menubar,
+                                                    window=self,
+                                                    queue=self.queue,
+                                                    runner=self.runner)
+                pane = aui.AuiPaneInfo().Caption(nm).Name(nm).MinSize(350, 300).Gripper()
+                if direction == "Left":
+                    self.mgr.AddPane(self.panels[nm], pane.Left(), target=position_target)
+                elif direction == "Bottom":
+                    self.mgr.AddPane(self.panels[nm], pane.Bottom())
+                elif direction == "Center":
+                    self.mgr.AddPane(self.panels[nm], pane.Center(), target=position_target)
+                if position_target is None:
+                    position_target = pane
+
+        self.mgr.Update()
+
+        print self.mgr.GetPaneByName("Direction")
+        for nb in self.mgr.GetNotebooks():
+            for i in range(nb.GetPageCount()):
+                if nb.GetPageText(i) in activate_tabs:
+                    nb.SetSelection(i)
 
         self.SetTitle("Robot Terminal")
         self.SetBackgroundColour(wx.SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW))
@@ -101,8 +123,6 @@ class MainFrame(wx.Frame):
         self.Maximize()
 
         self.mgr.Update()
-
-
 
         #register events at the controls
         self.Bind(wx.EVT_MENU, self.on_exit, id=ID_EXIT)
