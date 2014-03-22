@@ -70,6 +70,7 @@ class SerialPanel(wx.Panel):
         self.button_clear_1 = wx.Button(self, wx.ID_ANY, "clear log", style=wx.BU_EXACTFIT)
         self.button_clear_1.SetSize((20, 50))
 
+        #do layout
         sizer_right = wx.BoxSizer(wx.VERTICAL)
         sizer_right.Add(self.text_ctrl_output, 10, wx.EXPAND, 0)
         sizer_right.Add(self.button_clear_1, 1, wx.ALIGN_LEFT | wx.ALIGN_BOTTOM, 0)
