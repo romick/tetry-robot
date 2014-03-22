@@ -5,6 +5,7 @@ import time
 import math
 import json
 import sys
+import numpy as N
 
 MY_DRIVE_SPEED_MIN = 500
 MY_DRIVE_SPEED_MAX = 2500
@@ -112,18 +113,16 @@ class Controller:
             command += self.legs[lc].go_exact_coordinates(coord_d[lc][0], coord_d[lc][1], coord_d[lc][2])
         self._send(command)
 
-    def make_step(self, angle):
+    def make_step(self, angle, distance=10):
         #TODO: add gaits
-        #TODO: select closest leg to direction to start with
         if not self.inited:
             self.init_bot()
 
-        d = 10
         sleep1 = 0.1
         sleep2 = 0.5
 
         angle = math.radians(angle)
-        s, t = math.sin(angle) * d, math.cos(angle) * d
+        s, t = math.sin(angle) * distance, math.cos(angle) * distance
         print "Offsets are: %f, %f" % (s, t)
 
         if self.gaits[self.gait] == "wave":
@@ -131,8 +130,8 @@ class Controller:
                 #assume to start from BasePose
                 #raise each of legs , move forward by 4*d mm, lower it, then move body forward by d mm
                 print leg.id
-                self._leg_transpose(leg, s, t, d, sleep1)
-                self._shift_body(-s, -t)
+                self._leg_transpose(leg, s, t, distance, sleep1)
+                self.shift_body_offset(-s, -t)
                 time.sleep(sleep2)
         elif self.gaits[self.gait] == "ripple":
             pass
@@ -141,6 +140,7 @@ class Controller:
         pass
 
     def _sort_legs_angle(self, angle):
+        """Select closest to direction leg to start with"""
         legs_angles = [abs(math.degrees(x.leg_offset_angle - angle)) for x in self.legs]
         min_angle = min(legs_angles)
         closest_legs = [i for i, j in enumerate(legs_angles) if j == min_angle]
@@ -235,12 +235,19 @@ class Controller:
         time.sleep(sleep_time1)
         pass
 
-    def _shift_body(self, x_offset, y_offset):
+    def shift_body_offset(self, x_offset, y_offset):
         clist = []
         for l in self.legs:
             clist.extend(l.go_offset(x_offset, y_offset, 0))
         self._send(clist)
-        pass
+        # pass
+
+    def shift_body_angle(self, angle, length=30):
+        x_offset, y_offset = length * math.cos(math.radians(angle)), length * math.sin(math.radians(angle))
+        clist = []
+        for l in self.legs:
+            clist.extend(l.go_offset_from_initial(x_offset, y_offset, 0))
+        self._send(clist)
 
     def _angles2positions(self, alist):
         plist = []
@@ -269,3 +276,14 @@ class Controller:
                 print "Math function error."
             return
         return x
+
+
+    def rotate_body_z(self, z_angle):
+        z_angle = math.radians(z_angle)
+        rot_matrix_z = N.array([[math.cos(z_angle), -math.sin(z_angle), 0], # матрица вращения вокруг оси Z
+                             [math.sin(z_angle), math.cos(z_angle)], 0],
+                             [0,0,1])
+        bot_command = []
+        for l in self.legs:
+            bot_command.extend(l.rotate(rot_matrix_z))
+        self._send(bot_command)

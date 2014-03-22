@@ -1,4 +1,5 @@
 import math
+import numpy as N
 # import sys
 
 
@@ -103,7 +104,6 @@ class Leg:
     #    return some
 
     def go_exact_coordinates(self, x, y, z):
-        #TODO: move state storage to separate class (is it really needed?)
 
         #check if targets set
         if x is None:
@@ -131,3 +131,11 @@ class Leg:
 
     def go_offset(self, x_offset, y_offset, z_offset):
         return self.go_exact_coordinates(self.state_x + x_offset, self.state_y + y_offset, self.state_z + z_offset)
+
+    def go_offset_from_initial(self, x_offset, y_offset, z_offset):
+        return self.go_exact_coordinates(self.initial_state[0] + x_offset, self.initial_state[1] + y_offset, self.initial_state[2] + z_offset)
+
+    def rotate(self, rot_matrix):
+        coordinates = N.array([self.state_x, self.state_y, self.state_z])
+        coordinates = rot_matrix.dot(coordinates)
+        return self.go_exact_coordinates(coordinates[0], coordinates[1],coordinates[2])  #TODO: Convert to correct way!

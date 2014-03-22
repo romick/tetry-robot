@@ -86,7 +86,7 @@ class MainFrame(wx.Frame):
                         panel_list[name] = obj
 
         #TODO: add loading from settings file
-        ui_setting = [(["Direction", "General", "Moves", "TiltBody"], "Left"),
+        ui_setting = [(["Direction", "ShiftBody", "General", "Moves", "TiltBody"], "Left"),
                       (["JobList", "Logic", "Serial"], "Bottom"),
                       (["Angles", "Coordinates"], "Center")]
         activate_tabs = ["Direction", "Angles"]

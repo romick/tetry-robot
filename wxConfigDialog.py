@@ -101,7 +101,6 @@ class SerialConfigDialog(wx.Dialog):
         self.nb = wx.Notebook(self, wx.ID_ANY, style=0)
         self.leg_pages = []
 
-        #TODO: read initial settings from file
         self.robots = []
         for file_name in os.listdir('Robots'):
             if os.path.splitext(file_name)[1] == '.json':

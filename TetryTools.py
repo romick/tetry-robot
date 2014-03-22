@@ -16,3 +16,7 @@ class MathTools():
     def angle2coordinates(*args):
         """Not implemented yet."""
         pass
+
+    @staticmethod
+    def vector_length(*args):
+        return math.sqrt(args[0]**2 + args[1]**2)
