@@ -1,11 +1,12 @@
 import math
-import numpy as N
+import numpy
 # import sys
 
 
 class Leg:
     """ new legIK(offset=[-65.8, 76.3], angle=-2.2829, coxa=29.0, temur=49, tibia=52)  docstring for legIK"""
 
+    #TODO: rewrite- each part of the leg should be a Vector
     def __init__(self, **kwds):
         self.leg_offset = kwds['offset']
         self.coxa_length = kwds['coxa']
@@ -133,9 +134,11 @@ class Leg:
         return self.go_exact_coordinates(self.state_x + x_offset, self.state_y + y_offset, self.state_z + z_offset)
 
     def go_offset_from_initial(self, x_offset, y_offset, z_offset):
-        return self.go_exact_coordinates(self.initial_state[0] + x_offset, self.initial_state[1] + y_offset, self.initial_state[2] + z_offset)
+        return self.go_exact_coordinates(self.initial_state[0] + x_offset,
+                                         self.initial_state[1] + y_offset,
+                                         self.initial_state[2] + z_offset)
 
     def rotate(self, rot_matrix):
-        coordinates = N.array([self.state_x, self.state_y, self.state_z])
+        coordinates = numpy.array([self.state_x, self.state_y, self.state_z])
         coordinates = rot_matrix.dot(coordinates)
         return self.go_exact_coordinates(coordinates[0], coordinates[1],coordinates[2])  #TODO: Convert to correct way!
