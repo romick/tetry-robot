@@ -45,6 +45,8 @@ class MainFrame(wx.Frame):
     def __init__(self, *args, **kwds):
         self.bot = Crawler.Controller(sender=self.sender)
         self.queue = IndexQueue()
+        self.total_block = False
+
         thread = LogicThread(self.queue)
         thread.start()
 
@@ -56,6 +58,7 @@ class MainFrame(wx.Frame):
         self.frame_terminal_menubar = wx.MenuBar()
         self.SetMenuBar(self.frame_terminal_menubar)
         wxglade_tmp_menu = wx.Menu()
+        wxglade_tmp_menu.Append(wx.ID_ANY, "&Block", "", wx.ITEM_NORMAL)
         wxglade_tmp_menu.Append(ID_EXIT, "&Exit", "", wx.ITEM_NORMAL)
         self.frame_terminal_menubar.Append(wxglade_tmp_menu, "&File")
 
@@ -81,11 +84,10 @@ class MainFrame(wx.Frame):
                     if inspect.isclass(obj) and name[-5:] == "Panel":
                         name = name[:-5]
                         panel_list[name] = obj
-        # print panel_list
 
         #TODO: add loading from settings file
         ui_setting = [(["Direction", "General", "Moves", "TiltBody"], "Left"),
-                      (["Serial", "Logic", "JobList"], "Bottom"),
+                      (["JobList", "Logic", "Serial"], "Bottom"),
                       (["Angles", "Coordinates"], "Center")]
         activate_tabs = ["Direction", "Angles"]
 
@@ -99,7 +101,7 @@ class MainFrame(wx.Frame):
                                                     window=self,
                                                     queue=self.queue,
                                                     runner=self.runner)
-                pane = aui.AuiPaneInfo().Caption(nm).Name(nm).MinSize(350, 300).Gripper()
+                pane = aui.AuiPaneInfo().Caption(nm).Name(nm).MinSize(350, 300)
                 if direction == "Left":
                     self.mgr.AddPane(self.panels[nm], pane.Left(), target=position_target)
                 elif direction == "Bottom":
@@ -111,7 +113,7 @@ class MainFrame(wx.Frame):
 
         self.mgr.Update()
 
-        print self.mgr.GetPaneByName("Direction")
+        #activate tabs according to activate_tabs setting
         for nb in self.mgr.GetNotebooks():
             for i in range(nb.GetPageCount()):
                 if nb.GetPageText(i) in activate_tabs:
@@ -121,13 +123,14 @@ class MainFrame(wx.Frame):
         self.SetBackgroundColour(wx.SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW))
         self.SetSize((1500, 900))
         self.Maximize()
-
         self.mgr.Update()
 
         #register events at the controls
         self.Bind(wx.EVT_MENU, self.on_exit, id=ID_EXIT)
+        self.Bind(wx.EVT_MENU, self.on_toggle_block)
         self.Bind(wx.EVT_CLOSE, self.on_close)
 
+        #run "on_start" hooks in all panels
         for panel in self.panels.itervalues():
             for name, obj in inspect.getmembers(panel):
                 if name == "on_start":
@@ -140,6 +143,14 @@ class MainFrame(wx.Frame):
         self.mgr.UnInit()
         self.Close()
 
+    def on_toggle_block(self, event):
+        if not self.total_block:
+            self.total_block = True
+            while not self.queue.empty():
+                self.queue.get()
+        else:
+            self.total_block = False
+
     def on_close(self, event):
         for (pname, panel) in self.panels.iteritems():
             for name, obj in inspect.getmembers(panel):
@@ -149,17 +160,20 @@ class MainFrame(wx.Frame):
 
     def sender(self, **kwds):
         #Update GUI with new bot state
-
         for (pname, panel) in self.panels.iteritems():
             for name, obj in inspect.getmembers(panel):
                 if 'start' in kwds:
                     if name == "start":
                         panel.start()
                 if 'bot_command' in kwds or 'message' in kwds:
-                    if name == "update":
-                        bc, ms = kwds['bot_command'], kwds['message']
-                        # print >> sys.stderr, pname, bc, ms
-                        panel.update(bot_command=bc, message=ms)
+                    if not self.total_block:
+                        if name == "update":
+                            bc, ms = kwds['bot_command'], kwds['message']
+                            # print >> sys.stderr, pname, bc, ms
+                            panel.update(bot_command=bc, message=ms)
+                    else:
+                        if name == "stop":
+                            panel.stop()
 
     def runner(self, *args):
         # print args

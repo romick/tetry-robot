@@ -81,6 +81,4 @@ class DirectionPanel(wx.Panel):
         dc.DrawCircle(dxy[0], dxy[1], 3)
 
     def _on_left_down(self, event):
-        # (x, y) = event.GetCoords()
-        # print x, y
         self.runner(self.bot.make_step, MathTools.coordinates2angle(*event.GetCoords()))

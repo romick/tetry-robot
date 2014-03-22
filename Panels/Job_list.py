@@ -23,3 +23,6 @@ class JobListPanel(wx.Panel):
             self.text_ctrl_output.Clear()
             for job in self.jobs:
                 self.text_ctrl_output.WriteText(str(job[0].__name__) + ": " + str(job[1:]) + '\n')
+
+    def stop(self, **kwds):
+            self.text_ctrl_output.Clear()
