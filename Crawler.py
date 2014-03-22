@@ -5,7 +5,8 @@ import time
 import math
 import json
 import sys
-import numpy as N
+import numpy
+from TetryTools import MathTools
 
 MY_DRIVE_SPEED_MIN = 500
 MY_DRIVE_SPEED_MAX = 2500
@@ -277,13 +278,20 @@ class Controller:
             return
         return x
 
-
-    def rotate_body_z(self, z_angle):
-        z_angle = math.radians(z_angle)
-        rot_matrix_z = N.array([[math.cos(z_angle), -math.sin(z_angle), 0], # матрица вращения вокруг оси Z
-                             [math.sin(z_angle), math.cos(z_angle)], 0],
-                             [0,0,1])
+    def rotate_body(self, angle=0, axis_vector=(0, 0, 0)):
+        from math import cos, sin
+        angle = math.radians(angle)
+        (l, m, n) = MathTools.normalize(*axis_vector)
+        rotation_matrix = numpy.array([[l * l * (1 - cos(angle)) + cos(angle),
+                                        m * l * (1 - cos(angle)) - n * sin(angle),
+                                        n * l * (1 - cos(angle)) + m * sin(angle)],
+                                       [l * m * (1 - cos(angle)) + n * sin(angle),
+                                        m * m * (1 - cos(angle)) + cos(angle),
+                                        n * m * (1 - cos(angle)) - l * sin(angle)],
+                                       [l * n * (1 - cos(angle)) - m * sin(angle),
+                                        m * n * (1 - cos(angle)) + l * sin(angle),
+                                        n * n * (1 - cos(angle)) + cos(angle)]])
         bot_command = []
         for l in self.legs:
-            bot_command.extend(l.rotate(rot_matrix_z))
+            bot_command.extend(l.rotate(rotation_matrix))
         self._send(bot_command)

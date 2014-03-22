@@ -60,6 +60,7 @@ class ShiftBodyPanel(wx.Panel):
         for r in range(5):
             grid_sizer_1.Add((10, 10), 0, 0, 0)
 
+        #TODO: delete buttons
         grid_sizer_1.Add(self.buttons[0], 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_1.Add(self.buttons[1], 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
         grid_sizer_1.Add(self.buttons[2], 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
@@ -74,6 +75,10 @@ class ShiftBodyPanel(wx.Panel):
         self.canvas.Draw()
 
     def _on_move(self, event):
+        pass
+
+    def _on_left_down(self, event):
+        #TODO: change event to fire with mouse key down, not only at the moment press
         dxy = event.GetPosition()
         dc = wx.ClientDC(self.canvas)
         dc.SetPen(wx.Pen('WHITE', 1))
@@ -81,7 +86,6 @@ class ShiftBodyPanel(wx.Panel):
         dc.DrawLine(self.canvas_size / 2, self.canvas_size / 2, dxy[0], dxy[1])
         dc.DrawCircle(dxy[0], dxy[1], 3)
 
-    def _on_left_down(self, event):
         coordinates = event.GetCoords()
         self.runner(self.bot.shift_body_angle,
                     MathTools.coordinates2angle(*coordinates),

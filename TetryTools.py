@@ -1,6 +1,7 @@
 
 import math
 
+
 class MathTools():
 
     @staticmethod
@@ -19,4 +20,10 @@ class MathTools():
 
     @staticmethod
     def vector_length(*args):
-        return math.sqrt(args[0]**2 + args[1]**2)
+        return math.sqrt(sum(x**2 for x in args))
+        # return math.sqrt(args[0]**2 + args[1]**2)
+
+    @staticmethod
+    def normalize(*args):
+        v_length = MathTools.vector_length(*args)
+        return (x / v_length for x in args)
