@@ -18,7 +18,7 @@ class LogicPanel(wx.Panel):
         wx.Panel.__init__(self, parent=parent, id=wx.ID_ANY)
         self.bot = kwds['bot']
         #redirect stdout to text_ctrl_log
-        self.text_ctrl_log = wx.TextCtrl(self, -1, "", style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL)
+        self.text_ctrl_log = wx.TextCtrl(self, -1, "", style=wx.TE_MULTILINE | wx.TE_READONLY)
         sys.stdout = RedirectText(self.text_ctrl_log)
 
         self.button_clear_2 = wx.Button(self, wx.ID_ANY, "clear log", style=wx.BU_EXACTFIT)
