@@ -2,6 +2,7 @@
 import math
 
 
+
 class MathTools():
 
     @staticmethod
@@ -27,3 +28,15 @@ class MathTools():
     def normalize(*args):
         v_length = MathTools.vector_length(*args)
         return (x / v_length for x in args)
+
+    @staticmethod
+    def interpolate(x, min_s, max_s, min_d, max_d):
+        try:
+            x = (max_d - min_d) * (x - min_s) / (max_s - min_s) + min_d
+        except ZeroDivisionError:
+            print "Divide by Zero error. "
+            return
+        except ValueError:
+            print "Math function error."
+            return
+        return x

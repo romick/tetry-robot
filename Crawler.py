@@ -256,27 +256,14 @@ class Controller:
             if 'position' not in a.keys():
                 if a['servo'] in self.inverted:
                     a['position'] = int(round(
-                        self._interpolate(a['angle'], 180, -180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX)
+                        MathTools.interpolate(a['angle'], 180, -180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX)
                     ))
                 else:
                     a['position'] = int(round(
-                        self._interpolate(a['angle'], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX)
+                        MathTools.interpolate(a['angle'], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX)
                     ))
             plist.append(a)
         return plist
-
-    def _interpolate(self, x, min_s, max_s, min_d, max_d):
-        try:
-            x = (max_d - min_d) * (x - min_s) / (max_s - min_s) + min_d
-        except ZeroDivisionError:
-            if self.debug:
-                print "Divide by Zero error. "
-            return
-        except ValueError:
-            if self.debug:
-                print "Math function error."
-            return
-        return x
 
     def rotate_body(self, angle=0, axis_vector=(0, 0, 0)):
         from math import cos, sin
