@@ -21,6 +21,7 @@ class MathTools():
 
     @staticmethod
     def vector_length(*args):
+        print args
         return math.sqrt(sum(x**2 for x in args))
         # return math.sqrt(args[0]**2 + args[1]**2)
 

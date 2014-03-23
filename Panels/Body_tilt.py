@@ -45,8 +45,9 @@ class TiltBodyPanel(wx.Panel):
             b.SetMinSize((80, 80))
 
             def on_button(event, axis=rotation_axes[i]):
-                print angle
-                self.runner(self.bot.rotate_body, angle, )
+                # print angle
+                angle = 30
+                self.runner(self.bot.rotate_body, angle, axis)
 
             b.Bind(wx.EVT_BUTTON, on_button)
 
@@ -85,6 +86,7 @@ class TiltBodyPanel(wx.Panel):
         dc.DrawCircle(dxy[0], dxy[1], 3)
 
         coordinates = event.GetCoords()
-        self.runner(self.bot.shift_body_angle,
-                    MathTools.coordinates2angle(*coordinates),
-                    MathTools.vector_length(*coordinates))
+        angle = MathTools.interpolate(MathTools.vector_length(coordinates[0], coordinates[1]), 0, self.canvas_size, 0, 30)
+        self.runner(self.bot.rotate_body,
+                    angle,
+                    (coordinates[1], -coordinates[0], 0))
