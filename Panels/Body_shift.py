@@ -83,3 +83,4 @@ class ShiftBodyPanel(wx.Panel):
         self.runner(self.bot.shift_body_angle,
                     MathTools.coordinates2angle(*coordinates),
                     MathTools.vector_length(*coordinates))
+        self.runner(self.bot.sleep, 0.5)

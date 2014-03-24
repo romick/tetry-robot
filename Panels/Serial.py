@@ -109,12 +109,12 @@ class SerialPanel(wx.Panel):
             self.thread = None
 
     def update(self, **kwds):
-        message = kwds['message']
-        print "Sending message:%s" % message
-        if self.settings.echo:  # do echo if needed
-            self.text_ctrl_output.WriteText(message + '\n')
-        self.serial.write(message)  # send the character
-        pass
+        if 'message' in kwds:
+            message = kwds['message']
+            print "Sending message:%s" % message
+            if self.settings.echo:  # do echo if needed
+                self.text_ctrl_output.WriteText(message + '\n')
+            self.serial.write(message)  # send the character
 
     def on_start(self):
         self.on_settings(None)  # call setup dialog on startup, opens port

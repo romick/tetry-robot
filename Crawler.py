@@ -282,3 +282,8 @@ class Controller:
         for l in self.legs:
             bot_command.extend(l.rotate(rotation_matrix))
         self._send(bot_command)
+
+    def sleep(self, duration=1):
+        self.sender(update=1)
+        time.sleep(duration)
+        self.sender(update=1)

@@ -47,9 +47,8 @@ class AnglesPanel(wx.Panel):
                 self.runner(self.bot._send, command)
 
     def update(self, **kwds):
-                bot_command = kwds['bot_command']
-                # print >> sys.stderr, bot_command
-                if bot_command:
-                    for x in bot_command:
-                        # print >> sys.stderr, x
-                        self.sliders[x['servo']].SetValue(x['position'])
+        if 'bot_command' in kwds:
+            bot_command = kwds['bot_command']
+            # if bot_command:  # not sure if needed at all
+            for x in bot_command:
+                self.sliders[x['servo']].SetValue(x['position'])

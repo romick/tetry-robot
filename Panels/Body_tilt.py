@@ -83,3 +83,4 @@ class TiltBodyPanel(wx.Panel):
         self.runner(self.bot.rotate_body,
                     angle,
                     (coordinates[1], -coordinates[0], 0))
+        self.runner(self.bot.sleep, 0.5)

@@ -170,6 +170,9 @@ class MainFrame(wx.Frame):
                     else:
                         if name == "stop":
                             panel.stop()
+                if 'update' in kwds:
+                    if name == "update":
+                        panel.update()
 
     def runner(self, *args):
         # print args
