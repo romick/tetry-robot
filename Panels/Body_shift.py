@@ -12,7 +12,6 @@ class ShiftBodyPanel(wx.Panel):
         self.bot = kwds['bot']
         self.runner = kwds['runner']
         self.buttons = []
-        self.choice_gait = wx.Choice(self, -1, choices=self.bot.gaits)
 
         b_labels = ["forward-left",
                     "forward",
@@ -53,12 +52,6 @@ class ShiftBodyPanel(wx.Panel):
             b.Bind(wx.EVT_BUTTON, on_button)
 
         grid_sizer_1 = wx.FlexGridSizer(5, 3, 1, 1)
-
-        # self.gaits = ["tripod", "wave", ""]
-        grid_sizer_1.Add(self.choice_gait, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-
-        for r in range(5):
-            grid_sizer_1.Add((10, 10), 0, 0, 0)
 
         #TODO: delete buttons
         grid_sizer_1.Add(self.buttons[0], 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
