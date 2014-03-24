@@ -28,7 +28,10 @@ class MathTools():
     @staticmethod
     def normalize(*args):
         v_length = MathTools.vector_length(*args)
-        return (x / v_length for x in args)
+        if not v_length == 0:
+            return (x / v_length for x in args)
+        else:
+            return args
 
     @staticmethod
     def interpolate(x, min_s, max_s, min_d, max_d):
