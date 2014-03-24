@@ -5,12 +5,11 @@ import wx.aui
 import wx.lib.agw.aui as aui
 import inspect
 import sys
-# import json
 import threading
 import time
 import Crawler
 from Panels import *
-
+import Queue
 
 ID_EXIT = wx.NewId()
 
@@ -28,9 +27,6 @@ class LogicThread(threading.Thread):
                 task[0](*task[1:])
             else:
                 time.sleep(0.1)
-
-
-import Queue
 
 
 class IndexQueue(Queue.Queue):
@@ -74,16 +70,16 @@ class MainFrame(wx.Frame):
                                       aui.AUI_NB_ORDER_BY_ACCESS |
                                       aui.AUI_NB_NO_TAB_FOCUS)
         self.mgr.SetAutoNotebookTabArt(aui.ChromeTabArt())
-        self.panels = {}
 
         #Find all panels
-        panel_list = {}
+        self.panels_objects = {}  # placeholder for panels objects
+        self.panels_classes = {}  # placeholder for panel classes
         for mod in sys.modules:
             if mod[:7] == "Panels.":
                 for name, obj in inspect.getmembers(sys.modules[mod]):
                     if inspect.isclass(obj) and name[-5:] == "Panel":
                         name = name[:-5]
-                        panel_list[name] = obj
+                        self.panels_classes[name] = obj
 
         #TODO: add loading from settings file
         ui_setting = [(["Direction", "ShiftBody", "General", "Moves", "TiltBody"], "Left"),
@@ -95,19 +91,19 @@ class MainFrame(wx.Frame):
             position_target = None
             for nm in plist:
                 # print nm, position_target, direction
-                self.panels[nm] = panel_list[nm](self,
-                                                    bot=self.bot,
-                                                    menubar=self.frame_terminal_menubar,
-                                                    window=self,
-                                                    queue=self.queue,
-                                                    runner=self.runner)
+                self.panels_objects[nm] = self.panels_classes[nm](self,
+                                                                  bot=self.bot,
+                                                                  menubar=self.frame_terminal_menubar,
+                                                                  window=self,
+                                                                  queue=self.queue,
+                                                                  runner=self.runner)
                 pane = aui.AuiPaneInfo().Caption(nm).Name(nm).MinSize(350, 300)
                 if direction == "Left":
-                    self.mgr.AddPane(self.panels[nm], pane.Left(), target=position_target)
+                    self.mgr.AddPane(self.panels_objects[nm], pane.Left(), target=position_target)
                 elif direction == "Bottom":
-                    self.mgr.AddPane(self.panels[nm], pane.Bottom())
+                    self.mgr.AddPane(self.panels_objects[nm], pane.Bottom())
                 elif direction == "Center":
-                    self.mgr.AddPane(self.panels[nm], pane.Center(), target=position_target)
+                    self.mgr.AddPane(self.panels_objects[nm], pane.Center(), target=position_target)
                 if position_target is None:
                     position_target = pane
 
@@ -131,7 +127,7 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.on_close)
 
         #run "on_start" hooks in all panels
-        for panel in self.panels.itervalues():
+        for panel in self.panels_objects.itervalues():
             for name, obj in inspect.getmembers(panel):
                 if name == "on_start":
                     panel.on_start()
@@ -140,7 +136,6 @@ class MainFrame(wx.Frame):
 
     def on_exit(self, event):
         """Menu point Exit"""
-        self.mgr.UnInit()
         self.Close()
 
     def on_toggle_block(self, event):
@@ -152,7 +147,8 @@ class MainFrame(wx.Frame):
             self.total_block = False
 
     def on_close(self, event):
-        for (pname, panel) in self.panels.iteritems():
+        self.mgr.UnInit()
+        for (pname, panel) in self.panels_objects.iteritems():
             for name, obj in inspect.getmembers(panel):
                 if name == "on_close":
                     panel.on_close()
@@ -160,7 +156,7 @@ class MainFrame(wx.Frame):
 
     def sender(self, **kwds):
         #Update GUI with new bot state
-        for (pname, panel) in self.panels.iteritems():
+        for (pname, panel) in self.panels_objects.iteritems():
             for name, obj in inspect.getmembers(panel):
                 if 'start' in kwds:
                     if name == "start":
