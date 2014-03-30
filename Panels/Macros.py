@@ -29,7 +29,7 @@ class MovesPanel(wx.Panel):
                 self.run_macro(tasks)
             buttons[m].Bind(wx.EVT_BUTTON, on_button)
             self.grid.Add(buttons[m], 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
-        print buttons
+        # print buttons
         self.SetSizer(self.grid)
 
 

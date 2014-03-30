@@ -89,7 +89,7 @@ class MainFrame(wx.Frame):
             {'tabs': ["JobList", "Logic", "Serial"],
              'position': "Bottom",
              'size': (350,300)},
-            {'tabs': ["Angles", "Coordinates"],
+            {'tabs': ["Angles", "Coordinates", "Virtual"],
              'position': "Center",
              'size': (350,300)}
             ]
@@ -117,6 +117,9 @@ class MainFrame(wx.Frame):
                     position_target = pane
 
         self.mgr.Update()
+
+        for p in self.panels_objects:
+            print p
 
         #activate tabs according to activate_tabs setting
         for nb in self.mgr.GetNotebooks():
