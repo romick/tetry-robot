@@ -85,11 +85,16 @@ class MainFrame(wx.Frame):
         ui_setting = [
             {'tabs': ["Moves", "Direction", "ShiftBody", "TiltBody"],
              'position': "Left",
-             'size': (350,300)},
+             'size': (350,300),
+             'stacked': True},
             {'tabs': ["JobList", "Logic", "Serial"],
              'position': "Bottom",
              'size': (350,300)},
-            {'tabs': ["Angles", "Coordinates", "Virtual"],
+            {'tabs': ["Angles", "Coordinates"],
+             'position': "Right",
+             'size': (450,300),
+             'stacked': True},
+            {'tabs': ["Virtual", ],
              'position': "Center",
              'size': (350,300)}
             ]
@@ -105,14 +110,22 @@ class MainFrame(wx.Frame):
                                                                   window=self,
                                                                   queue=self.queue,
                                                                   runner=self.runner)
+                trgt = None
+                position_function = None
+                if 'stacked' in set.keys():
+                    trgt = position_target
                 if set['size'] is not None:
                     pane = aui.AuiPaneInfo().Caption(nm).Name(nm).MinSize(set['size'])
                 if set['position'] == "Left":
-                    self.mgr.AddPane(self.panels_objects[nm], pane.Left(), target=position_target)
+                    position_function = pane.Left
+                elif set['position'] == "Right":
+                    position_function = pane.Right
                 elif set['position'] == "Bottom":
-                    self.mgr.AddPane(self.panels_objects[nm], pane.Bottom())
+                    position_function= pane.Bottom
                 elif set['position'] == "Center":
-                    self.mgr.AddPane(self.panels_objects[nm], pane.Center(), target=position_target)
+                    position_function = pane.Center
+
+                self.mgr.AddPane(self.panels_objects[nm], position_function(), target=trgt)
                 if position_target is None:
                     position_target = pane
 
@@ -121,7 +134,7 @@ class MainFrame(wx.Frame):
         for p in self.panels_objects:
             print p
 
-        #activate tabs according to activate_tabs setting
+        #activate tabs according to default_tabs setting
         for nb in self.mgr.GetNotebooks():
             for i in range(nb.GetPageCount()):
                 if nb.GetPageText(i) in default_tabs:
