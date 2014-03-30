@@ -58,6 +58,8 @@ class MainFrame(wx.Frame):
         wxglade_tmp_menu.Append(ID_EXIT, "&Exit", "", wx.ITEM_NORMAL)
         self.frame_terminal_menubar.Append(wxglade_tmp_menu, "&File")
 
+        self.Show()
+
         #Bot mgmt panels & buttons
         self.mgr = aui.AuiManager()
         self.mgr.SetManagedWindow(self)
