@@ -82,10 +82,10 @@ class MainFrame(wx.Frame):
                         self.panels_classes[name] = obj
 
         #TODO: add loading from settings file
-        ui_setting = [(["Direction", "ShiftBody", "General", "Moves", "TiltBody"], "Left"),
+        ui_setting = [(["Moves", "Direction", "ShiftBody", "TiltBody"], "Left"),
                       (["JobList", "Logic", "Serial"], "Bottom"),
                       (["Angles", "Coordinates"], "Center")]
-        activate_tabs = ["Direction", "Angles"]
+        default_tabs = ["Direction", "Angles"]
 
         for (plist, direction) in ui_setting:
             position_target = None
@@ -112,12 +112,12 @@ class MainFrame(wx.Frame):
         #activate tabs according to activate_tabs setting
         for nb in self.mgr.GetNotebooks():
             for i in range(nb.GetPageCount()):
-                if nb.GetPageText(i) in activate_tabs:
+                if nb.GetPageText(i) in default_tabs:
                     nb.SetSelection(i)
 
         self.SetTitle("Robot Terminal")
         self.SetBackgroundColour(wx.SystemSettings_GetColour(wx.SYS_COLOUR_WINDOW))
-        self.SetSize((1500, 900))
+        # self.SetSize((1500, 900))
         self.Maximize()
         self.mgr.Update()
 
