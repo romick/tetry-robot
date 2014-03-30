@@ -82,14 +82,22 @@ class MainFrame(wx.Frame):
                         self.panels_classes[name] = obj
 
         #TODO: add loading from settings file
-        ui_setting = [(["Moves", "Direction", "ShiftBody", "TiltBody"], "Left"),
-                      (["JobList", "Logic", "Serial"], "Bottom"),
-                      (["Angles", "Coordinates"], "Center")]
+        ui_setting = [
+            {'tabs': ["Moves", "Direction", "ShiftBody", "TiltBody"],
+             'position': "Left",
+             'size': (350,300)},
+            {'tabs': ["JobList", "Logic", "Serial"],
+             'position': "Bottom",
+             'size': (350,300)},
+            {'tabs': ["Angles", "Coordinates"],
+             'position': "Center",
+             'size': (350,300)}
+            ]
         default_tabs = ["Direction", "Angles"]
 
-        for (plist, direction) in ui_setting:
+        for set in ui_setting:
             position_target = None
-            for nm in plist:
+            for nm in set['tabs']:
                 # print nm, position_target, direction
                 self.panels_objects[nm] = self.panels_classes[nm](self,
                                                                   bot=self.bot,
@@ -97,12 +105,13 @@ class MainFrame(wx.Frame):
                                                                   window=self,
                                                                   queue=self.queue,
                                                                   runner=self.runner)
-                pane = aui.AuiPaneInfo().Caption(nm).Name(nm).MinSize(350, 300)
-                if direction == "Left":
+                if set['size'] is not None:
+                    pane = aui.AuiPaneInfo().Caption(nm).Name(nm).MinSize(set['size'])
+                if set['position'] == "Left":
                     self.mgr.AddPane(self.panels_objects[nm], pane.Left(), target=position_target)
-                elif direction == "Bottom":
+                elif set['position'] == "Bottom":
                     self.mgr.AddPane(self.panels_objects[nm], pane.Bottom())
-                elif direction == "Center":
+                elif set['position'] == "Center":
                     self.mgr.AddPane(self.panels_objects[nm], pane.Center(), target=position_target)
                 if position_target is None:
                     position_target = pane
