@@ -1,2 +1,2 @@
 __author__ = 'roman_000'
-__all__ = ["Test"]
+__all__ = ["Test", "Reset"]

@@ -5,7 +5,7 @@ class Move():
     def __init__(self, *args, **kwds):
         self.bot = kwds['bot']
         self.runner = kwds['runner']
-        self.name = 'dummy'
+        self.caption = 'dummy'
 
     def run(self):
         for task in self.tasks():

@@ -16,16 +16,21 @@ class MovesPanel(wx.Panel):
         for mod in sys.modules:
             if mod[:6] == "Moves.":
                 for name, obj in inspect.getmembers(sys.modules[mod]):
-                    if inspect.isclass(obj) and not name == "Moves.GeneralMove.Move":
+                    # print name
+                    if inspect.isclass(obj) and not name == "Move":
                         moves.append(obj(**kwds))
-        print(moves)
+        # print moves
         buttons = range(len(moves))
+        self.grid = wx.FlexGridSizer(len(moves), 1, 1, 1)
         for m in range(len(moves)):
-            buttons[m] = wx.Button(self, wx.ID_ANY, moves[m].name)
+            buttons[m] = wx.Button(self, wx.ID_ANY, moves[m].caption)
 
             def on_button(evt, tasks=moves[m].tasks()):
                 self.run_macro(tasks)
             buttons[m].Bind(wx.EVT_BUTTON, on_button)
+            self.grid.Add(buttons[m], 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL, 0)
+        print buttons
+        self.SetSizer(self.grid)
 
 
     def run_macro(self, task_list):

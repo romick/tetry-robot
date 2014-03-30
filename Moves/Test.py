@@ -4,7 +4,7 @@ import GeneralMove
 class Test(GeneralMove.Move):
     def __init__(self, *args, **kwds):
         GeneralMove.Move.__init__(self, *args, **kwds)
-        self.name = "Test"
+        self.caption = "Test"
 
     def tasks(self):
         return (("sleep", 0.1),
