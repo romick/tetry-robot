@@ -6,33 +6,35 @@ var tetry = {
     },
 
     add_event_handlers: function(){
-        $( ".tetry-command-group" ).each( function() {
-            $(this).click(tetry.load_command_group());
+        $("body").delegate( ".tetry-command-group", "click", function() {
+            tetry.load_command_group($(this));
          });
-        $( ".tetry-command" ).each( function() {
-            $(this).click(tetry.send_command());
+        $("body").delegate( ".tetry-command", "click", function() {
+            tetry.send_command($(this).text());
          });
     },
 
-    load_command_group: function(){
-        $( "#tetry-commands-content" ).load( "/tetry/api/1.0/tasks/"+ $(this).attr("data") );
+    load_command_group: function(element){
+        $( "#tetry-commands-content" ).load( "/tetry/api/1.0/tasks/"+ element.attr("data") );
         $( ".tetry-command-group" ).parent().attr("class", "");
-        $( this ).parent().attr("class", "active");
-        tetry.add_event_handlers();
+        element.parent().attr("class", "active");
+        //tetry.add_event_handlers();
     },
 
-    send_command: function(){
-        tetry.ajaxer("/tetry/api/1.0/tasks/", {name: $(this).text()});
+    send_command: function(text){
+        tetry.ajaxer("/tetry/api/1.0/tasks/", {name: text});
     },
 
     ajaxer: function(url, data){
+        console.log(data);
         $.ajax({
-            url: "post.php",
-            data: data,
+            url: url,
+            contentType: 'application/json',
+            data: JSON.stringify(data),
             type: "POST",
             dataType : "json",
             success: function( json ) {
-                alert( json.status );
+                console.log( json.status + " " + json.name);
             },
             error: function( xhr, status, errorThrown ) {
                 alert( "Sorry, there was a problem!" );
@@ -51,4 +53,12 @@ var tetry = {
 
 $(function() {
     tetry.init();
+    $(window).ajaxError(function(evt, evtData) {
+        if(evtData && ('responseText' in evtData)) {
+          var debuggerWindow = window.open('about:blank', 'debuggerWindow');
+          debuggerWindow.document.open();
+          debuggerWindow.document.write(evtData.responseText);
+          debuggerWindow.document.close();
+        }
+    });
 });

@@ -32,10 +32,11 @@ def index():
 @app.route('/tetry/api/1.0/tasks/', methods=['POST'])
 def add_task_to_queue():
     #TODO: add code to save task to queue
-    if not request.json or not 'title' in request.json:
+    print request.json
+    if not request.json or not 'name' in request.json:
         abort(400)
     q.put_queue(json=request.json)
-    return jsonify({'status':'saved'})
+    return jsonify({'status':'saved', 'name': request.json['name']})
 
 @app.route('/tetry/api/1.0/tasks/<filter_group>', methods=['GET'])
 def list_available_tasks(filter_group):
@@ -43,7 +44,8 @@ def list_available_tasks(filter_group):
         'moves': ['example', 'test'],
         'direction': ['forward', 'right', 'left', 'backward'],
         'shiftbody': ['bodyforward', 'bodyright', 'bodyleft', 'bodybackward'],
-        'tiltbody': ['tiltforward', 'tiltright', 'tiltleft', 'tiltbackward']
+        'tiltbody': ['tiltforward', 'tiltright', 'tiltleft', 'tiltbackward'],
+        'undefined': [None]
 
     }
     list = tasks[filter_group]
@@ -55,5 +57,5 @@ if __name__ == '__main__':
     bot = loop.bot
     q = TaskQueue()
     app.debug = True
-    app.run()
+    app.run(host='0.0.0.0')
 
