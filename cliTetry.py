@@ -2,6 +2,9 @@ __author__ = 'roman_000'
 import Crawler
 
 from flask import Flask, jsonify, render_template, request, abort
+from redis import Redis
+from rq import Queue
+
 
 app = Flask(__name__)
 
@@ -35,27 +38,35 @@ def add_task_to_queue():
     print request.json
     if not request.json or not 'name' in request.json:
         abort(400)
-    q.put_queue(json=request.json)
+    # func = bot.make_step
+    # for name, obj in inspect.getmembers(panel):
+    if hasattr(bot, request.json['command']):
+        func = getattr(bot, request.json['command'])
+        result = func(int(request.json['data']))
+
+    # bot.make_step(int(request.json['angle']))
     return jsonify({'status':'saved', 'name': request.json['name']})
 
-@app.route('/tetry/api/1.0/tasks/<filter_group>', methods=['GET'])
-def list_available_tasks(filter_group):
-    tasks = {
-        'moves': ['example', 'test'],
-        'direction': ['forward', 'right', 'left', 'backward'],
-        'shiftbody': ['bodyforward', 'bodyright', 'bodyleft', 'bodybackward'],
-        'tiltbody': ['tiltforward', 'tiltright', 'tiltleft', 'tiltbackward'],
-        'undefined': [None]
-
-    }
-    list = tasks[filter_group]
-    bot.sender(log=list)
-    return render_template('commands.html', commands=list)
+# @app.route('/tetry/api/1.0/tasks/<filter_group>', methods=['GET'])
+# def list_available_tasks(filter_group):
+#     tasks = {
+#         'moves': [('example', ""), ('test', "")],
+#         'direction': [('forward', 0), ('right', 90), ('left', 270), ('backward', 180)],
+#         'shiftbody': [('shiftforward', 0), ('shiftright', 90), ('shiftleft', 270), ('shiftbackward', 180)],
+#         'tiltbody':  [('tiltforward', 0), ('tiltright', 90), ('tiltleft', 270), ('tiltbackward', 180)],
+#         'undefined': [None]
+#
+#     }
+#     list = tasks[filter_group]
+#     bot.sender(log=list)
+#     return render_template('commands.html', commands=list)
 
 if __name__ == '__main__':
     loop = MainLoop()
     bot = loop.bot
-    q = TaskQueue()
+    bot.load_settings("./Robots/tetry.json")
+    q = Queue(connection=Redis())
+    # q = TaskQueue()
     app.debug = True
     app.run(host='0.0.0.0')
 

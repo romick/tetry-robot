@@ -6,11 +6,11 @@ var tetry = {
     },
 
     add_event_handlers: function(){
-        $("body").delegate( ".tetry-command-group", "click", function() {
-            tetry.load_command_group($(this));
-         });
+//        $("body").delegate( ".tetry-command-group", "click", function() {
+//            tetry.load_command_group($(this));
+//         });
         $("body").delegate( ".tetry-command", "click", function() {
-            tetry.send_command($(this).text());
+            tetry.send_command($(this));
          });
     },
 
@@ -21,8 +21,8 @@ var tetry = {
         //tetry.add_event_handlers();
     },
 
-    send_command: function(text){
-        tetry.ajaxer("/tetry/api/1.0/tasks/", {name: text});
+    send_command: function(element){
+        tetry.ajaxer("/tetry/api/1.0/tasks/", {name: element.text(), command: element.attr("command"), data: element.attr("data")});
     },
 
     ajaxer: function(url, data){

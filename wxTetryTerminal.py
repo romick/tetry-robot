@@ -1,38 +1,17 @@
 #!/usr/bin/env python_32
 
+import inspect
+import sys
+
 import wx
 import wx.aui
 import wx.lib.agw.aui as aui
-import inspect
-import sys
-import threading
-import time
 import Crawler
-from Panels import *
-import Queue
+from RunnerThread import RunnerThread
+from TetryQueue import TetryQueue
+
 
 ID_EXIT = wx.NewId()
-
-
-class LogicThread(threading.Thread):
-    def __init__(self, queue):
-        threading.Thread.__init__(self)
-        self.queue = queue
-
-    def run(self):
-        while 1:
-            if not self.queue.empty():
-                task = self.queue.get()
-                print task
-                task[0](*task[1:])
-            else:
-                time.sleep(0.1)
-
-
-class IndexQueue(Queue.Queue):
-    def __getitem__(self, index):
-        with self.mutex:
-            return self.queue[index]
 
 
 class MainFrame(wx.Frame):
@@ -40,10 +19,10 @@ class MainFrame(wx.Frame):
 
     def __init__(self, *args, **kwds):
         self.bot = Crawler.Controller(sender=self.sender)
-        self.queue = IndexQueue()
+        self.queue = TetryQueue()
         self.total_block = False
 
-        thread = LogicThread(self.queue)
+        thread = RunnerThread(self.queue)
         thread.start()
 
         kwds["style"] = wx.DEFAULT_FRAME_STYLE

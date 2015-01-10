@@ -122,6 +122,7 @@ class Controller:
         sleep1 = 0.1
         sleep2 = 0.5
 
+        print angle
         angle = math.radians(angle)
         s, t = math.sin(angle) * distance, math.cos(angle) * distance
         print "Offsets are: %f, %f" % (s, t)
