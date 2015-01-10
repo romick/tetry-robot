@@ -1,30 +1,14 @@
 __author__ = 'roman_000'
 import Crawler
+from TetryQueue import TetryQueue
+
 
 from flask import Flask, jsonify, render_template, request, abort
-from redis import Redis
-from rq import Queue
 
 
 app = Flask(__name__)
 
-class TaskQueue():
-    """
-    Placeholder for real task queue
-    """
-    def put_queue(self,**kwds):
-        return None
-
-
-class MainLoop():
-    """
-    Bot logic
-    """
-    def __init__(self):
-        self.bot = Crawler.Controller(sender=self.dummysender)
-
-
-    def dummysender(self, **kwds):
+def dummysender(**kwds):
         print(kwds)
 
 @app.route('/')
@@ -38,14 +22,13 @@ def add_task_to_queue():
     print request.json
     if not request.json or not 'name' in request.json:
         abort(400)
-    # func = bot.make_step
-    # for name, obj in inspect.getmembers(panel):
+
     if hasattr(bot, request.json['command']):
         func = getattr(bot, request.json['command'])
         result = func(int(request.json['data']))
-
-    # bot.make_step(int(request.json['angle']))
-    return jsonify({'status':'saved', 'name': request.json['name']})
+        return jsonify({'status':'saved', 'name': request.json['name']})
+    else:
+        return jsonify({'status':'fail'})
 
 # @app.route('/tetry/api/1.0/tasks/<filter_group>', methods=['GET'])
 # def list_available_tasks(filter_group):
@@ -62,11 +45,9 @@ def add_task_to_queue():
 #     return render_template('commands.html', commands=list)
 
 if __name__ == '__main__':
-    loop = MainLoop()
-    bot = loop.bot
+    bot = Crawler.Controller(sender=dummysender)
     bot.load_settings("./Robots/tetry.json")
-    q = Queue(connection=Redis())
-    # q = TaskQueue()
+    queue = TetryQueue()
     app.debug = True
     app.run(host='0.0.0.0')
 
