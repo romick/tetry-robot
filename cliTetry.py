@@ -1,5 +1,8 @@
 __author__ = 'roman_000'
+import sys
 import Crawler
+import inspect
+import datetime, time
 from TetryQueue import TetryQueue
 
 
@@ -11,6 +14,18 @@ app = Flask(__name__)
 def dummysender(**kwds):
         print(kwds)
 
+def dummylogger(level, *args, **kwds):
+    """
+    Placeholder for logger
+
+    """
+    st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+    calling_frame = inspect.getouterframes(inspect.currentframe(),2)
+    if level < 0:
+        print >> sys.stderr, st, calling_frame[1][1:4], args, kwds
+    else:
+        print(st, calling_frame[1][1:4], args, kwds)
+
 @app.route('/')
 def index():
     bot.sender(log="Hello!")
@@ -19,7 +34,7 @@ def index():
 @app.route('/tetry/api/1.0/tasks/', methods=['POST'])
 def add_task_to_queue():
     #TODO: add code to save task to queue
-    print request.json
+    dummylogger(1, request.json)
     if not request.json or not 'name' in request.json:
         abort(400)
 
@@ -45,7 +60,7 @@ def add_task_to_queue():
 #     return render_template('commands.html', commands=list)
 
 if __name__ == '__main__':
-    bot = Crawler.Controller(sender=dummysender)
+    bot = Crawler.Controller(sender=dummysender, logger=dummylogger)
     bot.load_settings("./Robots/tetry.json")
     queue = TetryQueue()
     app.debug = True

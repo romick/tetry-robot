@@ -8,6 +8,7 @@ class Leg:
 
     #TODO: rewrite- each part of the leg should be a Vector
     def __init__(self, **kwds):
+        self.logger = kwds['logger']
         self.leg_offset = kwds['offset']
         self.coxa_length = kwds['coxa']
         self.temur_length = kwds['temur']
@@ -27,29 +28,29 @@ class Leg:
         if self.leg_offset_angle < 0:
             self.leg_offset_angle += 2 * math.pi
         if self.debug:
-            print self.name, ": leg_offset_angle(radians)=", self.leg_offset_angle
-            print self.name, ": leg_offset_angle(degrees)=", math.degrees(self.leg_offset_angle)
+            self.logger(1, self.name, ": leg_offset_angle(radians)=", self.leg_offset_angle)
+            self.logger(1, self.name, ": leg_offset_angle(degrees)=", math.degrees(self.leg_offset_angle))
 
     def _ik_lower_leg(self, x, y):
-        #print "IK function called. x=", x, "y=", y
+        #self.logger(1, "IK function called. x=", x, "y=", y)
         if self.debug:
-            print "Lower leg targets are:", x, y
+            self.logger(1, "Lower leg targets are:", x, y)
         try:
             d = math.sqrt(x ** 2 + y ** 2)
             k = (d ** 2 - self.tibia_length ** 2 + self.temur_length ** 2) / (2 * d)
             m = math.sqrt(self.temur_length ** 2 - k * k)
         except ZeroDivisionError:
             if self.debug:
-                print "Divide by Zero error. No valid joint solution."
+                self.logger(1, "Divide by Zero error. No valid joint solution.")
             return
         except ValueError:
             if self.debug:
-                print "Math function error. Probably square root of negative number. No valid joint solution."
+                self.logger(1, "Math function error. Probably square root of negative number. No valid joint solution.")
             return
         theta = math.degrees(math.atan2(float(y), float(x)) - math.atan2(m, k))
         phi = math.degrees(math.atan2(m, k) + math.atan2(m, (d - k)))
         return_angles = [theta, phi]
-        #print "theta=", theta, "phi=", phi
+        #self.logger(1, "theta=", theta, "phi=", phi)
         return return_angles
 
     def _ik_full_leg(self, x, y, z):
@@ -59,18 +60,17 @@ class Leg:
         lower_leg_angles = self._ik_lower_leg(math.sqrt(x ** 2 + y ** 2) - self.coxa_length, z)
         if lower_leg_angles is None:
             if self.debug:
-                print "No ikFullLeg calculation available!"
+                self.logger(1, "No ikFullLeg calculation available!")
             return
         else:
             if self.debug:
-                print "ikFullLeg ", round(alpha), round(lower_leg_angles[0]), round(lower_leg_angles[1])
+                self.logger(1, "ikFullLeg ", round(alpha), round(lower_leg_angles[0]), round(lower_leg_angles[1]))
             return_angles = [alpha, lower_leg_angles[0], lower_leg_angles[1]]
             return return_angles
 
     def _get_angles(self, x, y, z):
         if self.debug:
-            print
-            print self.name, ": Global targets are:", x, y, z
+            self.logger(1, self.name, ": Global targets are:", x, y, z)
         #re-calculate position
         cos_angle = math.cos(self.leg_offset_angle)
         sin_angle = math.sin(self.leg_offset_angle)
@@ -79,20 +79,20 @@ class Leg:
         y = math.copysign((y - self.leg_offset[1]), cos_angle)
         # rotate to leg zero position
         if self.debug:
-            print "Cos_angle", cos_angle, "Sin_angle", sin_angle
-            print "Leg local targets in global coordinates are x=", x, " y=", y, "z=", z
+            self.logger(1, "Cos_angle", cos_angle, "Sin_angle", sin_angle)
+            self.logger(1, "Leg local targets in global coordinates are x=", x, " y=", y, "z=", z)
         leg_x = cos_angle * x - sin_angle * y
         leg_y = sin_angle * x + cos_angle * y
         # get IK solution and move leg
         if self.debug:
-            print "Leg targets in local coordinates are legX=%.2f" % leg_x, " legY=%.2f" % leg_y, z
+            self.logger(1, "Leg targets in local coordinates are legX=%.2f" % leg_x, " legY=%.2f" % leg_y, z)
         s = self._ik_full_leg(leg_x, leg_y, z)
         if s is None:
             if self.debug:
-                print "No angles available!"
+                self.logger(1, "No angles available!")
             return [0, 0, 0]
         else:
-            #print "%.2f" % s[0], "%.2f" % s[1], "%.2f" % s[2]
+            #self.logger(1, "%.2f" % s[0], "%.2f" % s[1], "%.2f" % s[2])
             return s
 
     #def _getPositions (self, x, y, z):
@@ -101,7 +101,7 @@ class Leg:
     #    some[1] = round(self._interpolate(some[1], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
     #    some[2] = round(self._interpolate(some[2], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
     #    if self.debug:
-    #        print "Positions:", some
+    #        self.logger(1, "Positions:", some)
     #    return some
 
     def go_exact_coordinates(self, x, y, z):
@@ -118,10 +118,10 @@ class Leg:
         self.state_x = int(x)
         self.state_y = int(y)
         self.state_z = int(z)
-        #print >> sys.stderr, self.state_x, self.state_y, self.state_z
+        #self.logger(-1, self.state_x, self.state_y, self.state_z)
 
         [xp, yp, zp] = self._get_angles(x, y, z)
-        # print >> sys.stderr,xp,yp,zp
+        #self.logger(-1, xp,yp,zp)
         command_list = [dict(servo=self.servos[0], angle=int(xp)),
                         dict(servo=self.servos[1], angle=int(yp)),
                         dict(servo=self.servos[2], angle=int(zp))]

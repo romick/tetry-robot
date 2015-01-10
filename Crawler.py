@@ -42,6 +42,7 @@ class Controller:
     """
 
     def __init__(self, **kwds):
+        self.logger = kwds['logger']
         self.sender = kwds['sender']
 
         self.protocols = ['Custom tetry', 'Compact', 'Pololu', 'MiniSSC']
@@ -50,7 +51,7 @@ class Controller:
             self.current_protocol = self.protocols[(kwds['current_protocol'])]
         else:
             self.current_protocol = self.protocols[0]
-        print "Protocol is %s" % self.current_protocol
+        self.logger(1, "Protocol is %s" % self.current_protocol)
 
         self.inited = False
         if 'settings' in kwds:
@@ -72,12 +73,12 @@ class Controller:
         self.settings_file_name = settings_file_name
         self.legs = []
         try:
-            print >> sys.stderr, "Loaded settings from file:", self.settings_file_name
+            self.logger(-1, "Loaded settings from file:", self.settings_file_name)
             sfile = open(self.settings_file_name, 'r')
             jsettings = json.load(sfile)
             self.legs = range(len(jsettings['legs']))
             for j in jsettings['legs']:
-                #print >> sys.stderr, j
+                self.logger(1, j)
                 # nm = j['name']
                 self.legs[j['id']] = (legIK.Leg(name=j['name'],
                                                 id=j['id'],
@@ -87,7 +88,8 @@ class Controller:
                                                 tibia=j['tibia'],
                                                 servos=j['servos'],
                                                 initial_state=j['initial_state'],
-                                                debug=j['debug']))
+                                                debug=j['debug'],
+                                                logger=self.logger))
             self.inverted = jsettings['inverted']
             sfile.close()
         except ValueError:
@@ -108,9 +110,9 @@ class Controller:
 
     def move_to_coordinates(self, coord_d):
         command = []
-        print coord_d
+        self.logger(1, coord_d)
         for lc in range(len(coord_d)):
-            print coord_d[lc][0], coord_d[lc][1], coord_d[lc][2]
+            self.logger(1, coord_d[lc][0], coord_d[lc][1], coord_d[lc][2])
             command += self.legs[lc].go_exact_coordinates(coord_d[lc][0], coord_d[lc][1], coord_d[lc][2])
         self._send(command)
 
@@ -122,16 +124,16 @@ class Controller:
         sleep1 = 0.1
         sleep2 = 0.5
 
-        print angle
+        self.logger(1, angle)
         angle = math.radians(angle)
         s, t = math.sin(angle) * distance, math.cos(angle) * distance
-        print "Offsets are: %f, %f" % (s, t)
+        self.logger(1, "Offsets are: %f, %f" % (s, t))
 
         if self.gaits[self.gait] == "wave":
             for leg in self._sort_legs_angle(angle):
                 #assume to start from BasePose
                 #raise each of legs , move forward by 4*d mm, lower it, then move body forward by d mm
-                print leg.id
+                self.logger(1, leg.id)
                 self._leg_transpose(leg, s, t, distance, sleep1)
                 self.shift_body_offset(-s, -t)
                 time.sleep(sleep2)
@@ -149,8 +151,7 @@ class Controller:
         return self.legs[closest_legs[0]:] + self.legs[:closest_legs[0]]
 
     def _send(self, bot_command):
-        print bot_command
-        print
+        self.logger(1, bot_command)
 
         message = ''
 
@@ -221,10 +222,10 @@ class Controller:
                           chr((posi >> 7) & 0x7F)
 
         elif self.current_protocol == 'MiniSSC':
-            print "MiniSSC current_protocol has not been implemented yet!"
+            self.logger(1, "MiniSSC current_protocol has not been implemented yet!")
 
         else:
-            print "No current_protocol defined!"
+            self.logger(1, "No current_protocol defined!")
 
         self.sender(message=message, bot_command=bot_command)
 

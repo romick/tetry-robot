@@ -18,7 +18,7 @@ class MainFrame(wx.Frame):
     """Simple terminal program for wxPython"""
 
     def __init__(self, *args, **kwds):
-        self.bot = Crawler.Controller(sender=self.sender)
+        self.bot = Crawler.Controller(sender=self.sender, logger=self.dummylogger)
         self.queue = TetryQueue()
         self.total_block = False
 
@@ -82,7 +82,7 @@ class MainFrame(wx.Frame):
         for set in ui_setting:
             position_target = None
             for nm in set['tabs']:
-                # print nm, position_target, direction
+                # self.dummmylogger(1, nm, position_target, direction)
                 self.panels_objects[nm] = self.panels_classes[nm](self,
                                                                   bot=self.bot,
                                                                   menubar=self.frame_terminal_menubar,
@@ -111,7 +111,7 @@ class MainFrame(wx.Frame):
         self.mgr.Update()
 
         for p in self.panels_objects:
-            print p
+            self.dummmylogger(1, p)
 
         #activate tabs according to default_tabs setting
         for nb in self.mgr.GetNotebooks():
@@ -169,7 +169,7 @@ class MainFrame(wx.Frame):
                     if not self.total_block:
                         if name == "update":
                             bc, ms = kwds['bot_command'], kwds['message']
-                            # print >> sys.stderr, pname, bc, ms
+                            # self.dummmylogger(-1, pname, bc, ms)
                             panel.update(bot_command=bc, message=ms)
                     else:
                         if name == "stop":
@@ -179,9 +179,18 @@ class MainFrame(wx.Frame):
                         panel.update()
 
     def runner(self, *args):
-        # print args
+        # self.dummmylogger(1, args)
         self.queue.put(args)
 
+    def dummylogger(level, *args, **kwds):
+        """
+        Placeholder for logger
+
+        """
+        if level < 0:
+            print >> sys.stderr, args, kwds
+        else:
+            print(args, kwds)
 
 class MyApp(wx.App):
     def OnInit(self):
