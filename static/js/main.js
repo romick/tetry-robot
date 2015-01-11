@@ -48,7 +48,21 @@ var tetry = {
                 //alert( "The request is complete!" );
             }
         });
+    },
+
+    log_update: function () {
+        $.get('/tetry/api/1.0/logs/', function(json){
+            console.log(json);
+            $(".tetry-log").append("<tr><td>" + JSON.stringify(json.record) + "</td></tr>");
+            if (!json.empty){
+                tetry.log_update();
+            };
+
+        }, "json");
     }
+
+
+
 };
 
 $(function() {
@@ -61,4 +75,5 @@ $(function() {
           debuggerWindow.document.close();
         }
     });
+    window.setInterval(tetry.log_update, 10000);
 });

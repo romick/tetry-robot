@@ -8,6 +8,11 @@
     padding-top: 50px
 }
 
+.tetry-log {
+    min-height: 300;
+    max-height: 300;
+    overflow-y: scroll;
+}
 
 
 

@@ -10,6 +10,7 @@ from flask import Flask, jsonify, render_template, request, abort
 
 
 app = Flask(__name__)
+log_q = TetryQueue()
 
 def dummysender(**kwds):
         print(kwds)
@@ -21,10 +22,12 @@ def dummylogger(level, *args, **kwds):
     """
     st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
     calling_frame = inspect.getouterframes(inspect.currentframe(),2)
+    record = (st, calling_frame[1][1:4], args, kwds)
+    log_q.put(record)
     if level < 0:
-        print >> sys.stderr, st, calling_frame[1][1:4], args, kwds
+        print >> sys.stderr, record
     else:
-        print(st, calling_frame[1][1:4], args, kwds)
+        print(record)
 
 @app.route('/')
 def index():
@@ -58,6 +61,11 @@ def add_task_to_queue():
 #     list = tasks[filter_group]
 #     bot.sender(log=list)
 #     return render_template('commands.html', commands=list)
+
+@app.route('/tetry/api/1.0/logs/', methods=['GET'])
+def send_log_updates():
+    record = log_q.get_nowait()
+    return jsonify({'empty':log_q.empty(), 'record': record})
 
 if __name__ == '__main__':
     bot = Crawler.Controller(sender=dummysender, logger=dummylogger)
