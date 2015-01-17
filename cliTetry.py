@@ -3,14 +3,14 @@ import sys
 import Crawler
 import inspect
 import datetime, time
-from TetryQueue import TetryQueue
+import TetryQueue
 
 
 from flask import Flask, jsonify, render_template, request, abort
 
 
 app = Flask(__name__)
-log_q = TetryQueue()
+log_q = TetryQueue.TetryQueue()
 
 def dummysender(**kwds):
         print(kwds)
@@ -64,13 +64,19 @@ def add_task_to_queue():
 
 @app.route('/tetry/api/1.0/logs/', methods=['GET'])
 def send_log_updates():
-    record = log_q.get_nowait()
-    return jsonify({'empty':log_q.empty(), 'record': record})
+    try:
+        record = log_q.get_nowait()
+        return jsonify({'empty':log_q.empty(), 'record': record})
+    except:
+        return jsonify({'empty': True, 'record': None})
+    # else:
+    #     raise
+
 
 if __name__ == '__main__':
     bot = Crawler.Controller(sender=dummysender, logger=dummylogger)
     bot.load_settings("./Robots/tetry.json")
-    queue = TetryQueue()
+    queue = TetryQueue.TetryQueue()
     app.debug = True
     app.run(host='0.0.0.0')
 

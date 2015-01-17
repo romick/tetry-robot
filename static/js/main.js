@@ -3,6 +3,9 @@ var tetry = {
     init: function(){
         $( "#tetry-commands-content" ).load( "/tetry/api/1.0/tasks/moves" );
         tetry.add_event_handlers();
+        $('.log-container').slimScroll({
+            height: '150px'
+        });
     },
 
     add_event_handlers: function(){
@@ -23,6 +26,7 @@ var tetry = {
 
     send_command: function(element){
         tetry.ajaxer("/tetry/api/1.0/tasks/", {name: element.text(), command: element.attr("command"), data: element.attr("data")});
+        tetry.log_update();
     },
 
     ajaxer: function(url, data){
@@ -53,7 +57,9 @@ var tetry = {
     log_update: function () {
         $.get('/tetry/api/1.0/logs/', function(json){
             console.log(json);
-            $(".tetry-log").append("<tr><td>" + JSON.stringify(json.record) + "</td></tr>");
+            if (json.record) {
+                $(".tetry-log").prepend("<tr><td>" + JSON.stringify(json.record) + "</td></tr>");
+            };
             if (!json.empty){
                 tetry.log_update();
             };
