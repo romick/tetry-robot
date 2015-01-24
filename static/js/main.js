@@ -16,6 +16,28 @@ var tetry = {
             click: tetry.send_command_from_wheel,
             mousemove: tetry.draw_line_on_wheel
         });
+
+        //leg angle sliders
+
+        if (jQuery.ui) {
+            console.log("UI loaded!")
+        } else {
+            console.log("UI NOT LOADED!!")
+        };
+
+        $( ".leg-1 span" ).each( function (){
+
+//            console.log("there!!!");
+            $( this ).slider({
+                    min:10,
+                    max:100,
+                    value: 40,
+                    range: "min",
+                    animate: true
+            });
+
+        });
+
     },
 
     add_event_handlers: function(){
