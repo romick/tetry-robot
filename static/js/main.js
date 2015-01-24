@@ -6,6 +6,16 @@ var tetry = {
         $('.log-container').slimScroll({
             height: '150px'
         });
+
+        //wheel size 100x100
+        $('.wheel').drawArc({
+            layer: true,
+            fillStyle: 'black',
+            x: 100, y: 100,
+            radius: 90,
+            click: tetry.send_command_from_wheel,
+            mousemove: tetry.draw_line_on_wheel
+        });
     },
 
     add_event_handlers: function(){
@@ -24,9 +34,45 @@ var tetry = {
         //tetry.add_event_handlers();
     },
 
+
     send_command: function(element){
-        tetry.ajaxer("/tetry/api/1.0/tasks/", {name: element.text(), command: element.attr("command"), data: element.attr("data")});
-        tetry.log_update();
+        tetry.ajaxer("/tetry/api/1.0/tasks/", { name: element.text(),
+                                                command: element.attr("command"),
+                                                data: element.attr("data")});
+//        tetry.log_update();
+    },
+
+    send_command_from_wheel: function (layer) {
+                //TODO: change from hard-coded to calculated
+                var x = layer.eventX - 100;
+                var y = layer.eventY - 100;
+                var angle = tetry.coords2angle(x, y);
+                var command = $(this).attr("command")
+                tetry.ajaxer("/tetry/api/1.0/tasks/", {name: "wheel", command: command, data: angle});
+    },
+
+    coords2angle: function (x, y) {
+        var angle = Math.atan2(y, x)/Math.PI*180;
+        angle = angle + 90;
+        if (angle < 0){
+            angle = 360 + angle;
+        };
+        return angle;
+
+    },
+
+    draw_line_on_wheel: function (layer) {
+        var angle = tetry.coords2angle(layer.eventY, layer.eventX)
+        var length = Math.sqrt((layer.eventX-50)*(layer.eventX-50)+(layer.eventY-50)*(layer.eventY-50))
+        $(this).drawLine ({
+            strokeStyle: "white",
+            strokeWidth: 2,
+            x1: 100,
+            y1: 100,
+            x2: layer.eventX,
+            y2: layer.eventY
+
+        });
     },
 
     ajaxer: function(url, data){
@@ -50,6 +96,7 @@ var tetry = {
             // Code to run regardless of success or failure
             complete: function( xhr, status ) {
                 //alert( "The request is complete!" );
+                tetry.log_update();
             }
         });
     },
@@ -82,4 +129,5 @@ $(function() {
         }
     });
     window.setInterval(tetry.log_update, 10000);
+
 });

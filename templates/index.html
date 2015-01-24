@@ -43,15 +43,15 @@
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
-            <form class="navbar-form navbar-right" role="form">
-                <div class="form-group">
-                    <input type="text" placeholder="Email" class="form-control">
-                </div>
-                <div class="form-group">
-                    <input type="password" placeholder="Password" class="form-control">
-                </div>
-                <button type="submit" class="btn btn-success">Sign in</button>
-            </form>
+            <!--<form class="navbar-form navbar-right" role="form">-->
+                <!--<div class="form-group">-->
+                    <!--<input type="text" placeholder="Email" class="form-control">-->
+                <!--</div>-->
+                <!--<div class="form-group">-->
+                    <!--<input type="password" placeholder="Password" class="form-control">-->
+                <!--</div>-->
+                <!--<button type="submit" class="btn btn-success">Sign in</button>-->
+            <!--</form>-->
         </div><!--/.navbar-collapse -->
     </div>
 </nav>
@@ -62,10 +62,11 @@
 
 <div class="container">
 
-    <div role="tabpanel">
+    <div role="tabpanel" class="col-md-6">
 
+        <!--<div class=""-->
         <!-- Nav tabs -->
-        <ul class="nav nav-tabs" role="tablist">
+        <ul class="nav nav-tabs small" role="tablist">
             <li role="presentation"><a href="#moves" aria-controls="moves" class="tetry-command-group" role="tab" data-toggle="tab">Pre-defined moves</a></li>
             <li role="presentation" class="active"><a href="#direction" aria-controls="direction" class="tetry-command-group" role="tab" data-toggle="tab">Move in direction</a></li>
             <li role="presentation"><a href="#shiftbody" aria-controls="shiftbody" class="tetry-command-group" role="tab" data-toggle="tab">Shift body</a></li>
@@ -83,42 +84,45 @@
             <div role="tabpanel" class="tab-pane active" id="direction">
                 <div class="container tetry-divider"></div>
                 <div class="row">
-                    <div class="col-md-2 col-md-offset-5 text-center"><button type="button" class="btn btn-primary btn-lg tetry-command" command="make_step" data="0"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> Forward</button></div>
+                    <div class="col-xs-12 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="make_step" data="0"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> Forward</button></div>
+                </div>
+                <div class="row vcenter">
+                    <div class="col-xs-2 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="make_step" data="270"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Left</button></div>
+                    <div class="col-xs-8 text-center"><canvas class="wheel" width="200" height="200" command="make_step"></canvas></div>
+                    <div class="col-xs-2 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="make_step" data="90"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Right</button></div>
                 </div>
                 <div class="row">
-                    <div class="col-md-2 col-md-offset-3 text-center"><button type="button" class="btn btn-primary btn-lg tetry-command" command="make_step" data="270"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Left</button></div>
-                    <div class="col-md-2 col-md-offset-2 text-center"><button type="button" class="btn btn-primary btn-lg tetry-command" command="make_step" data="90"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Right</button></div>
-                </div>
-                <div class="row">
-                    <div class="col-md-2 col-md-offset-5 text-center"><button type="button" class="btn btn-primary btn-lg tetry-command" command="make_step" data="180"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Backward</button></div>
+                    <div class="col-xs-12 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="make_step" data="180"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Backward</button></div>
                 </div>
             </div>
             <!-- Shift body pane-->
             <div role="tabpanel" class="tab-pane" id="shiftbody">
                 <div class="container tetry-divider"></div>
                 <div class="row">
-                    <div class="col-md-2 col-md-offset-5 text-center"><button type="button" class="btn btn-primary btn-lg tetry-command" command="shift_body_angle" data="0"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> Forward</button></div>
+                    <div class="col-xs-12 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="shift_body_angle" data="0"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> Forward</button></div>
+                </div>
+                <div class="row vcenter">
+                    <div class="col-xs-2 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="shift_body_angle" data="270"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Left</button></div>
+                    <div class="col-xs-8 text-center"><canvas class="wheel" width="200" height="200" command="shift_body_angle"></canvas></div>
+                    <div class="col-xs-2 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="shift_body_angle" data="90"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Right</button></div>
                 </div>
                 <div class="row">
-                    <div class="col-md-2 col-md-offset-3 text-center"><button type="button" class="btn btn-primary btn-lg tetry-command" command="shift_body_angle" data="270"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Left</button></div>
-                    <div class="col-md-2 col-md-offset-2 text-center"><button type="button" class="btn btn-primary btn-lg tetry-command" command="shift_body_angle" data="90"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Right</button></div>
-                </div>
-                <div class="row">
-                    <div class="col-md-2 col-md-offset-5 text-center"><button type="button" class="btn btn-primary btn-lg tetry-command" command="shift_body_angle" data="180"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Backward</button></div>
+                    <div class="col-xs-12 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="shift_body_angle" data="180"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Backward</button></div>
                 </div>
             </div>
             <!--Tilt body pane-->
             <div role="tabpanel" class="tab-pane" id="tiltbody">
                 <div class="container tetry-divider"></div>
                 <div class="row">
-                    <div class="col-md-2 col-md-offset-5 text-center"><button type="button" class="btn btn-primary btn-lg tetry-command" command="shift_body_angle" data="0"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> Forward</button></div>
+                    <div class="col-xs-12 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="rotate_body" data="0"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> Forward</button></div>
+                </div>
+                <div class="row vcenter">
+                    <div class="col-xs-2 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="rotate_body" data="270"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Left</button></div>
+                    <div class="col-xs-8 text-center"><canvas class="wheel" width="200" height="200" command="rotate_body"></canvas></div>
+                    <div class="col-xs-2 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="rotate_body" data="90"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Right</button></div>
                 </div>
                 <div class="row">
-                    <div class="col-md-2 col-md-offset-3 text-center"><button type="button" class="btn btn-primary btn-lg tetry-command" command="shift_body_angle" data="270"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Left</button></div>
-                    <div class="col-md-2 col-md-offset-2 text-center"><button type="button" class="btn btn-primary btn-lg tetry-command" command="shift_body_angle" data="90"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Right</button></div>
-                </div>
-                <div class="row">
-                    <div class="col-md-2 col-md-offset-5 text-center"><button type="button" class="btn btn-primary btn-lg tetry-command" command="shift_body_angle" data="180"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Backward</button></div>
+                    <div class="col-xs-12 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="rotate_body" data="180"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Backward</button></div>
                 </div>
             </div>
         </div>
@@ -170,9 +174,12 @@
 
 <script src="static/js/vendor/bootstrap.min.js"></script>
 
+<!--jQuery and plugins-->
 <script src="static/js/plugins.js"></script>
 <script type="text/javascript" src="static/js/jquery.slimscroll.min.js"></script>
+<script src='static/js/jcanvas.min.js'></script>
 
+<!--Tetry script-->
 <script src="static/js/main.js"></script>
 
 <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
