@@ -29,7 +29,10 @@
 }
 
 
-
+.section-left {
+    /*outline: 1px solid grey;*/
+    border-right: 1px dashed grey;
+}
 
 
 
