@@ -1,3 +1,6 @@
+var wamp_connection = null;
+var sess = null;
+
 
 var tetry = {
     init: function(){
@@ -27,7 +30,6 @@ var tetry = {
 
         $( ".leg-1 span" ).each( function (){
 
-//            console.log("there!!!");
             $( this ).slider({
                     min:10,
                     max:100,
@@ -36,8 +38,32 @@ var tetry = {
                     animate: true
             });
 
-        });
+         });
 
+        wamp_connection = new autobahn.Connection({
+            url: 'ws://127.0.0.1:8080/ws',
+            realm: 'realm1'
+        });
+        wamp_connection.onopen = function(session) {
+            sess = session;
+            console.log("connecting to wamp...");
+            if (sess.isOpen) {
+                console.log("Connected to wamp!");
+            };
+//        var counter = 0;
+//
+//            setInterval(function () {
+//                console.log("publishing to topic 'com': " + counter);
+//                session.publish('com', [counter]);
+//                counter += 1;
+//            }, 1000);
+        };
+        wamp_connection.onclose = function(reason, details) {
+            sess = null;
+            console.log("connection closed ", reason);
+        }
+
+        wamp_connection.open();
     },
 
     add_event_handlers: function(){
@@ -58,9 +84,10 @@ var tetry = {
 
 
     send_command: function(element){
-        tetry.ajaxer("/tetry/api/1.0/tasks/", { name: element.text(),
-                                                command: element.attr("command"),
-                                                data: element.attr("data")});
+        var msg = { name: element.text(),
+                    command: element.attr("command"),
+                    data: element.attr("data")};
+        tetry.ajaxer("/tetry/api/1.0/tasks/", msg);
 //        tetry.log_update();
     },
 
@@ -98,7 +125,19 @@ var tetry = {
     },
 
     ajaxer: function(url, data){
+
         console.log(data);
+        sess.publish('com.tetry.run_command', [data], {}, {acknowledge: true, exclude_me: false}).then(
+            function (publication) {
+                // publish was successful
+                console.log("Command published");
+            },
+            function (error) {
+                // publish failed
+                console.log("Command sending failed");
+            }
+        );
+
         $.ajax({
             url: url,
             contentType: 'application/json',
@@ -122,6 +161,10 @@ var tetry = {
             }
         });
     },
+
+//    wamp_func: function() {
+//        wamp_connection
+//    },
 
     log_update: function () {
         $.get('/tetry/api/1.0/logs/', function(json){
