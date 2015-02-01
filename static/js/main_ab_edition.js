@@ -67,10 +67,8 @@ var tetry = {
     },
 
     on_log_receive: function(log_record){
-        console.log("Got log:",log_record)
-        if (log_record) {
-            $(".tetry-log").prepend("<tr><td>" + JSON.stringify(record) + "</td></tr>");
-        };
+        console.log("Got log:",log_record);
+        $(".tetry-log").prepend("<tr><td>" + JSON.stringify(log_record) + "</td></tr>");
     },
 
     load_command_group: function(element){
@@ -138,18 +136,18 @@ var tetry = {
     },
 
 
-    log_update: function () {
-        $.get('/tetry/api/1.0/logs/', function(json){
-            console.log(json);
-            if (json.record) {
-                $(".tetry-log").prepend("<tr><td>" + JSON.stringify(json.record) + "</td></tr>");
-            };
-            if (!json.empty){
-                tetry.log_update();
-            };
-
-        }, "json");
-    }
+//    log_update: function () {
+//        $.get('/tetry/api/1.0/logs/', function(json){
+//            console.log(json);
+//            if (json.record) {
+//                $(".tetry-log").prepend("<tr><td>" + JSON.stringify(json.record) + "</td></tr>");
+//            };
+//            if (!json.empty){
+//                tetry.log_update();
+//            };
+//
+//        }, "json");
+//    }
 
 
 

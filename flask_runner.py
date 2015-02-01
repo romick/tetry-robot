@@ -50,6 +50,10 @@ def send_log_updates():
     except:
         return jsonify({'empty': True, 'record': None})
 
+@app.route('/tetry/api/1.0/panels/<panel_name>', methods=['GET'])
+def send_panels_list(panel_name):
+
+    return None
 
 if __name__ == '__main__':
     app.debug = True

@@ -27,35 +27,8 @@
 <!--[if lt IE 7]>
 <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
 <![endif]-->
-<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Tetry robot goes webby</a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-            <!--<form class="navbar-form navbar-right" role="form">-->
-                <!--<div class="form-group">-->
-                    <!--<input type="text" placeholder="Email" class="form-control">-->
-                <!--</div>-->
-                <!--<div class="form-group">-->
-                    <!--<input type="password" placeholder="Password" class="form-control">-->
-                <!--</div>-->
-                <!--<button type="submit" class="btn btn-success">Sign in</button>-->
-            <!--</form>-->
-        </div><!--/.navbar-collapse -->
-    </div>
-</nav>
+
+{% include "navbar.html" ignore missing %}
 
 <div class="container tetry-divider">
 
@@ -64,8 +37,6 @@
 <div class="container">
 
     <div role="tabpanel" class="section-left col-md-6">
-
-        <!--<div class=""-->
         <!-- Nav tabs -->
         <ul class="nav nav-tabs small" role="tablist">
             <li role="presentation"><a href="#moves" aria-controls="moves" class="tetry-command-group" role="tab" data-toggle="tab">Pre-defined moves</a></li>
@@ -76,118 +47,21 @@
 
         <!-- Tab panes -->
         <div class="tab-content">
-
-            <!-- move pane-->
-            <div role="tabpanel" class="tab-pane" id="moves">
-                ...1
-            </div>
-            <!-- direction pane-->
-            <div role="tabpanel" class="tab-pane active" id="direction">
-                <div class="container tetry-divider"></div>
-                <div class="row">
-                    <div class="col-xs-12 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="make_step" data="0"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> Forward</button></div>
-                </div>
-                <div class="row vcenter">
-                    <div class="col-xs-3 text-right"><button type="button" class="btn btn-primary btn-xs tetry-command" command="make_step" data="270"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Left</button></div>
-                    <div class="col-xs-6 text-center"><canvas class="wheel" width="200" height="200" command="make_step"></canvas></div>
-                    <div class="col-xs-3 text-left"><button type="button" class="btn btn-primary btn-xs tetry-command" command="make_step" data="90"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Right</button></div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="make_step" data="180"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Backward</button></div>
-                </div>
-            </div>
-            <!-- Shift body pane-->
-            <div role="tabpanel" class="tab-pane" id="shiftbody">
-                <div class="container tetry-divider"></div>
-                <div class="row">
-                    <div class="col-xs-12 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="shift_body_angle" data="0"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> Forward</button></div>
-                </div>
-                <div class="row vcenter">
-                    <div class="col-xs-3 text-right"><button type="button" class="btn btn-primary btn-xs tetry-command" command="shift_body_angle" data="270"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Left</button></div>
-                    <div class="col-xs-6 text-center"><canvas class="wheel" width="200" height="200" command="shift_body_angle"></canvas></div>
-                    <div class="col-xs-3 text-left"><button type="button" class="btn btn-primary btn-xs tetry-command" command="shift_body_angle" data="90"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Right</button></div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="shift_body_angle" data="180"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Backward</button></div>
-                </div>
-            </div>
-            <!--Tilt body pane-->
-            <div role="tabpanel" class="tab-pane" id="tiltbody">
-                <div class="container tetry-divider"></div>
-                <div class="row">
-                    <div class="col-xs-12 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="rotate_body" data="0"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> Forward</button></div>
-                </div>
-                <div class="row vcenter">
-                    <div class="col-xs-3 text-right"><button type="button" class="btn btn-primary btn-xs tetry-command" command="rotate_body" data="270"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> Left</button></div>
-                    <div class="col-xs-6 text-center"><canvas class="wheel" width="200" height="200" command="rotate_body"></canvas></div>
-                    <div class="col-xs-3 text-left"><button type="button" class="btn btn-primary btn-xs tetry-command" command="rotate_body" data="90"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Right</button></div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12 text-center"><button type="button" class="btn btn-primary btn-xs tetry-command" command="rotate_body" data="180"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Backward</button></div>
-                </div>
-            </div>
+{% include "moves.html" ignore missing %}
+{% include "direction.html" ignore missing %}
+{% include "shiftbody.html" ignore missing %}
+{% include "tiltbody.html" ignore missing %}
         </div>
-
     </div>
+
     <div class="section col-md-6">
-        <div class="row status-angle">
-            <div class="col-xs-3 leg-1">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <div class="col-xs-3 leg-2">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <div class="col-xs-3 leg-3">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <div class="col-xs-3 leg-4">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
+{% include "angles.html" ignore missing %}
     </div>
 </div>
 
 <div class="container tetry-divider"></div>
-<!--
-    <div class="container">
-        <ul class="nav nav-tabs">
-          <li role="presentation" class="active"><a href="#" class="tetry-command-group" data="moves">Pre-defined moves</a></li>
-          <li role="presentation"><a href="#" class="tetry-command-group" data="direction">Move in direction</a></li>
-          <li role="presentation"><a href="#" class="tetry-command-group" data="shiftbody">Shift body</a></li>
-          <li role="presentation"><a href="#" class="tetry-command-group" data="tiltbody">Tilt body</a></li>
-    </ul>
-    </div>
-
-    <div class="container tetry-divider"></div>
-
-    <div id="tetry-commands-content">
-        <button type="button" class=" hide btn btn-primary btn-lg">Forward</button>
-    </div>
-
-
-    <div class="container tetry-divider"></div>
--->
-
 <div class="container">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">Log</h3>
-        </div>
-        <div class="panel-body">
-            <div class="log-container">
-                <table class="table tetry-log table-striped">
-                </table>
-            </div>
-        </div>
-    </div>
+{% include "log.html" ignore missing %}
 </div>
 <hr>
 
