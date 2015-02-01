@@ -8,6 +8,13 @@
          "options": {
             "pythonpath": [".."]
          },
+         "components": [
+            {
+               "type": "class",
+               "realm": "realm1",
+               "classname": "tetry_instance.TetryInstance"
+            }
+         ],
          "realms": [
             {
                "name": "realm1",

@@ -12,7 +12,8 @@ import Crawler
 
 DEBUG = True
 
-class Component(ApplicationSession):
+
+class TetryInstance(ApplicationSession):
     """
     An application component that subscribes and receives events,
     and stop after having received 5 events.
@@ -33,7 +34,7 @@ class Component(ApplicationSession):
     def logger(self, level, *args, **kwds):
         st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         calling_frame = inspect.getouterframes(inspect.currentframe(), 2)
-        record = (st, calling_frame[1][1],calling_frame[1][2],calling_frame[1][3], args, kwds)
+        record = (st, calling_frame[1][1], calling_frame[1][2], calling_frame[1][3], args, kwds)
         if DEBUG:
             if level < 0:
                 print >> sys.stderr, record
@@ -58,7 +59,7 @@ class Component(ApplicationSession):
                 print("Failed to subscribe handler: {}".format(res.value))
 
         self.bot = Crawler.Controller(sender=self.sender, logger=self.logger)
-        self.bot.load_settings("./Robots/tetry.json")
+        self.bot.load_settings("../Robots/tetry.json")
 
     @wamp.subscribe(u'com.tetry.run_command')
     def on_command(self, i):
@@ -93,4 +94,4 @@ if __name__ == '__main__':
     from autobahn.twisted.wamp import ApplicationRunner
     runner = ApplicationRunner("ws://127.0.0.1:8080/ws", "realm1")
     print "started"
-    runner.run(Component)
+    runner.run(TetryInstance)
