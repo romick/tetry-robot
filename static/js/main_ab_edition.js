@@ -50,13 +50,7 @@ var tetry = {
             if (sess.isOpen) {
                 console.log("Connected to wamp!");
             };
-//        var counter = 0;
-//
-//            setInterval(function () {
-//                console.log("publishing to topic 'com': " + counter);
-//                session.publish('com', [counter]);
-//                counter += 1;
-//            }, 1000);
+            sess.subscribe('com.tetry.log', tetry.on_log_receive)
         };
         wamp_connection.onclose = function(reason, details) {
             sess = null;
@@ -67,19 +61,22 @@ var tetry = {
     },
 
     add_event_handlers: function(){
-//        $("body").delegate( ".tetry-command-group", "click", function() {
-//            tetry.load_command_group($(this));
-//         });
         $("body").delegate( ".tetry-command", "click", function() {
             tetry.send_command($(this));
          });
+    },
+
+    on_log_receive: function(log_record){
+        console.log("Got log:",log_record)
+        if (log_record) {
+            $(".tetry-log").prepend("<tr><td>" + JSON.stringify(record) + "</td></tr>");
+        };
     },
 
     load_command_group: function(element){
         $( "#tetry-commands-content" ).load( "/tetry/api/1.0/tasks/"+ element.attr("data") );
         $( ".tetry-command-group" ).parent().attr("class", "");
         element.parent().attr("class", "active");
-        //tetry.add_event_handlers();
     },
 
 
@@ -138,33 +135,8 @@ var tetry = {
             }
         );
 
-//        $.ajax({
-//            url: url,
-//            contentType: 'application/json',
-//            data: JSON.stringify(data),
-//            type: "POST",
-//            dataType : "json",
-//            success: function( json ) {
-//                console.log( json.status + " " + json.name);
-//            },
-//            error: function( xhr, status, errorThrown ) {
-//                alert( "Sorry, there was a problem!" );
-//                console.log( "Error: " + errorThrown );
-//                console.log( "Status: " + status );
-//                console.dir( xhr );
-//            },
-//
-//            // Code to run regardless of success or failure
-//            complete: function( xhr, status ) {
-//                //alert( "The request is complete!" );
-//                tetry.log_update();
-//            }
-//        });
     },
 
-//    wamp_func: function() {
-//        wamp_connection
-//    },
 
     log_update: function () {
         $.get('/tetry/api/1.0/logs/', function(json){
@@ -185,14 +157,14 @@ var tetry = {
 
 $(function() {
     tetry.init();
-    $(window).ajaxError(function(evt, evtData) {
-        if(evtData && ('responseText' in evtData)) {
-          var debuggerWindow = window.open('about:blank', 'debuggerWindow');
-          debuggerWindow.document.open();
-          debuggerWindow.document.write(evtData.responseText);
-          debuggerWindow.document.close();
-        }
-    });
-    window.setInterval(tetry.log_update, 10000);
+//    $(window).ajaxError(function(evt, evtData) {
+//        if(evtData && ('responseText' in evtData)) {
+//          var debuggerWindow = window.open('about:blank', 'debuggerWindow');
+//          debuggerWindow.document.open();
+//          debuggerWindow.document.write(evtData.responseText);
+//          debuggerWindow.document.close();
+//        }
+//    });
+//    window.setInterval(tetry.log_update, 10000);
 
 });

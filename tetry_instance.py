@@ -10,6 +10,7 @@ from autobahn.twisted.wamp import ApplicationSession
 
 import Crawler
 
+DEBUG = True
 
 class Component(ApplicationSession):
     """
@@ -17,25 +18,50 @@ class Component(ApplicationSession):
     and stop after having received 5 events.
     """
 
+    # def __init__(self, *args):
+    #     # self.bot = None
+    #     ApplicationSession.__init__(self, args)
+
+    def sender(self, **kwds):
+        if 'bot_command' in kwds:
+            self.publish('com.tetry.servo_targets', kwds['bot_command'])
+            self.logger(2, kwds['bot_command'])
+        if 'message' in kwds:
+            self.publish('com.tetry.send2com', kwds['message'])
+            self.logger(2, kwds['message'])
+
+    def logger(self, level, *args, **kwds):
+        st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+        calling_frame = inspect.getouterframes(inspect.currentframe(), 2)
+        record = (st, calling_frame[1][1],calling_frame[1][2],calling_frame[1][3], args, kwds)
+        if DEBUG:
+            if level < 0:
+                print >> sys.stderr, record
+            else:
+                print(record)
+        self.publish("com.tetry.log", record)
+
     @inlineCallbacks
     def onJoin(self, details):
         print("session attached")
 
-        ## subscribe all methods on this object decorated with "@wamp.subscribe"
-        ## as PubSub event handlers
-        ##
+        # subscribe all methods on this object decorated with "@wamp.subscribe"
+        # as PubSub event handlers
+        #
         results = yield self.subscribe(self)
         for success, res in results:
             if success:
-                ## res is an Subscription instance
+                # res is an Subscription instance
                 print("Ok, subscribed handler with subscription ID {}".format(res.id))
             else:
-                ## res is an Failure instance
+                # res is an Failure instance
                 print("Failed to subscribe handler: {}".format(res.value))
 
+        self.bot = Crawler.Controller(sender=self.sender, logger=self.logger)
+        self.bot.load_settings("./Robots/tetry.json")
 
     @wamp.subscribe(u'com.tetry.run_command')
-    def onCommand(self, i):
+    def on_command(self, i):
         # try:
             print("Got event on run_command: {}".format(i))
             # self.received += 1
@@ -45,20 +71,18 @@ class Component(ApplicationSession):
 
             # print(i)
             print(i[u'command'])
-            if hasattr(bot, i[u'command']):
+            if hasattr(self.bot, i[u'command']):
                 print("Got connected command: {}".format([u'command']))
-                func = getattr(bot, i[u'command'])
+                func = getattr(self.bot, i[u'command'])
                 result = func(int(i[u'data']))
             else:
                 print("function not found")
         # except Exception, e:
         #     print e
 
-
-    @wamp.subscribe(u'com.myapp.topic2')
-    def onEvent2(self, msg):
-        print("Got event on topic2: {}".format(msg))
-
+    @wamp.subscribe(u'com.tetry.log')
+    def on_log(self, msg):
+        print("Got event on log: {}".format(msg))
 
     def onDisconnect(self):
         print("disconnected")
@@ -66,28 +90,7 @@ class Component(ApplicationSession):
 
 
 if __name__ == '__main__':
-    def dummysender(**kwds):
-        print(kwds)
-
-    def dummylogger(level, *args, **kwds):
-        """
-        Placeholder for logger
-
-        """
-        st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-        calling_frame = inspect.getouterframes(inspect.currentframe(), 2)
-        record = (st, calling_frame[1][1:4], args, kwds)
-        # log_q.put(record)
-        if level < 0:
-            print >> sys.stderr, record
-        else:
-            print(record)
-
     from autobahn.twisted.wamp import ApplicationRunner
-
-    bot = Crawler.Controller(sender=dummysender, logger=dummylogger)
-    bot.load_settings("./Robots/tetry.json")
-
     runner = ApplicationRunner("ws://127.0.0.1:8080/ws", "realm1")
     print "started"
     runner.run(Component)

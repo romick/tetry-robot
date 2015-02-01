@@ -73,7 +73,7 @@ class Controller:
         self.settings_file_name = settings_file_name
         self.legs = []
         try:
-            self.logger(-1, "Loaded settings from file:", self.settings_file_name)
+            self.logger(1, "Loaded settings from file:", self.settings_file_name)
             sfile = open(self.settings_file_name, 'r')
             jsettings = json.load(sfile)
             self.legs = range(len(jsettings['legs']))
