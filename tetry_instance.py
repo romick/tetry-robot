@@ -37,15 +37,16 @@ class Component(ApplicationSession):
     @wamp.subscribe(u'com.tetry.run_command')
     def onCommand(self, i):
         # try:
-            print("Got event on topic1: {}".format(i))
+            print("Got event on run_command: {}".format(i))
             # self.received += 1
             # if self.received > 5:
             #     self.leave()
             # print(self.received)
 
-            print i[u'command']
+            # print(i)
+            print(i[u'command'])
             if hasattr(bot, i[u'command']):
-                print i[u'command']
+                print("Got connected command: {}".format([u'command']))
                 func = getattr(bot, i[u'command'])
                 result = func(int(i[u'data']))
             else:
@@ -88,5 +89,5 @@ if __name__ == '__main__':
     bot.load_settings("./Robots/tetry.json")
 
     runner = ApplicationRunner("ws://127.0.0.1:8080/ws", "realm1")
-
+    print "started"
     runner.run(Component)

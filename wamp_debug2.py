@@ -17,7 +17,7 @@ class Component(ApplicationSession):
       counter = 0
       while True:
          print(".")
-         self.publish('com', counter)
+         self.publish('com.tetry.run_command', counter)
          counter += 1
          yield sleep(1)
 
