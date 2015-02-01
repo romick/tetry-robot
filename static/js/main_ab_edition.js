@@ -136,20 +136,6 @@ var tetry = {
     },
 
 
-//    log_update: function () {
-//        $.get('/tetry/api/1.0/logs/', function(json){
-//            console.log(json);
-//            if (json.record) {
-//                $(".tetry-log").prepend("<tr><td>" + JSON.stringify(json.record) + "</td></tr>");
-//            };
-//            if (!json.empty){
-//                tetry.log_update();
-//            };
-//
-//        }, "json");
-//    }
-
-
 
 };
 
@@ -163,6 +149,5 @@ $(function() {
 //          debuggerWindow.document.close();
 //        }
 //    });
-//    window.setInterval(tetry.log_update, 10000);
 
 });
