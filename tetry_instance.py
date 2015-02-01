@@ -23,18 +23,20 @@ class TetryInstance(ApplicationSession):
     #     # self.bot = None
     #     ApplicationSession.__init__(self, args)
 
+    @inlineCallbacks
     def sender(self, **kwds):
         if 'bot_command' in kwds:
-            self.publish('com.tetry.servo_targets', kwds['bot_command'])
-            self.logger(2, kwds['bot_command'])
+            yield self.publish('com.tetry.servo_targets', kwds['bot_command'])
+            yield self.logger(2, kwds['bot_command'])
         if 'message' in kwds:
-            self.publish('com.tetry.send2com', kwds['message'])
-            self.logger(2, kwds['message'])
+            res = yield self.call('com.tetry.send2com', kwds['message'])
+            yield self.publish('com.tetry.sent2com', kwds['message'])
+            yield self.logger(2, kwds['message'])
 
     def logger(self, level, *args, **kwds):
         st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         calling_frame = inspect.getouterframes(inspect.currentframe(), 2)
-        record = (st, calling_frame[1][1], calling_frame[1][2], calling_frame[1][3], args, kwds)
+        record = st, calling_frame[1][1], calling_frame[1][2], calling_frame[1][3], args, kwds
         if DEBUG:
             if level < 0:
                 print >> sys.stderr, record
@@ -61,6 +63,7 @@ class TetryInstance(ApplicationSession):
         self.bot = Crawler.Controller(sender=self.sender, logger=self.logger)
         self.bot.load_settings("../Robots/tetry.json")
 
+    @inlineCallbacks
     @wamp.subscribe(u'com.tetry.run_command')
     def on_command(self, i):
         # try:
@@ -75,7 +78,7 @@ class TetryInstance(ApplicationSession):
             if hasattr(self.bot, i[u'command']):
                 print("Got connected command: {}".format([u'command']))
                 func = getattr(self.bot, i[u'command'])
-                result = func(int(i[u'data']))
+                result = yield func(int(i[u'data']))
             else:
                 print("function not found")
         # except Exception, e:

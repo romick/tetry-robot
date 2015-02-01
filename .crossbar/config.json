@@ -8,13 +8,6 @@
          "options": {
             "pythonpath": [".."]
          },
-         "components": [
-            {
-               "type": "class",
-               "realm": "realm1",
-               "classname": "tetry_instance.TetryInstance"
-            }
-         ],
          "realms": [
             {
                "name": "realm1",
@@ -62,6 +55,55 @@
                   "ws": {
                      "type": "websocket"
                   }
+               }
+            }
+         ]
+      },
+      {
+         "type": "container",
+         "options": {
+            "pythonpath": [".."]
+         },
+         "components": [
+            {
+               "type": "class",
+               "classname": "tetry_instance.TetryInstance",
+               "realm": "realm1",
+               "transport": {
+                  "type": "websocket",
+                  "endpoint": {
+                     "type": "tcp",
+                     "host": "127.0.0.1",
+                     "port": 8080
+                  },
+                  "url": "ws://127.0.0.1:8080/ws"
+               }
+            }
+         ]
+      },
+      {
+         "type": "container",
+         "options": {
+            "pythonpath": [".."]
+         },
+         "components": [
+            {
+               "type": "class",
+               "classname": "comport_component.McuComponent",
+               "extra": {
+                 "port": "./pty1",
+                 "baudrate": 115200,
+                 "debug": "True"
+               },
+               "realm": "realm1",
+               "transport": {
+                  "type": "websocket",
+                  "endpoint": {
+                     "type": "tcp",
+                     "host": "127.0.0.1",
+                     "port": 8080
+                  },
+                  "url": "ws://127.0.0.1:8080/ws"
                }
             }
          ]
