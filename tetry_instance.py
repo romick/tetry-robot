@@ -23,15 +23,15 @@ class TetryInstance(ApplicationSession):
     #     # self.bot = None
     #     ApplicationSession.__init__(self, args)
 
-    @inlineCallbacks
+    # @inlineCallbacks
     def sender(self, **kwds):
         if 'bot_command' in kwds:
-            yield self.publish('com.tetry.servo_targets', kwds['bot_command'])
-            yield self.logger(2, kwds['bot_command'])
+            self.publish('com.tetry.servo_targets', kwds['bot_command'])
+            self.logger(2, kwds['bot_command'])
         if 'message' in kwds:
-            res = yield self.call('com.tetry.send2com', kwds['message'])
-            yield self.publish('com.tetry.sent2com', kwds['message'])
-            yield self.logger(2, kwds['message'])
+            res = self.call('com.tetry.send2com', kwds['message'])
+            self.publish('com.tetry.sent2com', kwds['message'])
+            self.logger(2, kwds['message'])
 
     def logger(self, level, *args, **kwds):
         st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
@@ -74,9 +74,9 @@ class TetryInstance(ApplicationSession):
             # print(self.received)
 
             # print(i)
-            print(i[u'command'])
+            # print(i[u'command'])
             if hasattr(self.bot, i[u'command']):
-                print("Got connected command: {}".format([u'command']))
+                print("Found connected command: {}".format(i[u'command']))
                 func = getattr(self.bot, i[u'command'])
                 result = yield func(int(i[u'data']))
             else:
@@ -87,6 +87,10 @@ class TetryInstance(ApplicationSession):
     @wamp.subscribe(u'com.tetry.log')
     def on_log(self, msg):
         print("Got event on log: {}".format(msg))
+
+    @wamp.subscribe(u'com.tetry.got_from_com')
+    def on_com_line(self, msg):
+        print("Got line from com: {}".format(msg))
 
     def onDisconnect(self):
         print("disconnected")

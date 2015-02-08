@@ -6,7 +6,7 @@ import numpy
 class Leg:
     """ new legIK(offset=[-65.8, 76.3], angle=-2.2829, coxa=29.0, temur=49, tibia=52)  docstring for legIK"""
 
-    #TODO: rewrite- each part of the leg should be a Vector
+    # TODO: rewrite- each part of the leg should be a Vector
     def __init__(self, **kwds):
         self.logger = kwds['logger']
         self.leg_offset = kwds['offset']
@@ -32,7 +32,7 @@ class Leg:
             self.logger(1, self.name, ": leg_offset_angle(degrees)=", math.degrees(self.leg_offset_angle))
 
     def _ik_lower_leg(self, x, y):
-        #self.logger(1, "IK function called. x=", x, "y=", y)
+        # self.logger(1, "IK function called. x=", x, "y=", y)
         if self.debug:
             self.logger(1, "Lower leg targets are:", x, y)
         try:
@@ -50,7 +50,7 @@ class Leg:
         theta = math.degrees(math.atan2(float(y), float(x)) - math.atan2(m, k))
         phi = math.degrees(math.atan2(m, k) + math.atan2(m, (d - k)))
         return_angles = [theta, phi]
-        #self.logger(1, "theta=", theta, "phi=", phi)
+        # self.logger(1, "theta=", theta, "phi=", phi)
         return return_angles
 
     def _ik_full_leg(self, x, y, z):
@@ -71,7 +71,7 @@ class Leg:
     def _get_angles(self, x, y, z):
         if self.debug:
             self.logger(1, self.name, ": Global targets are:", x, y, z)
-        #re-calculate position
+        # re-calculate position
         cos_angle = math.cos(self.leg_offset_angle)
         sin_angle = math.sin(self.leg_offset_angle)
 
@@ -92,10 +92,10 @@ class Leg:
                 self.logger(1, "No angles available!")
             return [0, 0, 0]
         else:
-            #self.logger(1, "%.2f" % s[0], "%.2f" % s[1], "%.2f" % s[2])
+            # self.logger(1, "%.2f" % s[0], "%.2f" % s[1], "%.2f" % s[2])
             return s
 
-    #def _getPositions (self, x, y, z):
+    # def _getPositions (self, x, y, z):
     #    some = self._get_angles(x, y, z)
     #    some[0] = round(self._interpolate(some[0], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
     #    some[1] = round(self._interpolate(some[1], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX))
@@ -106,7 +106,7 @@ class Leg:
 
     def go_exact_coordinates(self, x, y, z):
 
-        #check if targets set
+        # check if targets set
         if x is None:
             x = self.state_x
         if y is None:
@@ -114,14 +114,14 @@ class Leg:
         if z is None:
             z = self.state_z
 
-        #save current position
+        # save current position
         self.state_x = int(x)
         self.state_y = int(y)
         self.state_z = int(z)
-        #self.logger(-1, self.state_x, self.state_y, self.state_z)
+        # self.logger(-1, self.state_x, self.state_y, self.state_z)
 
         [xp, yp, zp] = self._get_angles(x, y, z)
-        #self.logger(-1, xp,yp,zp)
+        # self.logger(-1, xp,yp,zp)
         command_list = [dict(servo=self.servos[0], angle=int(xp)),
                         dict(servo=self.servos[1], angle=int(yp)),
                         dict(servo=self.servos[2], angle=int(zp))]

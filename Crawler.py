@@ -1,17 +1,18 @@
 # -*- coding: latin-1 -*-
 
 import legIK
-import time
+# import time
 import math
 import json
-import sys
+# import sys
 import numpy
 from TetryTools import MathTools
+from twisted.internet import reactor, defer
 
 MY_DRIVE_SPEED_MIN = 500
 MY_DRIVE_SPEED_MAX = 2500
 
-#The class is based on a work by Rob Cook.
+# The class is based on a work by Rob Cook.
 # Please visit www.robcook.eu for more details on algorithm and calculations behind it.
 
 
@@ -69,7 +70,7 @@ class Controller:
                   sfile, cls=LegEncoder, indent=1, separators=(',', ': '))
 
     def load_settings(self, settings_file_name):
-        #load legs from json file
+        # load legs from json file
         self.settings_file_name = settings_file_name
         self.legs = []
         try:
@@ -95,7 +96,7 @@ class Controller:
         except ValueError:
             pass
 
-        #calculate number of servos
+        # calculate number of servos
         for l in self.legs:
             self.servo_number += len(l.servos)
 
@@ -107,6 +108,7 @@ class Controller:
             bc += leg.set_initial_state()
         self._send(bc)
         self.inited = True
+        self.logger(1, "Bot inited.")
 
     def move_to_coordinates(self, coord_d):
         command = []
@@ -116,11 +118,14 @@ class Controller:
             command += self.legs[lc].go_exact_coordinates(coord_d[lc][0], coord_d[lc][1], coord_d[lc][2])
         self._send(command)
 
+    @defer.inlineCallbacks
     def make_step(self, angle, distance=10):
-        #TODO: add gaits
+        # TODO: add gaits
         if not self.inited:
+            self.logger(1, "Bot is not initiated yet. Initiating...")
             self.init_bot()
 
+        self.logger(1, "Making step...")
         sleep1 = 0.1
         sleep2 = 0.5
 
@@ -131,12 +136,15 @@ class Controller:
 
         if self.gaits[self.gait] == "wave":
             for leg in self._sort_legs_angle(angle):
-                #assume to start from BasePose
-                #raise each of legs , move forward by 4*d mm, lower it, then move body forward by d mm
-                self.logger(1, leg.id)
+                # assume to start from BasePose
+                # raise each of legs , move forward by 4*d mm, lower it, then move body forward by d mm
+                self.logger(1, "Transposing leg: %i" % leg.id)
                 self._leg_transpose(leg, s, t, distance, sleep1)
                 self.shift_body_offset(-s, -t)
-                time.sleep(sleep2)
+                d = defer.Deferred()
+                reactor.callLater(sleep2, d.callback, None)
+                yield d
+
         elif self.gaits[self.gait] == "ripple":
             pass
         else:
@@ -166,8 +174,8 @@ class Controller:
 
         elif self.current_protocol == 'Compact':
             if len(bot_command) > 1:
-                #Set Multiple Targets
-                #Compact current_protocol:
+                # Set Multiple Targets
+                # Compact current_protocol:
                 # 0x9F,
                 # number of targets,
                 # first channel number,
@@ -229,14 +237,23 @@ class Controller:
 
         self.sender(message=message, bot_command=bot_command)
 
+    @defer.inlineCallbacks
     def _leg_transpose(self, leg, x_offset, y_offset, depth, sleep_time1):
+
         self._send(leg.go_offset(x_offset, y_offset, -depth))
-        time.sleep(sleep_time1)
+        d1 = defer.Deferred()
+        reactor.callLater(sleep_time1, d1.callback, None)
+        yield d1
+
         self._send(leg.go_offset(x_offset * 2, y_offset * 2, 0))
-        time.sleep(sleep_time1)
+        d2 = defer.Deferred()
+        reactor.callLater(sleep_time1, d2.callback, None)
+        yield d2
+
         self._send(leg.go_offset(x_offset, y_offset, depth))
-        time.sleep(sleep_time1)
-        pass
+        d3 = defer.Deferred()
+        reactor.callLater(sleep_time1, d3.callback, None)
+        yield d3
 
     def shift_body_offset(self, x_offset, y_offset):
         clist = []
@@ -285,7 +302,11 @@ class Controller:
             bot_command.extend(l.rotate(rotation_matrix))
         self._send(bot_command)
 
-    def sleep(self, duration=1):
-        self.sender(update=1)
-        time.sleep(duration)
-        self.sender(update=1)
+    @defer.inlineCallbacks
+    def sleep(self, duration=1.0):
+        # self.sender(update=1)
+        d = defer.Deferred()
+        reactor.callLater(duration, d.callback, duration)
+        yield d
+        # time.sleep(duration)
+        # self.sender(update=1)
