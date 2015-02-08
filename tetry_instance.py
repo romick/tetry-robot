@@ -27,11 +27,11 @@ class TetryInstance(ApplicationSession):
     def sender(self, **kwds):
         if 'bot_command' in kwds:
             self.publish('com.tetry.servo_targets', kwds['bot_command'])
-            self.logger(2, kwds['bot_command'])
+            # self.logger(2, kwds['bot_command'])
         if 'message' in kwds:
             res = self.call('com.tetry.send2com', kwds['message'])
             self.publish('com.tetry.sent2com', kwds['message'])
-            self.logger(2, kwds['message'])
+            # self.logger(2, kwds['message'])
 
     def logger(self, level, *args, **kwds):
         st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
@@ -84,13 +84,13 @@ class TetryInstance(ApplicationSession):
         # except Exception, e:
         #     print e
 
-    @wamp.subscribe(u'com.tetry.log')
-    def on_log(self, msg):
-        print("Got event on log: {}".format(msg))
-
-    @wamp.subscribe(u'com.tetry.got_from_com')
-    def on_com_line(self, msg):
-        print("Got line from com: {}".format(msg))
+    # @wamp.subscribe(u'com.tetry.log')
+    # def on_log(self, msg):
+    #     print("Got event on log: {}".format(msg))
+    #
+    # @wamp.subscribe(u'com.tetry.got_from_com')
+    # def on_com_line(self, msg):
+    #     print("Got line from com: {}".format(msg))
 
     def onDisconnect(self):
         print("disconnected")
