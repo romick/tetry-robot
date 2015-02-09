@@ -72,7 +72,7 @@
                "extra":
                    {"legs":
                        {
-                           "FR leg":
+                           "FR_leg":
                                 {
                                     "type": "3joints",
                                     "temur": 45,
@@ -83,7 +83,7 @@
                                     "servos": [0, 1, 2],
                                     "tibia": 85
                                 },
-                           "MR leg":
+                           "MR_leg":
                                 {
                                     "type": "3joints",
                                     "temur": 45,
@@ -94,7 +94,7 @@
                                     "servos": [0, 1, 2],
                                     "tibia": 85
                                 },
-                           "BR leg":
+                           "BR_leg":
                                 {
                                     "type": "3joints",
                                     "temur": 45,
@@ -105,7 +105,7 @@
                                     "servos": [6, 7, 8],
                                     "tibia": 85
                                 },
-                           "FL leg":
+                           "FL_leg":
                                {
                                    "temur": 45,
                                    "name": "FL leg",
@@ -115,7 +115,7 @@
                                    "servos": [3, 4, 5],
                                    "tibia": 85
                                },
-                           "BL leg":
+                           "BL_leg":
                                {
                                    "temur": 45,
                                    "name": "BL leg",
@@ -124,7 +124,7 @@
                                    "coxa": 85,
                                    "servos": [9, 10, 11],
                                    "tibia": 85},
-                           "ML leg":
+                           "ML_leg":
                                {
                                    "temur": 45,
                                    "name": "ML leg",

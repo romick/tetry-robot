@@ -42,9 +42,11 @@ class Controller:
 
     """
 
+    # to re-write
     def __init__(self, **kwds):
         self.logger = kwds['logger']
         self.sender = kwds['sender']
+        self.app = kwds['app']
 
         self.protocols = ['Custom tetry', 'Compact', 'Pololu', 'MiniSSC']
         self.gaits = ["tripod", "wave", "ripple"]
@@ -64,63 +66,65 @@ class Controller:
         self.inverted = []
         self.servo_number = 0
 
+    # to re-write
     def dump_settings(self):
         sfile = open(self.settings_file_name, 'w')
         json.dump(dict(legs=self.legs, inverted=self.inverted),
                   sfile, cls=LegEncoder, indent=1, separators=(',', ': '))
 
+    # DEPRECATED!
+    # @defer.inlineCallbacks
+    # def load_settings_from_file(self, settings_file_name):
+    #     # load legs from json file
+    #     self.settings_file_name = settings_file_name
+    #     self.legs = []
+    #     try:
+    #         self.logger(1, "Loaded settings from file:", self.settings_file_name)
+    #         sfile = open(self.settings_file_name, 'r')
+    #         jsettings = json.load(sfile)
+    #         self.load_settings(jsettings)
+    #         sfile.close()
+    #     except ValueError:
+    #         pass
+    #     # yield 1
+    #
+    #     # calculate number of servos
+    #     for l in self.legs:
+    #         self.servo_number += len(l.servos)
+    #
+    #     self.sender(start=1)
+
+    #  OK
     @defer.inlineCallbacks
-    def load_settings(self, settings_file_name):
-        # load legs from json file
-        self.settings_file_name = settings_file_name
-        self.legs = []
-        try:
-            self.logger(1, "Loaded settings from file:", self.settings_file_name)
-            sfile = open(self.settings_file_name, 'r')
-            jsettings = json.load(sfile)
-            self.legs = range(len(jsettings['legs']))
-            for j in jsettings['legs']:
-                self.logger(1, j)
-                # nm = j['name']
-                # TODO: legIK should be crossbar.io RPC (service)
-                self.legs[j['id']] = (legIK.Leg(name=j['name'],
-                                                id=j['id'],
-                                                offset=j['offset'],
-                                                coxa=j['coxa'],
-                                                temur=j['temur'],
-                                                tibia=j['tibia'],
-                                                servos=j['servos'],
-                                                initial_state=j['initial_state'],
-                                                debug=j['debug'],
-                                                logger=self.logger))
-            self.inverted = jsettings['inverted']
-            sfile.close()
-        except ValueError:
-            pass
-        yield 1
+    def load_settings(self, model):
+        self.legs = model[u'legs'].keys()
+        for key,j in model[u'legs'].iteritems():
+            print key, j
+            yield self.app.call("com.tetry.{}.init".format(key), j)
+            # TODO: legIK should be crossbar.io RPC (service)
+        self.inverted = model['inverted']
 
-        # calculate number of servos
-        for l in self.legs:
-            self.servo_number += len(l.servos)
 
-        self.sender(start=1)
-
+    # OK
+    @defer.inlineCallbacks
     def init_bot(self):
         bc = []
         for leg in self.legs:
-            bc += leg.set_initial_state()
+            res = yield self.app.call("com.tetry.{}.get_starting_point".format(leg))
+            bc += res
         self._send(bc)
         self.inited = True
         self.logger(1, "Bot inited.")
 
-    def move_to_coordinates(self, coord_d):
-        command = []
-        self.logger(1, coord_d)
-        for lc in range(len(coord_d)):
-            self.logger(1, coord_d[lc][0], coord_d[lc][1], coord_d[lc][2])
-            command += self.legs[lc].go_exact_coordinates(coord_d[lc][0], coord_d[lc][1], coord_d[lc][2])
-        self._send(command)
+    # def move_to_coordinates(self, coord_d):
+    #     command = []
+    #     self.logger(1, coord_d)
+    #     for lc in range(len(coord_d)):
+    #         self.logger(1, coord_d[lc][0], coord_d[lc][1], coord_d[lc][2])
+    #         command += self.legs[lc].go_exact_coordinates(coord_d[lc][0], coord_d[lc][1], coord_d[lc][2])
+    #     self._send(command)
 
+    # to re-write
     @defer.inlineCallbacks
     def make_step(self, angle, distance=10):
         # TODO: add gaits
@@ -154,25 +158,33 @@ class Controller:
             pass
         pass
 
+    # to re-write
     def _sort_legs_angle(self, angle):
         """Select closest to direction leg to start with"""
-        legs_angles = [abs(math.degrees(x.leg_offset_angle - angle)) for x in self.legs]
-        min_angle = min(legs_angles)
-        closest_legs = [i for i, j in enumerate(legs_angles) if j == min_angle]
-        return self.legs[closest_legs[0]:] + self.legs[:closest_legs[0]]
+        # TODO: rewrite to return list of strings
+        # legs_angles = [abs(math.degrees(x.leg_offset_angle - angle)) for x in self.legs]
+        # min_angle = min(legs_angles)
+        # closest_legs = [i for i, j in enumerate(legs_angles) if j == min_angle]
+        # return self.legs[closest_legs[0]:] + self.legs[:closest_legs[0]]
+        return self.legs
 
+    # OK
     def _send(self, bot_command):
         self.logger(1, bot_command)
 
-        message = ''
-
         bot_command = self._angles2positions(bot_command)
+
+        self.sender(message=self._translate(bot_command), bot_command=bot_command)
+
+    # OK
+    def _translate(self, bot_command):
+        message = ''
 
         if self.current_protocol == 'Custom tetry':
             for x in bot_command:
                 message += '#%iP%i' % (x['servo'], x['position'])
                 # self.sliders[x['servo']].SetValue(x['position'])
-            #message = message[::-1]
+            # message = message[::-1]
             message += '\n'
 
         elif self.current_protocol == 'Compact':
@@ -237,27 +249,33 @@ class Controller:
 
         else:
             self.logger(1, "No current_protocol defined!")
+        return message
 
-        self.sender(message=message, bot_command=bot_command)
-
+    # OK
     @defer.inlineCallbacks
     def _leg_transpose(self, leg, x_offset, y_offset, depth, sleep_time1):
+        # TODO: leg here should be a string referring to required leg
+        rpc = "com.tetry.{}.get_to_offset".format(leg)
 
-        self._send(leg.go_offset(x_offset, y_offset, -depth))
+        res1 = yield self.app.call(rpc, x_offset, y_offset, -depth)
+        self._send(res1)
         d1 = defer.Deferred()
         reactor.callLater(sleep_time1, d1.callback, None)
         yield d1
 
-        self._send(leg.go_offset(x_offset * 2, y_offset * 2, 0))
+        res2 = yield self.app.call(rpc, x_offset * 2, y_offset * 2, 0)
+        self._send(res2)
         d2 = defer.Deferred()
         reactor.callLater(sleep_time1, d2.callback, None)
         yield d2
 
-        self._send(leg.go_offset(x_offset, y_offset, depth))
+        res3 = yield self.app.call(rpc, x_offset, y_offset, depth)
+        self._send(res3)
         d3 = defer.Deferred()
         reactor.callLater(sleep_time1, d3.callback, None)
         yield d3
 
+    # to re-write
     def shift_body_offset(self, x_offset, y_offset):
         clist = []
         for l in self.legs:
@@ -265,6 +283,7 @@ class Controller:
         self._send(clist)
         # pass
 
+    # to re-write
     def shift_body_angle(self, angle, length=30):
         x_offset, y_offset = length * math.cos(math.radians(angle)), length * math.sin(math.radians(angle))
         clist = []
@@ -272,6 +291,8 @@ class Controller:
             clist.extend(l.go_offset_from_initial(x_offset, y_offset, 0))
         self._send(clist)
 
+
+    # OK
     def _angles2positions(self, alist):
         plist = []
         for a in alist:
@@ -287,6 +308,7 @@ class Controller:
             plist.append(a)
         return plist
 
+    # to re-write
     def rotate_body(self, angle=0, axis_vector=(0, 0, 0)):
         from math import cos, sin
         angle = math.radians(angle)
@@ -305,11 +327,9 @@ class Controller:
             bot_command.extend(l.rotate(rotation_matrix))
         self._send(bot_command)
 
+    # OK
     @defer.inlineCallbacks
     def sleep(self, duration=1.0):
-        # self.sender(update=1)
         d = defer.Deferred()
         reactor.callLater(duration, d.callback, duration)
         yield d
-        # time.sleep(duration)
-        # self.sender(update=1)

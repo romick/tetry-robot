@@ -60,15 +60,16 @@ class TetryInstance(ApplicationSession):
             else:
                 # res is an Failure instance
                 print("Failed to subscribe handler: {}".format(res.value))
-        self.bot = Crawler.Controller(sender=self.sender, logger=self.logger)
+        self.bot = Crawler.Controller(sender=self.sender, logger=self.logger, app=self)
         try:
-            self.bot.load_settings("../Robots/tetry.json")
-        except Exception, e:
-            print(e)
-        else:
+        # self.bot.load_settings_from_file("../Robots/tetry.json")
+        # else:
             self.model = yield self.call('com.tetry.get_model')
-            print("Loaded model:")
-            print(self.model)
+            self.bot.load_settings(self.model)
+            print("Loaded model.")
+        except Exception as e:
+            print(e.value)
+        # print(self.model)
 
 
     @inlineCallbacks
