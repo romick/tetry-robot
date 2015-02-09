@@ -69,6 +69,7 @@ class Controller:
         json.dump(dict(legs=self.legs, inverted=self.inverted),
                   sfile, cls=LegEncoder, indent=1, separators=(',', ': '))
 
+    @defer.inlineCallbacks
     def load_settings(self, settings_file_name):
         # load legs from json file
         self.settings_file_name = settings_file_name
@@ -96,6 +97,7 @@ class Controller:
             sfile.close()
         except ValueError:
             pass
+        yield 1
 
         # calculate number of servos
         for l in self.legs:

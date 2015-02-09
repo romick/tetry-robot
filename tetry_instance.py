@@ -19,15 +19,16 @@ class TetryInstance(ApplicationSession):
     and stop after having received 5 events.
     """
 
-    # def __init__(self, *args):
-    #     # self.bot = None
-    #     ApplicationSession.__init__(self, args)
+    # @inlineCallbacks
+    def __init__(self, config = None):
+        ApplicationSession.__init__(self, config)
+        print("component created")
 
     # @inlineCallbacks
     def sender(self, **kwds):
         if 'bot_command' in kwds:
             self.publish('com.tetry.servo_targets', kwds['bot_command'])
-            # self.logger(2, kwds['bot_command'])
+            self.logger(2, kwds['bot_command'])
         if 'message' in kwds:
             res = self.call('com.tetry.send2com', kwds['message'])
             self.publish('com.tetry.sent2com', kwds['message'])
@@ -59,9 +60,16 @@ class TetryInstance(ApplicationSession):
             else:
                 # res is an Failure instance
                 print("Failed to subscribe handler: {}".format(res.value))
-
         self.bot = Crawler.Controller(sender=self.sender, logger=self.logger)
-        self.bot.load_settings("../Robots/tetry.json")
+        try:
+            self.bot.load_settings("../Robots/tetry.json")
+        except Exception, e:
+            print(e)
+        else:
+            self.model = yield self.call('com.tetry.get_model')
+            print("Loaded model:")
+            print(self.model)
+
 
     @inlineCallbacks
     @wamp.subscribe(u'com.tetry.run_command')

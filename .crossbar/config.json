@@ -66,6 +66,98 @@
          },
          "components": [
             {
+               "id": "PhysicalModel",
+               "type": "class",
+               "classname": "physical_model.PhysicalModel",
+               "extra":
+                   {"legs":
+                       {
+                           "FR leg":
+                                {
+                                    "type": "3joints",
+                                    "temur": 45,
+                                    "name": "FR leg",
+                                    "offset": [25, 25],
+                                    "debug": false,
+                                    "coxa": 85,
+                                    "servos": [0, 1, 2],
+                                    "tibia": 85
+                                },
+                           "MR leg":
+                                {
+                                    "type": "3joints",
+                                    "temur": 45,
+                                    "name": "MR leg",
+                                    "offset": [25, 0],
+                                    "debug": false,
+                                    "coxa": 85,
+                                    "servos": [0, 1, 2],
+                                    "tibia": 85
+                                },
+                           "BR leg":
+                                {
+                                    "type": "3joints",
+                                    "temur": 45,
+                                    "name": "BR leg",
+                                    "offset": [25, -25],
+                                    "debug": false,
+                                    "coxa": 85,
+                                    "servos": [6, 7, 8],
+                                    "tibia": 85
+                                },
+                           "FL leg":
+                               {
+                                   "temur": 45,
+                                   "name": "FL leg",
+                                   "offset": [-25, 25],
+                                   "debug": false,
+                                   "coxa": 85,
+                                   "servos": [3, 4, 5],
+                                   "tibia": 85
+                               },
+                           "BL leg":
+                               {
+                                   "temur": 45,
+                                   "name": "BL leg",
+                                   "offset": [-25, -25],
+                                   "debug": false,
+                                   "coxa": 85,
+                                   "servos": [9, 10, 11],
+                                   "tibia": 85},
+                           "ML leg":
+                               {
+                                   "temur": 45,
+                                   "name": "ML leg",
+                                   "offset": [-25, 0],
+                                   "debug": false,
+                                   "coxa": 85,
+                                   "servos": [3, 4, 5],
+                                   "tibia": 85
+                               }
+                       },
+                       "inverted": [2, 5, 8, 11]
+               },
+           "realm": "realm1",
+               "transport": {
+                  "type": "websocket",
+                  "endpoint": {
+                     "type": "tcp",
+                     "host": "127.0.0.1",
+                     "port": 8080
+                  },
+                  "url": "ws://127.0.0.1:8080/ws"
+               }
+            }
+         ]
+      },
+      {
+         "type": "container",
+         "options": {
+            "pythonpath": [".."]
+         },
+         "components": [
+            {
+               "id": "TetryInstance",
                "type": "class",
                "classname": "tetry_instance.TetryInstance",
                "realm": "realm1",
@@ -88,7 +180,8 @@
          },
          "components": [
             {
-               "type": "class",
+              "id": "EventCatcher",
+              "type": "class",
                "classname": "event_catcher.EventCatcher",
                "realm": "realm1",
                "transport": {
@@ -110,6 +203,7 @@
          },
          "components": [
             {
+               "id": "ComPortWorker",
                "type": "class",
                "classname": "comport_component.McuComponent",
                "extra": {
