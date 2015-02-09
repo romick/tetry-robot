@@ -81,6 +81,7 @@ class Controller:
             for j in jsettings['legs']:
                 self.logger(1, j)
                 # nm = j['name']
+                # TODO: legIK should be crossbar.io RPC (service)
                 self.legs[j['id']] = (legIK.Leg(name=j['name'],
                                                 id=j['id'],
                                                 offset=j['offset'],
