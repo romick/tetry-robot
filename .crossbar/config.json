@@ -1,6 +1,7 @@
 
 {
    "controller": {
+     "id": "tetry"
    },
    "workers": [
       {
@@ -138,6 +139,32 @@
                        "inverted": [2, 5, 8, 11]
                },
            "realm": "realm1",
+               "transport": {
+                  "type": "websocket",
+                  "endpoint": {
+                     "type": "tcp",
+                     "host": "127.0.0.1",
+                     "port": 8080
+                  },
+                  "url": "ws://127.0.0.1:8080/ws"
+               }
+            }
+         ]
+      },
+      {
+         "type": "container",
+         "options": {
+            "pythonpath": [".."]
+         },
+         "components": [
+            {
+              "id": "FR_leg",
+              "type": "class",
+               "classname": "leg_runner.LegRunner",
+               "extra":{
+                 "name": "FR_leg"
+               },
+               "realm": "realm1",
                "transport": {
                   "type": "websocket",
                   "endpoint": {

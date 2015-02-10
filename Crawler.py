@@ -104,7 +104,6 @@ class Controller:
             # TODO: legIK should be crossbar.io RPC (service)
         self.inverted = model['inverted']
 
-
     # OK
     @defer.inlineCallbacks
     def init_bot(self):
@@ -255,6 +254,7 @@ class Controller:
     @defer.inlineCallbacks
     def _leg_transpose(self, leg, x_offset, y_offset, depth, sleep_time1):
         # TODO: leg here should be a string referring to required leg
+        # TODO: re-write in Twisted way
         rpc = "com.tetry.{}.get_to_offset".format(leg)
 
         res1 = yield self.app.call(rpc, x_offset, y_offset, -depth)
@@ -271,26 +271,56 @@ class Controller:
 
         res3 = yield self.app.call(rpc, x_offset, y_offset, depth)
         self._send(res3)
-        d3 = defer.Deferred()
-        reactor.callLater(sleep_time1, d3.callback, None)
-        yield d3
+        # d3 = defer.Deferred()
+        # reactor.callLater(sleep_time1, d3.callback, None)
+        # yield d3
 
-    # to re-write
+    # OK
     def shift_body_offset(self, x_offset, y_offset):
-        clist = []
+        ds=[]
         for l in self.legs:
-            clist.extend(l.go_offset(x_offset, y_offset, 0))
-        self._send(clist)
+            d = defer.Deferred()
+            d.addCallback(self.app.call, "com.tetry.{}.get_to_offset".format(l), x_offset, y_offset, 0)
+            ds.append(d)
+        dlist = defer.gatherResults(ds, consumeErrors=True)
+        dlist.addCallback(self._flatten_list)
+        dlist.addCallback(self._send)
+        for d in ds:
+            reactor.callWhenRunning(d.callback)
+            yield d
+        # clist = []
+        # for leg in self.legs:
+        #     rpc = "com.tetry.{}.get_to_offset".format(leg)
+        #
+        #     clist.extend(l.go_offset(x_offset, y_offset, 0))
+        # self._send(clist)
         # pass
 
-    # to re-write
-    def shift_body_angle(self, angle, length=30):
-        x_offset, y_offset = length * math.cos(math.radians(angle)), length * math.sin(math.radians(angle))
-        clist = []
-        for l in self.legs:
-            clist.extend(l.go_offset_from_initial(x_offset, y_offset, 0))
-        self._send(clist)
+    # OK
+    def _flatten_list(self, list):
+        return [item for sublist in list for item in sublist]
 
+    # OK
+    @defer.inlineCallbacks
+    def shift_body_angle(self, angle, length=30):
+        # TODO: length should be taken from PhysicalModel
+        x_offset, y_offset = length * math.cos(math.radians(angle)), length * math.sin(math.radians(angle))
+        # clist = []
+        ds=[]
+        for l in self.legs:
+            d = defer.Deferred()
+            d.addCallback(self.app.call, "com.tetry.{}.get_to_offset_from_initial".format(l), x_offset, y_offset, 0)
+            ds.append(d)
+        dlist = defer.gatherResults(ds, consumeErrors=True)
+        dlist.addCallback(self._flatten_list)
+        dlist.addCallback(self._send)
+        for d in ds:
+            reactor.callWhenRunning(d.callback)
+            yield d
+
+
+        # clist.extend(l.go_offset_from_initial(x_offset, y_offset, 0))
+        # self._send(clist)
 
     # OK
     def _angles2positions(self, alist):
@@ -308,7 +338,7 @@ class Controller:
             plist.append(a)
         return plist
 
-    # to re-write
+    # OK
     def rotate_body(self, angle=0, axis_vector=(0, 0, 0)):
         from math import cos, sin
         angle = math.radians(angle)
@@ -322,10 +352,22 @@ class Controller:
                                        [l * n * (1 - cos(angle)) - m * sin(angle),
                                         m * n * (1 - cos(angle)) + l * sin(angle),
                                         n * n * (1 - cos(angle)) + cos(angle)]])
-        bot_command = []
+        ds=[]
         for l in self.legs:
-            bot_command.extend(l.rotate(rotation_matrix))
-        self._send(bot_command)
+            d = defer.Deferred()
+            d.addCallback(self.app.call, "com.tetry.{}.get_rotate".format(l), rotation_matrix)
+            ds.append(d)
+        dlist = defer.gatherResults(ds, consumeErrors=True)
+        dlist.addCallback(self._flatten_list)
+        dlist.addCallback(self._send)
+        for d in ds:
+            reactor.callWhenRunning(d.callback)
+            yield d
+
+        # bot_command = []
+        # for l in self.legs:
+        #     bot_command.extend(l.rotate(rotation_matrix))
+        # self._send(bot_command)
 
     # OK
     @defer.inlineCallbacks
