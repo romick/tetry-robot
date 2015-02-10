@@ -1,6 +1,6 @@
 # -*- coding: latin-1 -*-
 
-import legIK
+# import legIK
 # import time
 import math
 import json
@@ -16,20 +16,20 @@ MY_DRIVE_SPEED_MAX = 2500
 # Please visit www.robcook.eu for more details on algorithm and calculations behind it.
 
 
-class LegEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, legIK.Leg):
-            return dict(name=obj.name,
-                        id=obj.id,
-                        offset=obj.leg_offset,
-                        coxa=obj.coxa_length,
-                        temur=obj.temur_length,
-                        tibia=obj.tibia_length,
-                        servos=obj.servos,
-                        initial_state=obj.initial_state,
-                        debug=obj.debug)
-        # Let the base class default method raise the TypeError
-        return json.JSONEncoder.default(self, obj)
+# class LegEncoder(json.JSONEncoder):
+#     def default(self, obj):
+#         if isinstance(obj, legIK.Leg):
+#             return dict(name=obj.name,
+#                         id=obj.id,
+#                         offset=obj.leg_offset,
+#                         coxa=obj.coxa_length,
+#                         temur=obj.temur_length,
+#                         tibia=obj.tibia_length,
+#                         servos=obj.servos,
+#                         initial_state=obj.initial_state,
+#                         debug=obj.debug)
+#         # Let the base class default method raise the TypeError
+#         return json.JSONEncoder.default(self, obj)
 
 
 class Controller:
@@ -67,10 +67,10 @@ class Controller:
         self.servo_number = 0
 
     # to re-write
-    def dump_settings(self):
-        sfile = open(self.settings_file_name, 'w')
-        json.dump(dict(legs=self.legs, inverted=self.inverted),
-                  sfile, cls=LegEncoder, indent=1, separators=(',', ': '))
+    # def dump_settings(self):
+    #     sfile = open(self.settings_file_name, 'w')
+    #     json.dump(dict(legs=self.legs, inverted=self.inverted),
+    #               sfile, cls=LegEncoder, indent=1, separators=(',', ': '))
 
     # DEPRECATED!
     # @defer.inlineCallbacks

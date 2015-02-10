@@ -65,8 +65,8 @@ class TetryInstance(ApplicationSession):
         # self.bot.load_settings_from_file("../Robots/tetry.json")
         # else:
             self.model = yield self.call('com.tetry.get_model')
-            self.bot.load_settings(self.model)
-            print("Loaded model.")
+            yield self.bot.load_settings(self.model)
+            print("Loading model...")
         except Exception as e:
             print(e.value)
         # print(self.model)

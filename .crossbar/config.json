@@ -184,6 +184,136 @@
          },
          "components": [
             {
+              "id": "MR_leg",
+              "type": "class",
+               "classname": "leg_runner.LegRunner",
+               "extra":{
+                 "name": "MR_leg"
+               },
+               "realm": "realm1",
+               "transport": {
+                  "type": "websocket",
+                  "endpoint": {
+                     "type": "tcp",
+                     "host": "127.0.0.1",
+                     "port": 8080
+                  },
+                  "url": "ws://127.0.0.1:8080/ws"
+               }
+            }
+         ]
+      },
+      {
+         "type": "container",
+         "options": {
+            "pythonpath": [".."]
+         },
+         "components": [
+            {
+              "id": "BR_leg",
+              "type": "class",
+               "classname": "leg_runner.LegRunner",
+               "extra":{
+                 "name": "BR_leg"
+               },
+               "realm": "realm1",
+               "transport": {
+                  "type": "websocket",
+                  "endpoint": {
+                     "type": "tcp",
+                     "host": "127.0.0.1",
+                     "port": 8080
+                  },
+                  "url": "ws://127.0.0.1:8080/ws"
+               }
+            }
+         ]
+      },
+      {
+         "type": "container",
+         "options": {
+            "pythonpath": [".."]
+         },
+         "components": [
+            {
+              "id": "FL_leg",
+              "type": "class",
+               "classname": "leg_runner.LegRunner",
+               "extra":{
+                 "name": "FL_leg"
+               },
+               "realm": "realm1",
+               "transport": {
+                  "type": "websocket",
+                  "endpoint": {
+                     "type": "tcp",
+                     "host": "127.0.0.1",
+                     "port": 8080
+                  },
+                  "url": "ws://127.0.0.1:8080/ws"
+               }
+            }
+         ]
+      },
+      {
+         "type": "container",
+         "options": {
+            "pythonpath": [".."]
+         },
+         "components": [
+            {
+              "id": "ML_leg",
+              "type": "class",
+               "classname": "leg_runner.LegRunner",
+               "extra":{
+                 "name": "ML_leg"
+               },
+               "realm": "realm1",
+               "transport": {
+                  "type": "websocket",
+                  "endpoint": {
+                     "type": "tcp",
+                     "host": "127.0.0.1",
+                     "port": 8080
+                  },
+                  "url": "ws://127.0.0.1:8080/ws"
+               }
+            }
+         ]
+      },
+      {
+         "type": "container",
+         "options": {
+            "pythonpath": [".."]
+         },
+         "components": [
+            {
+              "id": "BL_leg",
+              "type": "class",
+               "classname": "leg_runner.LegRunner",
+               "extra":{
+                 "name": "BL_leg"
+               },
+               "realm": "realm1",
+               "transport": {
+                  "type": "websocket",
+                  "endpoint": {
+                     "type": "tcp",
+                     "host": "127.0.0.1",
+                     "port": 8080
+                  },
+                  "url": "ws://127.0.0.1:8080/ws"
+               }
+            }
+         ]
+      },
+      {
+         "type": "container",
+         "options": {
+            "pythonpath": [".."]
+         },
+         "components": [
+            {
                "id": "TetryInstance",
                "type": "class",
                "classname": "tetry_instance.TetryInstance",

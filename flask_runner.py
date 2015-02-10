@@ -3,7 +3,7 @@ import sys
 import inspect
 import datetime
 import time
-import TetryQueue
+# import TetryQueue
 
 
 from flask import Flask, render_template, request, jsonify
@@ -13,25 +13,25 @@ from flask import Flask, render_template, request, jsonify
 class FlaskRunner:
 
     def __init__(self):
-        self.log = TetryQueue.TetryQueue()
+        # self.log = TetryQueue.TetryQueue()
         self.app = Flask(__name__)
 
-    def dummysender(self, **kwds):
-            print(kwds)
-
-    def dummylogger(self, level, *args, **kwds):
-        """
-        Placeholder for logger
-
-        """
-        st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-        calling_frame = inspect.getouterframes(inspect.currentframe(), 2)
-        record = (st, calling_frame[1][1:4], args, kwds)
-        self.log.put(record)
-        if level < 0:
-            print >> sys.stderr, record
-        else:
-            print(record)
+    # def dummysender(self, **kwds):
+    #         print(kwds)
+    #
+    # def dummylogger(self, level, *args, **kwds):
+    #     """
+    #     Placeholder for logger
+    #
+    #     """
+    #     st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+    #     calling_frame = inspect.getouterframes(inspect.currentframe(), 2)
+    #     record = (st, calling_frame[1][1:4], args, kwds)
+    #     self.log.put(record)
+    #     if level < 0:
+    #         print >> sys.stderr, record
+    #     else:
+    #         print(record)
 
 fl = FlaskRunner()
 app = fl.app
