@@ -27,6 +27,7 @@ class TetryInstance(ApplicationSession):
 
     # @inlineCallbacks
     def sender(self, **kwds):
+        print kwds
         if 'bot_command' in kwds:
             self.publish('com.tetry.servo_targets', kwds['bot_command'])
             self.logger(2, kwds['bot_command'])

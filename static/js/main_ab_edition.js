@@ -1,8 +1,10 @@
 var wamp_connection = null;
 var sess = null;
 
+//var sliders = []
 
 var tetry = {
+    angle_sliders: [],
     init: function(){
         $( "#tetry-commands-content" ).load( "/tetry/api/1.0/tasks/moves" );
         tetry.add_event_handlers();
@@ -28,15 +30,20 @@ var tetry = {
             console.log("UI NOT LOADED!!")
         };
 
-        $( ".leg-1 span" ).each( function (){
+        $( ".status-angle div span" ).each( function (){
+
 
             $( this ).slider({
-                    min:10,
-                    max:100,
-                    value: 40,
+                    min:-180,
+                    max:180,
+                    value: 0,
                     range: "min",
-                    animate: true
+                    animate: true,
+                    disabled: false,
+                    orientation: "vertical"
             });
+            tetry.angle_sliders[tetry.angle_sliders.length]= $( this )
+//            console.log("slider done")
 
          });
 
@@ -51,6 +58,7 @@ var tetry = {
                 console.log("Connected to wamp!");
             };
             sess.subscribe('com.tetry.log', tetry.on_log_receive)
+            sess.subscribe('com.tetry.servo_targets', tetry.on_angles_update)
         };
         wamp_connection.onclose = function(reason, details) {
             sess = null;
@@ -64,6 +72,17 @@ var tetry = {
         $("body").delegate( ".tetry-command", "click", function() {
             tetry.send_command($(this));
          });
+    },
+
+    on_angles_update: function(bc){
+//        console.log(tetry.angle_sliders);
+        console.log("Received bot command:", bc[0]);
+        bc[0].forEach(function(c){
+            $("span[data='" + c.servo + "']").slider("option", "value", c.angle);
+//            tetry.angle_sliders[c.servo].slider("value") = c.angle;
+        });
+        console.log("Received bot command:", bc);
+
     },
 
     on_log_receive: function(log_record){

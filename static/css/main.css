@@ -35,13 +35,11 @@
     border-right: 1px dashed grey;
 }
 
-.leg-1 > span {
-    width: 100px;
+.status-angle > div > span {
     height: 200px;
     margin: 15px;
+    float: left;
 }
-
-
 
 
 
