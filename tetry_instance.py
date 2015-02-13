@@ -1,4 +1,5 @@
 import sys
+import traceback
 import inspect
 import datetime
 import time
@@ -10,7 +11,7 @@ from autobahn.twisted.wamp import ApplicationSession
 
 import Crawler
 
-DEBUG = True
+DEBUG = False
 
 
 class TetryInstance(ApplicationSession):
@@ -68,7 +69,8 @@ class TetryInstance(ApplicationSession):
             yield self.bot.load_settings(self.model)
             print("Loading model...")
         except Exception as e:
-            print(e.value)
+            # print(e.message)
+            traceback.print_exc()
         # print(self.model)
 
 

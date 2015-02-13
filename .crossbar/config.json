@@ -67,77 +67,82 @@
          },
          "components": [
             {
+              "id": "EventCatcher",
+              "type": "class",
+               "classname": "event_catcher.EventCatcher",
+               "realm": "realm1",
+               "transport": {
+                  "type": "websocket",
+                  "endpoint": {
+                     "type": "tcp",
+                     "host": "127.0.0.1",
+                     "port": 8080
+                  },
+                  "url": "ws://127.0.0.1:8080/ws"
+               }
+            }
+         ]
+      },
+      {
+         "type": "container",
+         "options": {
+            "pythonpath": [".."]
+         },
+         "components": [
+            {
                "id": "PhysicalModel",
                "type": "class",
                "classname": "physical_model.PhysicalModel",
                "extra":
-                   {"legs":
-                       {
-                           "FR_leg":
-                                {
-                                    "type": "3joints",
-                                    "temur": 45,
-                                    "name": "FR leg",
-                                    "offset": [25, 25],
-                                    "debug": false,
-                                    "coxa": 85,
-                                    "servos": [0, 1, 2],
-                                    "tibia": 85
-                                },
-                           "MR_leg":
-                                {
-                                    "type": "3joints",
-                                    "temur": 45,
-                                    "name": "MR leg",
-                                    "offset": [25, 0],
-                                    "debug": false,
-                                    "coxa": 85,
-                                    "servos": [0, 1, 2],
-                                    "tibia": 85
-                                },
-                           "BR_leg":
-                                {
-                                    "type": "3joints",
-                                    "temur": 45,
-                                    "name": "BR leg",
-                                    "offset": [25, -25],
-                                    "debug": false,
-                                    "coxa": 85,
-                                    "servos": [6, 7, 8],
-                                    "tibia": 85
-                                },
-                           "FL_leg":
-                               {
-                                   "temur": 45,
-                                   "name": "FL leg",
-                                   "offset": [-25, 25],
-                                   "debug": false,
-                                   "coxa": 85,
-                                   "servos": [3, 4, 5],
-                                   "tibia": 85
-                               },
-                           "BL_leg":
-                               {
-                                   "temur": 45,
-                                   "name": "BL leg",
-                                   "offset": [-25, -25],
-                                   "debug": false,
-                                   "coxa": 85,
-                                   "servos": [9, 10, 11],
-                                   "tibia": 85},
-                           "ML_leg":
-                               {
-                                   "temur": 45,
-                                   "name": "ML leg",
-                                   "offset": [-25, 0],
-                                   "debug": false,
-                                   "coxa": 85,
-                                   "servos": [3, 4, 5],
-                                   "tibia": 85
-                               }
-                       },
-                       "inverted": [2, 5, 8, 11]
-               },
+                {
+                 "legs": [
+                  {
+                   "temur": 45,
+                   "coxa": 85,
+                   "name": "FR leg",
+                   "offset": [25, 25],
+                   "debug": false,
+                   "initial_state": [55, 55, 40],
+                   "servos": [0,1,2],
+                   "id": "FR_leg",
+                   "tibia": 85
+                  },
+                  {
+                   "temur": 45,
+                   "coxa": 85,
+                   "name": "BR leg",
+                   "offset": [25,-25],
+                   "debug": false,
+                   "initial_state": [55,-55,40],
+                   "servos": [6,7,8],
+                   "id": "BR_leg",
+                   "tibia": 85
+                  },
+                  {
+                   "temur": 45,
+                   "coxa": 85,
+                   "name": "BL leg",
+                   "offset": [-25,-25],
+                   "debug": false,
+                   "initial_state": [-55,-55,40],
+                   "servos": [9,10,11],
+                   "id": "BL_leg",
+                   "tibia": 85
+                  },
+                  {
+                   "temur": 45,
+                   "coxa": 85,
+                   "name": "FL leg",
+                   "offset": [-25,25],
+                   "debug": false,
+                   "initial_state": [-55,55,40],
+                   "servos": [3,4,5],
+                   "id": "FL_leg",
+                   "tibia": 85
+                  }
+                 ],
+                 "inverted": [2,5,8,11]
+                },
            "realm": "realm1",
                "transport": {
                   "type": "websocket",
@@ -163,32 +168,6 @@
                "classname": "leg_runner.LegRunner",
                "extra":{
                  "name": "FR_leg"
-               },
-               "realm": "realm1",
-               "transport": {
-                  "type": "websocket",
-                  "endpoint": {
-                     "type": "tcp",
-                     "host": "127.0.0.1",
-                     "port": 8080
-                  },
-                  "url": "ws://127.0.0.1:8080/ws"
-               }
-            }
-         ]
-      },
-      {
-         "type": "container",
-         "options": {
-            "pythonpath": [".."]
-         },
-         "components": [
-            {
-              "id": "MR_leg",
-              "type": "class",
-               "classname": "leg_runner.LegRunner",
-               "extra":{
-                 "name": "MR_leg"
                },
                "realm": "realm1",
                "transport": {
@@ -262,32 +241,6 @@
          },
          "components": [
             {
-              "id": "ML_leg",
-              "type": "class",
-               "classname": "leg_runner.LegRunner",
-               "extra":{
-                 "name": "ML_leg"
-               },
-               "realm": "realm1",
-               "transport": {
-                  "type": "websocket",
-                  "endpoint": {
-                     "type": "tcp",
-                     "host": "127.0.0.1",
-                     "port": 8080
-                  },
-                  "url": "ws://127.0.0.1:8080/ws"
-               }
-            }
-         ]
-      },
-      {
-         "type": "container",
-         "options": {
-            "pythonpath": [".."]
-         },
-         "components": [
-            {
               "id": "BL_leg",
               "type": "class",
                "classname": "leg_runner.LegRunner",
@@ -317,29 +270,6 @@
                "id": "TetryInstance",
                "type": "class",
                "classname": "tetry_instance.TetryInstance",
-               "realm": "realm1",
-               "transport": {
-                  "type": "websocket",
-                  "endpoint": {
-                     "type": "tcp",
-                     "host": "127.0.0.1",
-                     "port": 8080
-                  },
-                  "url": "ws://127.0.0.1:8080/ws"
-               }
-            }
-         ]
-      },
-      {
-         "type": "container",
-         "options": {
-            "pythonpath": [".."]
-         },
-         "components": [
-            {
-              "id": "EventCatcher",
-              "type": "class",
-               "classname": "event_catcher.EventCatcher",
                "realm": "realm1",
                "transport": {
                   "type": "websocket",

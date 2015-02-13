@@ -3,6 +3,7 @@
 # import legIK
 # import time
 import math
+import traceback
 import json
 # import sys
 import numpy
@@ -97,10 +98,15 @@ class Controller:
     #  OK
     @defer.inlineCallbacks
     def load_settings(self, model):
-        self.legs = model[u'legs'].keys()
-        for key,j in model[u'legs'].iteritems():
-            print key, j
-            yield self.app.call("com.tetry.{}.init".format(key), j)
+        self.legs = []
+        print len(model[u'legs'])
+        for j in model[u'legs']:
+            self.legs.append(j['id'])
+            print j['name'], j
+            try:
+                yield self.app.call("com.tetry.{}.init".format(j['id']), j)
+            except:
+                traceback.print_exc()
             # TODO: legIK should be crossbar.io RPC (service)
         self.inverted = model['inverted']
 
@@ -110,6 +116,7 @@ class Controller:
         bc = []
         for leg in self.legs:
             res = yield self.app.call("com.tetry.{}.get_starting_point".format(leg))
+            print res
             bc += res
         self._send(bc)
         self.inited = True
@@ -144,7 +151,7 @@ class Controller:
             for leg in self._sort_legs_angle(angle):
                 # assume to start from BasePose
                 # raise each of legs , move forward by 4*d mm, lower it, then move body forward by d mm
-                self.logger(1, "Transposing leg: %i" % leg.id)
+                self.logger(1, "Transposing leg: {}".format(leg))
                 self._leg_transpose(leg, s, t, distance, sleep1)
                 self.shift_body_offset(-s, -t)
                 d = defer.Deferred()

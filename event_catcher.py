@@ -28,6 +28,10 @@ class EventCatcher(ApplicationSession):
                 # res is an Failure instance
                 print("Failed to subscribe handler: {}".format(res.value))
 
+    @wamp.subscribe(u'wamp.metaevent.session.on_join')
+    def on_command(self, msg):
+        self.printer(u'wamp.metaevent.session.on_join', msg)
+
     @wamp.subscribe(u'com.tetry.run_command')
     def on_command(self, msg):
         self.printer(u'com.tetry.run_command', msg)
