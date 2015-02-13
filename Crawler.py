@@ -112,7 +112,7 @@ class Controller:
 
     # OK
     @defer.inlineCallbacks
-    def init_bot(self):
+    def init_bot(self, *args):
         bc = []
         for leg in self.legs:
             res = yield self.app.call("com.tetry.{}.get_starting_point".format(leg))
@@ -293,7 +293,7 @@ class Controller:
         dlist.addCallback(self._flatten_list)
         dlist.addCallback(self._send)
         for d in ds:
-            reactor.callWhenRunning(d.callback)
+            reactor.callLater(0, d.callback, None)
             yield d
         # clist = []
         # for leg in self.legs:
@@ -322,7 +322,7 @@ class Controller:
         dlist.addCallback(self._flatten_list)
         dlist.addCallback(self._send)
         for d in ds:
-            reactor.callWhenRunning(d.callback)
+            reactor.callLater(0, d.callback, None)
             yield d
 
 
