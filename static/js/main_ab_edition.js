@@ -47,6 +47,23 @@ var tetry = {
 
          });
 
+        $( ".status-coordinates div span" ).each( function (){
+
+
+            $( this ).slider({
+                    min:-180,
+                    max:180,
+                    value: 0,
+                    range: "min",
+                    animate: true,
+                    disabled: false,
+                    orientation: "vertical"
+            });
+//            tetry.angle_sliders[tetry.angle_sliders.length]= $( this )
+//            console.log("slider done")
+
+         });
+
         wamp_connection = new autobahn.Connection({
             url: 'ws://127.0.0.1:8080/ws',
             realm: 'realm1'
@@ -78,7 +95,7 @@ var tetry = {
 //        console.log(tetry.angle_sliders);
         console.log("Received bot command:", bc[0]);
         bc[0].forEach(function(c){
-            $("span[data='" + c.servo + "']").slider("option", "value", c.angle);
+            $(".status-angle div span[data='" + c.servo + "']").slider("option", "value", c.angle);
 //            tetry.angle_sliders[c.servo].slider("value") = c.angle;
         });
         console.log("Received bot command:", bc);

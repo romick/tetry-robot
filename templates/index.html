@@ -30,9 +30,7 @@
 
 {% include "navbar.html" ignore missing %}
 
-<div class="container tetry-divider">
-
-</div>
+<div class="container tetry-divider"></div>
 
 <div class="container">
 
@@ -54,8 +52,20 @@
         </div>
     </div>
 
-    <div class="section col-md-6">
+    <div role="tabpanel" class="section-left col-md-6">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs small" role="tablist">
+            <li role="presentation"><a href="#coordinates" aria-controls="coordinates" class="tetry-command-group" role="tab" data-toggle="tab">Coordinates</a></li>
+            <li role="presentation" class="active"><a href="#angles" aria-controls="angles" class="tetry-command-group" role="tab" data-toggle="tab">Servo angles</a></li>
+            <li role="presentation"><a href="#d3" aria-controls="d3" class="tetry-command-group" role="tab" data-toggle="tab">3D viewport</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+{% include "coordinates.html" ignore missing %}
 {% include "angles.html" ignore missing %}
+{% include "3d.html" ignore missing %}
+        </div>
     </div>
 </div>
 

@@ -36,11 +36,16 @@
 }
 
 .status-angle > div > span {
-    height: 200px;
+    height: 150px;
     margin: 15px;
     float: left;
 }
 
+.status-coordinates > div > span {
+    height: 150px;
+    margin: 15px;
+    float: left;
+}
 
 
 
