@@ -11,4 +11,7 @@ Special thanks to:
  - PySerial project contributors (http://pyserial.sourceforge.net/)
   
  
-
+Required:
+flask
+setproctitle
+numpy

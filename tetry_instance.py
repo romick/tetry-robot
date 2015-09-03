@@ -6,7 +6,8 @@ import time
 
 from twisted.internet import reactor
 from twisted.internet.defer import inlineCallbacks
-from autobahn import wamp
+from twisted.python.failure import Failure
+from autobahn.wamp import subscribe
 from autobahn.twisted.wamp import ApplicationSession
 
 import Crawler
@@ -49,19 +50,16 @@ class TetryInstance(ApplicationSession):
 
     @inlineCallbacks
     def onJoin(self, details):
-        print("session attached")
+        print("tetry instance session attached")
 
         # subscribe all methods on this object decorated with "@wamp.subscribe"
         # as PubSub event handlers
         #
         results = yield self.subscribe(self)
-        for success, res in results:
-            if success:
-                # res is an Subscription instance
-                print("Ok, subscribed handler with subscription ID {}".format(res.id))
-            else:
-                # res is an Failure instance
-                print("Failed to subscribe handler: {}".format(res.value))
+       # check we didn't have any errors
+        for sub in results:
+            if isinstance(sub, Failure):
+                print("subscribe failed:", sub.getErrorMessage())
         self.bot = Crawler.Controller(sender=self.sender, logger=self.logger, app=self)
         try:
         # self.bot.load_settings_from_file("../Robots/tetry.json")
@@ -76,7 +74,7 @@ class TetryInstance(ApplicationSession):
 
 
     @inlineCallbacks
-    @wamp.subscribe(u'com.tetry.run_command')
+    @subscribe(u'com.tetry.run_command')
     def on_command(self, i):
         # try:
             print("Got event on run_command: {}".format(i))

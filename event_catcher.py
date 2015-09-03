@@ -2,7 +2,8 @@ __author__ = 'romick'
 
 from twisted.internet import reactor
 from twisted.internet.defer import inlineCallbacks
-from autobahn import wamp
+from twisted.python.failure import Failure
+from autobahn.wamp import subscribe
 from autobahn.twisted.wamp import ApplicationSession
 
 DEBUG = True
@@ -14,41 +15,38 @@ class EventCatcher(ApplicationSession):
     """
     @inlineCallbacks
     def onJoin(self, details):
-        print("session attached")
+        print("event catcher session attached")
 
         # subscribe all methods on this object decorated with "@wamp.subscribe"
         # as PubSub event handlers
         #
         results = yield self.subscribe(self)
-        for success, res in results:
-            if success:
-                # res is an Subscription instance
-                print("Ok, subscribed handler with subscription ID {}".format(res.id))
-            else:
-                # res is an Failure instance
-                print("Failed to subscribe handler: {}".format(res.value))
+        # check we didn't have any errors
+        for sub in results:
+            if isinstance(sub, Failure):
+                print("subscribe failed:", sub.getErrorMessage())
 
-    @wamp.subscribe(u'wamp.metaevent.session.on_join')
+    @subscribe(u'wamp.metaevent.session.on_join')
     def on_command(self, msg):
         self.printer(u'wamp.metaevent.session.on_join', msg)
 
-    @wamp.subscribe(u'com.tetry.run_command')
+    @subscribe(u'com.tetry.run_command')
     def on_command(self, msg):
         self.printer(u'com.tetry.run_command', msg)
 
-    @wamp.subscribe(u'com.tetry.log')
+    @subscribe(u'com.tetry.log')
     def on_log(self, msg):
         self.printer(u'com.tetry.log', msg)
 
-    @wamp.subscribe(u'com.tetry.got_from_com')
+    @subscribe(u'com.tetry.got_from_com')
     def on_com_line(self, msg):
         self.printer(u'com.tetry.got_from_com', msg)
 
-    @wamp.subscribe(u'com.tetry.servo_targets')
+    @subscribe(u'com.tetry.servo_targets')
     def on_com_line(self, msg):
         self.printer(u'com.tetry.servo_targets', msg)
 
-    @wamp.subscribe(u'com.tetry.sent2com')
+    @subscribe(u'com.tetry.sent2com')
     def on_com_line(self, msg):
         self.printer(u'com.tetry.sent2com', msg)
 
