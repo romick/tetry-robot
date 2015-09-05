@@ -2,7 +2,7 @@ __author__ = 'roman_000'
 
 import wx
 from wx.lib.floatcanvas import FloatCanvas
-from TetryTools import MathTools
+from backend_main.TetryTools import MathTools
 # import os
 
 

@@ -113,7 +113,7 @@
       {
          "type": "container",
          "options": {
-            "pythonpath": [".."]
+            "pythonpath": ["../physical_model"]
          },
          "components": [
             {
@@ -291,7 +291,7 @@
       {
          "type": "container",
          "options": {
-            "pythonpath": [".."]
+            "pythonpath": ["../backend_main"]
          },
          "components": [
             {

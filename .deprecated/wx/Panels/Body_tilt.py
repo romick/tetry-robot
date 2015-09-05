@@ -3,8 +3,7 @@ __author__ = 'roman_000'
 import wx
 import wx
 from wx.lib.floatcanvas import FloatCanvas
-from TetryTools import MathTools
-import numpy
+from backend_main.TetryTools import MathTools
 
 
 class TiltBodyPanel(wx.Panel):

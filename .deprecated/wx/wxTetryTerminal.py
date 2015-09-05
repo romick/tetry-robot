@@ -6,7 +6,7 @@ import sys
 import wx
 import wx.aui
 import wx.lib.agw.aui as aui
-import Crawler
+from backend_main import Crawler
 from RunnerThread import RunnerThread
 from deprecated.wx import TetryQueue
 

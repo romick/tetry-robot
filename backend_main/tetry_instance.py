@@ -10,7 +10,8 @@ from twisted.python.failure import Failure
 from autobahn.wamp import subscribe
 from autobahn.twisted.wamp import ApplicationSession
 
-import Crawler
+from backend_main import Crawler
+
 
 DEBUG = False
 
