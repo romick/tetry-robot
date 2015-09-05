@@ -16,4 +16,11 @@ python:
  - flask
  - setproctitle
  - numpy
-socat
+socat (for testing purposes)
+
+Architecture:
+ - using reactive python scripts based on PubSub and RPC messages
+ - crossbar.io is a transport for messages
+ - one folder is one microservice
+ 
+Start by running ./start.sh
