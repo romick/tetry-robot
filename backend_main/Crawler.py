@@ -6,25 +6,12 @@ import math
 import traceback
 import numpy
 from twisted.internet import reactor, defer
+from twisted.internet.defer import inlineCallbacks
 
 # The class is based on a work by Rob Cook.
 # Please visit www.robcook.eu for more details on algorithm and calculations behind it.
 
 
-# class LegEncoder(json.JSONEncoder):
-#     def default(self, obj):
-#         if isinstance(obj, legIK.Leg):
-#             return dict(name=obj.name,
-#                         id=obj.id,
-#                         offset=obj.leg_offset,
-#                         coxa=obj.coxa_length,
-#                         temur=obj.temur_length,
-#                         tibia=obj.tibia_length,
-#                         servos=obj.servos,
-#                         initial_state=obj.initial_state,
-#                         debug=obj.debug)
-#         # Let the base class default method raise the TypeError
-#         return json.JSONEncoder.default(self, obj)
 # @staticmethod
 def normalize(*args):
     v_length = vector_length(*args)
@@ -32,6 +19,7 @@ def normalize(*args):
         return (x / v_length for x in args)
     else:
         return args
+
 
 # @staticmethod
 def vector_length(*args):
@@ -55,70 +43,31 @@ class Controller:
         self.logger = kwds['logger']
         self.sender = kwds['sender']
         self.app = kwds['app']
-
-        # self.protocols = ['Custom tetry', 'Compact', 'Pololu', 'MiniSSC']
-        # if 'current_protocol' in kwds.keys():
-        #     self.current_protocol = self.protocols[(kwds['current_protocol'])]
-        # else:
-        #     self.current_protocol = self.protocols[0]
-        # self.logger(1, "Protocol is %s" % self.current_protocol)
-
         self.gaits = ["tripod", "wave", "ripple"]
         self.inited = False
-        if 'settings' in kwds:
-            self.settings_file_name = kwds['settings']
-            self.load_settings(self.settings_file_name)
+        # if 'settings' in kwds:
+        #     self.settings_file_name = kwds['settings']
+        #     self.load_settings(self.settings_file_name)
         self.gait = 1
         self.debug = 1
         self.legs = []
         self.inverted = []
         self.servo_number = 0
 
-    # to re-write
-    # def dump_settings(self):
-    #     sfile = open(self.settings_file_name, 'w')
-    #     json.dump(dict(legs=self.legs, inverted=self.inverted),
-    #               sfile, cls=LegEncoder, indent=1, separators=(',', ': '))
-
-    # DEPRECATED!
     # @defer.inlineCallbacks
-    # def load_settings_from_file(self, settings_file_name):
-    #     # load legs from json file
-    #     self.settings_file_name = settings_file_name
+    # def load_settings(self, model):
     #     self.legs = []
-    #     try:
-    #         self.logger(1, "Loaded settings from file:", self.settings_file_name)
-    #         sfile = open(self.settings_file_name, 'r')
-    #         jsettings = json.load(sfile)
-    #         self.load_settings(jsettings)
-    #         sfile.close()
-    #     except ValueError:
-    #         pass
-    #     # yield 1
-    #
-    #     # calculate number of servos
-    #     for l in self.legs:
-    #         self.servo_number += len(l.servos)
-    #
-    #     self.sender(start=1)
+    #     print len(model[u'legs'])
+    #     for j in model[u'legs']:
+    #         self.legs.append(j['id'])
+    #         print j['name'], j
+    #         try:
+    #             yield self.app.call("com.tetry.{}.init".format(j['id']), j)
+    #         except:
+    #             traceback.print_exc()
+    #     self.inverted = model['inverted']
 
-    #  OK
-    @defer.inlineCallbacks
-    def load_settings(self, model):
-        self.legs = []
-        print len(model[u'legs'])
-        for j in model[u'legs']:
-            self.legs.append(j['id'])
-            print j['name'], j
-            try:
-                yield self.app.call("com.tetry.{}.init".format(j['id']), j)
-            except:
-                traceback.print_exc()
-            # TODO: legIK should be crossbar.io RPC (service)
-        self.inverted = model['inverted']
-
-    # OK
-    @defer.inlineCallbacks
+    @inlineCallbacks
     def init_bot(self, *args):
         bc = []
         for leg in self.legs:
@@ -138,7 +87,7 @@ class Controller:
     #     self._send(command)
 
     # to re-write
-    @defer.inlineCallbacks
+    @inlineCallbacks
     def make_step(self, angle, distance=10):
         # TODO: add gaits
         if not self.inited:
@@ -181,22 +130,13 @@ class Controller:
         # return self.legs[closest_legs[0]:] + self.legs[:closest_legs[0]]
         return self.legs
 
-    # OK
+    @inlineCallbacks
     def _send(self, bot_command):
         self.logger(1, bot_command)
+        yield self.app.call("com.tetry.queue.append", bot_command)
 
-        bot_command = self._angles2positions(bot_command)
-
-        self.sender(message=self._translate(bot_command), bot_command=bot_command)
-
-    # OK
-    # def _translate(self, bot_command):
-    #     return None
-    # OK
-    @defer.inlineCallbacks
+    @inlineCallbacks
     def _leg_transpose(self, leg, x_offset, y_offset, depth, sleep_time1):
-        # TODO: leg here should be a string referring to required leg
-        # TODO: re-write in Twisted way
         rpc = "com.tetry.{}.get_to_offset".format(leg)
 
         res1 = yield self.app.call(rpc, x_offset, y_offset, -depth)
@@ -217,9 +157,8 @@ class Controller:
         # reactor.callLater(sleep_time1, d3.callback, None)
         # yield d3
 
-    # OK
     def shift_body_offset(self, x_offset, y_offset):
-        ds=[]
+        ds = []
         for l in self.legs:
             d = defer.Deferred()
             d.addCallback(self.app.call, "com.tetry.{}.get_to_offset".format(l), x_offset, y_offset, 0)
@@ -243,7 +182,7 @@ class Controller:
         return [item for sublist in list for item in sublist]
 
     # OK
-    @defer.inlineCallbacks
+    @inlineCallbacks
     def shift_body_angle(self, angle, length=30):
         # TODO: length should be taken from PhysicalModel
         x_offset, y_offset = length * math.cos(math.radians(angle)), length * math.sin(math.radians(angle))
@@ -259,8 +198,6 @@ class Controller:
         for d in ds:
             reactor.callLater(0, d.callback, None)
             yield d
-
-
         # clist.extend(l.go_offset_from_initial(x_offset, y_offset, 0))
         # self._send(clist)
 
@@ -280,7 +217,7 @@ class Controller:
                                        [l * n * (1 - cos(angle)) - m * sin(angle),
                                         m * n * (1 - cos(angle)) + l * sin(angle),
                                         n * n * (1 - cos(angle)) + cos(angle)]])
-        ds=[]
+        ds = []
         for l in self.legs:
             d = defer.Deferred()
             d.addCallback(self.app.call, "com.tetry.{}.get_rotate".format(l), rotation_matrix)
