@@ -2,13 +2,13 @@ __author__ = 'romick'
 import traceback
 import sys
 
-if sys.platform == 'win32':
-    # on windows, we need to use the following reactor for serial support
-    # http://twistedmatrix.com/trac/ticket/3802
-    #
-    from twisted.internet import win32eventreactor
-
-    win32eventreactor.install()
+# if sys.platform == 'win32':
+#     # on windows, we need to use the following reactor for serial support
+#     # http://twistedmatrix.com/trac/ticket/3802
+#     #
+#     from twisted.internet import win32eventreactor
+#
+#     win32eventreactor.install()
 from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.wamp import ApplicationSession
 from leg_IK import legIK
@@ -17,23 +17,10 @@ from leg_IK import legIK
 class LegRunner(ApplicationSession):
     @inlineCallbacks
     def onJoin(self, details):
-
-        # # session metaevents: these are fired by Crossbar.io
-        # # upon _other_ WAMP sessions joining/leaving the router
-        # #
         self.name = self.config.extra['name']
-        print(details)
+        # print(details)
 
-        results = yield self.subscribe(self)
-        for success, res in results:
-            if success:
-                # res is an Subscription instance
-                print("Ok, subscribed handler with subscription ID {}".format(res.id))
-            else:
-                # res is an Failure instance
-                print("Failed to subscribe handler: {}".format(res.value))
         print("Leg_runner with name {} started".format(self.name))
-        # self.call()
         try:
             yield self.register(self.init, 'com.tetry.{}.init'.format(self.name))
             yield self.register(self.get_starting_point, 'com.tetry.{}.get_starting_point'.format(self.name))
@@ -41,11 +28,8 @@ class LegRunner(ApplicationSession):
             yield self.register(self.get_to_offset_from_initial, 'com.tetry.{}.get_to_offset_from_initial'.format(self.name))
             yield self.register(self.get_rotate, 'com.tetry.{}.get_rotate'.format(self.name))
         except Exception as e:
-            # print e, e.message
             traceback.print_exc()
-            pass
-            # else:
-            # print("fail :^(")
+            # pass
 
     def init(self, model):
         # print "Leg's model is: ", model
