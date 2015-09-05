@@ -11,7 +11,7 @@ if sys.platform == 'win32':
     win32eventreactor.install()
 from twisted.internet.defer import inlineCallbacks
 from autobahn.twisted.wamp import ApplicationSession
-import legIK
+from leg_IK import legIK
 
 
 class LegRunner(ApplicationSession):

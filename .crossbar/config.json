@@ -187,7 +187,7 @@
       {
          "type": "container",
          "options": {
-            "pythonpath": [".."]
+            "pythonpath": ["../leg_IK"]
          },
          "components": [
             {
@@ -213,7 +213,7 @@
       {
          "type": "container",
          "options": {
-            "pythonpath": [".."]
+            "pythonpath": ["../leg_IK"]
          },
          "components": [
             {
@@ -239,7 +239,7 @@
       {
          "type": "container",
          "options": {
-            "pythonpath": [".."]
+            "pythonpath": ["../leg_IK"]
          },
          "components": [
             {
@@ -265,7 +265,7 @@
       {
          "type": "container",
          "options": {
-            "pythonpath": [".."]
+            "pythonpath": ["../leg_IK"]
          },
          "components": [
             {
