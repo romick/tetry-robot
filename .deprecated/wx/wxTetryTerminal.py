@@ -8,8 +8,8 @@ import wx.aui
 import wx.lib.agw.aui as aui
 import Crawler
 from RunnerThread import RunnerThread
-from TetryQueue import TetryQueue
-from Panels import *
+from deprecated.wx import TetryQueue
+
 
 ID_EXIT = wx.NewId()
 

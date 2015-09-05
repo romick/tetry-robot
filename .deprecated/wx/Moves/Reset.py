@@ -1,5 +1,5 @@
+from deprecated.wx.Moves import GeneralMove
 
-import GeneralMove
 
 class Reset(GeneralMove.Move):
     def __init__(self, *args, **kwds):

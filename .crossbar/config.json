@@ -7,7 +7,7 @@
       {
          "type": "router",
          "options": {
-            "pythonpath": [".."]
+            "pythonpath": ["..", "../web_frontend"]
          },
          "realms": [
             {
@@ -43,19 +43,19 @@
                   },
                   "js": {
                      "type": "static",
-                     "directory": "../static/js"
+                     "directory": "../web_frontend/static/js"
                   },
                   "css": {
                      "type": "static",
-                     "directory": "../static/css"
+                     "directory": "../web_frontend/static/css"
                   },
                   "fonts": {
                      "type": "static",
-                     "directory": "../static/fonts"
+                     "directory": "../web_frontend/static/fonts"
                   },
                   "meta": {
                      "type": "static",
-                     "directory": "../metaapi"
+                     "directory": "../web_frontend/metaapi"
                   },
                   "ws": {
                      "type": "websocket"
