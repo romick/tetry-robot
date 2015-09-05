@@ -50,13 +50,13 @@ class Controller:
         self.app = kwds['app']
 
         self.protocols = ['Custom tetry', 'Compact', 'Pololu', 'MiniSSC']
-        self.gaits = ["tripod", "wave", "ripple"]
         if 'current_protocol' in kwds.keys():
             self.current_protocol = self.protocols[(kwds['current_protocol'])]
         else:
             self.current_protocol = self.protocols[0]
         self.logger(1, "Protocol is %s" % self.current_protocol)
 
+        self.gaits = ["tripod", "wave", "ripple"]
         self.inited = False
         if 'settings' in kwds:
             self.settings_file_name = kwds['settings']

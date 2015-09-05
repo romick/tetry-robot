@@ -12,6 +12,8 @@ Special thanks to:
   
  
 Required:
-flask
-setproctitle
-numpy
+python:
+ - flask
+ - setproctitle
+ - numpy
+socat

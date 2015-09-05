@@ -53,6 +53,10 @@
                      "type": "static",
                      "directory": "../static/fonts"
                   },
+                  "meta": {
+                     "type": "static",
+                     "directory": "../metaapi"
+                  },
                   "ws": {
                      "type": "websocket"
                   }
@@ -70,6 +74,29 @@
               "id": "EventCatcher",
               "type": "class",
                "classname": "event_catcher.EventCatcher",
+               "realm": "realm1",
+               "transport": {
+                  "type": "websocket",
+                  "endpoint": {
+                     "type": "tcp",
+                     "host": "127.0.0.1",
+                     "port": 8080
+                  },
+                  "url": "ws://127.0.0.1:8080/ws"
+               }
+            }
+         ]
+      },
+      {
+         "type": "container",
+         "options": {
+            "pythonpath": ["../queue"]
+         },
+         "components": [
+            {
+              "id": "Queue",
+              "type": "class",
+               "classname": "queue.CommandQueue",
                "realm": "realm1",
                "transport": {
                   "type": "websocket",
@@ -141,7 +168,8 @@
                    "tibia": 85
                   }
                  ],
-                 "inverted": [2,5,8,11]
+                 "inverted": [2,5,8,11],
+                 "protocol": "Custom tetry"
                 },
            "realm": "realm1",
                "transport": {
@@ -286,13 +314,13 @@
       {
          "type": "container",
          "options": {
-            "pythonpath": [".."]
+            "pythonpath": ["../comport_ssc32"]
          },
          "components": [
             {
                "id": "ComPortWorker",
                "type": "class",
-               "classname": "comport_component.McuComponent",
+               "classname": "comport_ssc32.McuComponent",
                "extra": {
                  "port": "./pty1",
                  "baudrate": 115200,

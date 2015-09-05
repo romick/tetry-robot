@@ -73,7 +73,7 @@ class McuComponent(ApplicationSession):
             print('Could not open serial port: {0}'.format(e))
             self.leave()
         else:
-            yield self.register(serialProtocol.send_command, u"com.tetry.send2com")
+            yield self.register(serialProtocol.send_command, u"com.tetry.send2ssc32")
 
 if __name__ == '__main__':
     #
