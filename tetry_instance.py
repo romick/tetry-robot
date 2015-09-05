@@ -60,10 +60,9 @@ class TetryInstance(ApplicationSession):
         for sub in results:
             if isinstance(sub, Failure):
                 print("subscribe failed:", sub.getErrorMessage())
+
         self.bot = Crawler.Controller(sender=self.sender, logger=self.logger, app=self)
         try:
-        # self.bot.load_settings_from_file("../Robots/tetry.json")
-        # else:
             self.model = yield self.call('com.tetry.get_model')
             yield self.bot.load_settings(self.model)
             print("Loading model...")
@@ -78,11 +77,6 @@ class TetryInstance(ApplicationSession):
     def on_command(self, i):
         # try:
             print("Got event on run_command: {}".format(i))
-            # self.received += 1
-            # if self.received > 5:
-            #     self.leave()
-            # print(self.received)
-
             # print(i)
             # print(i[u'command'])
             if hasattr(self.bot, i[u'command']):
@@ -93,14 +87,6 @@ class TetryInstance(ApplicationSession):
                 print("function not found")
         # except Exception, e:
         #     print e
-
-    # @wamp.subscribe(u'com.tetry.log')
-    # def on_log(self, msg):
-    #     print("Got event on log: {}".format(msg))
-    #
-    # @wamp.subscribe(u'com.tetry.got_from_com')
-    # def on_com_line(self, msg):
-    #     print("Got line from com: {}".format(msg))
 
     def onDisconnect(self):
         print("disconnected")
