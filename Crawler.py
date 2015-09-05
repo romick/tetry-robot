@@ -49,12 +49,12 @@ class Controller:
         self.sender = kwds['sender']
         self.app = kwds['app']
 
-        self.protocols = ['Custom tetry', 'Compact', 'Pololu', 'MiniSSC']
-        if 'current_protocol' in kwds.keys():
-            self.current_protocol = self.protocols[(kwds['current_protocol'])]
-        else:
-            self.current_protocol = self.protocols[0]
-        self.logger(1, "Protocol is %s" % self.current_protocol)
+        # self.protocols = ['Custom tetry', 'Compact', 'Pololu', 'MiniSSC']
+        # if 'current_protocol' in kwds.keys():
+        #     self.current_protocol = self.protocols[(kwds['current_protocol'])]
+        # else:
+        #     self.current_protocol = self.protocols[0]
+        # self.logger(1, "Protocol is %s" % self.current_protocol)
 
         self.gaits = ["tripod", "wave", "ripple"]
         self.inited = False
@@ -183,80 +183,8 @@ class Controller:
         self.sender(message=self._translate(bot_command), bot_command=bot_command)
 
     # OK
-    def _translate(self, bot_command):
-        message = ''
-
-        if self.current_protocol == 'Custom tetry':
-            for x in bot_command:
-                message += '#%iP%i' % (x['servo'], x['position'])
-                # self.sliders[x['servo']].SetValue(x['position'])
-            # message = message[::-1]
-            message += '\n'
-
-        elif self.current_protocol == 'Compact':
-            if len(bot_command) > 1:
-                # Set Multiple Targets
-                # Compact current_protocol:
-                # 0x9F,
-                # number of targets,
-                # first channel number,
-                # first target low bits,
-                # first target high bits,
-                # second target low bits,
-                # second target high bits,
-                # …
-                message = chr(0x9F) + chr(len(bot_command))
-                for x in bot_command:
-                    posi = x['position'] * 4
-                    message = message + \
-                              chr(x['servo']) + \
-                              chr(posi & 0x7F) + \
-                              chr((posi >> 7) & 0x7F)
-            else:
-                posi = bot_command[0]['position'] * 4
-                message = chr(84) + \
-                          chr(bot_command[0]['servo']) + \
-                          chr(posi & 0x7F) + \
-                          chr((posi >> 7) & 0x7F)
-
-        elif self.current_protocol == 'Pololu':
-            pololu_device_number = 12
-            if len(bot_command) > 1:
-                #Set Multiple Targets
-                #Pololu current_protocol:
-                # 0xAA,
-                # device number,
-                # 0x1F,
-                # number of targets,
-                # first channel number,
-                # first target low bits,
-                # first target high bits,
-                # second target low bits,
-                # second target high bits,
-                # …
-                message = chr(0xAA) + chr(pololu_device_number) + chr(0x1F) + chr(len(bot_command))
-                for x in bot_command:
-                    posi = x['position'] * 4
-                    message = message + \
-                              chr(x['servo']) + \
-                              chr(posi & 0x7F) + \
-                              chr((posi >> 7) & 0x7F)
-            else:
-                posi = bot_command[0]['position'] * 4
-                message = chr(0xAA) + \
-                          chr(pololu_device_number) + \
-                          chr(4) + \
-                          chr(bot_command[0]['servo']) + \
-                          chr(posi & 0x7F) + \
-                          chr((posi >> 7) & 0x7F)
-
-        elif self.current_protocol == 'MiniSSC':
-            self.logger(1, "MiniSSC current_protocol has not been implemented yet!")
-
-        else:
-            self.logger(1, "No current_protocol defined!")
-        return message
-
+    # def _translate(self, bot_command):
+    #     return None
     # OK
     @defer.inlineCallbacks
     def _leg_transpose(self, leg, x_offset, y_offset, depth, sleep_time1):
@@ -330,20 +258,6 @@ class Controller:
         # self._send(clist)
 
     # OK
-    def _angles2positions(self, alist):
-        plist = []
-        for a in alist:
-            if 'position' not in a.keys():
-                if a['servo'] in self.inverted:
-                    a['position'] = int(round(
-                        MathTools.interpolate(a['angle'], 180, -180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX)
-                    ))
-                else:
-                    a['position'] = int(round(
-                        MathTools.interpolate(a['angle'], -180, 180, MY_DRIVE_SPEED_MIN, MY_DRIVE_SPEED_MAX)
-                    ))
-            plist.append(a)
-        return plist
 
     # OK
     def rotate_body(self, angle=0, axis_vector=(0, 0, 0)):
