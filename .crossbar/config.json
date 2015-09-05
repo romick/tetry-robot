@@ -67,7 +67,7 @@
       {
          "type": "container",
          "options": {
-            "pythonpath": [".."]
+            "pythonpath": ["../event_catcher"]
          },
          "components": [
             {
