@@ -19,19 +19,6 @@ class MathTools():
         """Not implemented yet."""
         pass
 
-    @staticmethod
-    def vector_length(*args):
-        print args
-        return math.sqrt(sum(x**2 for x in args))
-        # return math.sqrt(args[0]**2 + args[1]**2)
-
-    @staticmethod
-    def normalize(*args):
-        v_length = MathTools.vector_length(*args)
-        if not v_length == 0:
-            return (x / v_length for x in args)
-        else:
-            return args
 
     @staticmethod
     def interpolate(x, min_s, max_s, min_d, max_d):

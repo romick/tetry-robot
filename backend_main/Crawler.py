@@ -4,13 +4,8 @@
 # import time
 import math
 import traceback
-# import sys
 import numpy
-from backend_main.TetryTools import MathTools
 from twisted.internet import reactor, defer
-
-MY_DRIVE_SPEED_MIN = 500
-MY_DRIVE_SPEED_MAX = 2500
 
 # The class is based on a work by Rob Cook.
 # Please visit www.robcook.eu for more details on algorithm and calculations behind it.
@@ -30,6 +25,19 @@ MY_DRIVE_SPEED_MAX = 2500
 #                         debug=obj.debug)
 #         # Let the base class default method raise the TypeError
 #         return json.JSONEncoder.default(self, obj)
+# @staticmethod
+def normalize(*args):
+    v_length = vector_length(*args)
+    if not v_length == 0:
+        return (x / v_length for x in args)
+    else:
+        return args
+
+# @staticmethod
+def vector_length(*args):
+    print args
+    return math.sqrt(sum(x**2 for x in args))
+    # return math.sqrt(args[0]**2 + args[1]**2)
 
 
 class Controller:
@@ -262,7 +270,7 @@ class Controller:
     def rotate_body(self, angle=0, axis_vector=(0, 0, 0)):
         from math import cos, sin
         angle = math.radians(angle)
-        (l, m, n) = MathTools.normalize(*axis_vector)
+        (l, m, n) = normalize(*axis_vector)
         rotation_matrix = numpy.array([[l * l * (1 - cos(angle)) + cos(angle),
                                         m * l * (1 - cos(angle)) - n * sin(angle),
                                         n * l * (1 - cos(angle)) + m * sin(angle)],
@@ -295,3 +303,4 @@ class Controller:
         d = defer.Deferred()
         reactor.callLater(duration, d.callback, duration)
         yield d
+
