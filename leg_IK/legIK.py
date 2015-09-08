@@ -137,6 +137,13 @@ class Leg:
         return self.go_exact_coordinates(self.initial_state[0] + x_offset,
                                          self.initial_state[1] + y_offset,
                                          self.initial_state[2] + z_offset)
+                                         
+    def transform_by_formula(self, vector, time, formula):
+        vx, vy, vz = vector
+        vxt, vyt, vzt = vx/time, vy/time, vz/time
+        clist = []
+        for i in range(time)[0::10]:
+            clist.append(self.go_offset(vxt, vyt, vzt))
 
     def rotate(self, rot_matrix):
         coordinates = numpy.array([self.state_x, self.state_y, self.state_z])
