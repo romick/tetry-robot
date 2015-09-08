@@ -144,6 +144,7 @@ class Leg:
         clist = []
         for i in range(time)[0::10]:
             clist.append(self.go_offset(vxt, vyt, vzt))
+        return clist
 
     def rotate(self, rot_matrix):
         coordinates = numpy.array([self.state_x, self.state_y, self.state_z])
