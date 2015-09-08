@@ -27,6 +27,7 @@ class LegRunner(ApplicationSession):
             yield self.register(self.get_to_offset, 'com.tetry.{}.get_to_offset'.format(self.name))
             yield self.register(self.get_to_offset_from_initial, 'com.tetry.{}.get_to_offset_from_initial'.format(self.name))
             yield self.register(self.get_rotate, 'com.tetry.{}.get_rotate'.format(self.name))
+            yield self.register(self.transform_by_formula, 'com.tetry.{}.transform'.format(self.name))
         except Exception as e:
             traceback.print_exc()
             # pass
@@ -60,6 +61,10 @@ class LegRunner(ApplicationSession):
 
     def get_to_offset(self, x, y, z):
         return self.leg.go_offset_from_initial(x, y, z)
+        # return 1
+
+    def transform_by_formula(self, vector, time, formula="lambda x,y,z: (x,y,z)"):
+        return self.leg.transform_by_formula(vector, time, formula)
         # return 1
 
     def logger(self, *args):
