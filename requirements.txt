@@ -16,7 +16,7 @@ Werkzeug==0.15.3
 apt-xapian-index==0.45
 apturl==0.4.1ubuntu4
 argparse==1.2.1
-autobahn==0.9.5
+autobahn==20.12.3
 characteristic==14.3.0
 chardet==2.0.1
 colorama==0.2.5
