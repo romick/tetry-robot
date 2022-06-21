@@ -39,7 +39,7 @@ lxml==3.3.3
 mistune==0.5
 nemo-emblems==0.0.1
 netaddr==0.7.13
-numpy==1.8.2
+numpy==1.22.0
 oauthlib==0.6.1
 oneconf==0.3.7
 paramiko==1.10.1
