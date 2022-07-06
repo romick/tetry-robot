@@ -35,7 +35,7 @@ httplib2==0.8
 itsdangerous==0.24
 klein==15.0.0
 lockfile==0.8
-lxml==3.3.3
+lxml==4.9.1
 mistune==0.5
 nemo-emblems==0.0.1
 netaddr==0.7.13
