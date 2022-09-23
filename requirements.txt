@@ -45,7 +45,7 @@ oneconf==0.3.7
 paramiko==1.10.1
 pexpect==3.1
 piston-mini-client==0.7.5
-protobuf==2.5.0
+protobuf==3.18.3
 pyOpenSSL==0.13
 pyasn1==0.1.7
 pyasn1-modules==0.0.5
